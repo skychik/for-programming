@@ -6,101 +6,42 @@
 
 package laba2;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.FileNotFoundException; 
+import java.io.FileReader;
+import java.io.IOException;
 
-/**
- *
- * @author саша и кирюша
- */
+public class New {
 
-public class Laba2 {
-    public static void main(String[] args) {
-        
-        //
-        //Creation
-        //
-        
-        Product sausage;
-        {
-            int price = 40;
-            sausage = new Product("Бутерброд с сосиской", price);
+    public static void main(String[] args) { 
+        BufferedReader fileReader = null;
+        String fileWay = System.getenv("EmployeeFile");
+        try {
+            fileReader = new BufferedReader(new FileReader(fileWay));
+        } 
+        catch (FileNotFoundException e) {
+            File file = new File(fileWay); 
         }
-        
-        Shop larek;
-        {
-            ArrayList <Product> larekAssort = new ArrayList <Product>();
-            larekAssort.add(sausage);
-            
-            ArrayList <Employee> employeeLarekList = new ArrayList <Employee>();
-
-            larek = new MovableShop("-", "Ларек", larekAssort, employeeLarekList);
+ 
+    try {
+        //PrintWriter обеспечит возможности записи в файл
+        PrintWriter out = new PrintWriter(fileWay);
+ 
+        try {
+            //Записываем текст в файл
+            out.print(""); //Дописать
+        } finally {
+            /*
+            *После чего мы должны закрыть файл
+            *Иначе файл не запишется 
+            */
+            out.close();
         }
-        
-        Workplace factory;
-        {
-            Product macaroni;
-            {
-                int price = 40;
-                macaroni = new Product("Макароны", price); 
-            }
-            
-            ArrayList <Product> fabricAssort = new ArrayList <Product>();
-            fabricAssort.add(macaroni);
-            
-            ArrayList <Employee> employeeFabricList = new ArrayList <Employee>();
-
-            factory = new Workplace("-", "Фабрика", fabricAssort, employeeFabricList);
-        }
-        
-        ShopAssistant saleswoman;
-        {
-            int salary = 20000;
-            byte attitude = 30;
-            byte workQuality = 30;
-            saleswoman = new ShopAssistant("-", "Продавщица", larek, salary, attitude, workQuality);
-            larek.addEmployee(saleswoman);
-        }
-        
-        Employer scuperfild;
-        {
-            int profit = 100000;
-            scuperfild = new Employer("Скуперфильд", "Владелец Фабрики", factory, profit);
-            larek.setEmployer(scuperfild);
-        }
-        
-        ArrayList <FactoryWorker> workers = new ArrayList<FactoryWorker>();
-        {
-            int workerProfit = 20000;
-            byte attitude = 30; 
-            byte workQuality = 30;
-            for(int i = 0; i<5; i++){
-                workers.add(new FactoryWorker("Рабочий " + Integer.toString(i + 1), "Рабочий", factory, workerProfit, attitude, workQuality));
-                factory.addEmployee(workers.get(i));
-            }
-        }
-        
-        Employer fabricManager;
-        {
-            int profit = 50000;
-            fabricManager = new Employer("", "Управляющий фабрики", factory, profit);
-            factory.setEmployer(fabricManager);
-        }
-        
-        ManagerNotebook notebook = new ManagerNotebook(fabricManager);
-        
-        //
-        //Beggining
-        //
-        
-        for(int i = 0; i < workers.size(); i++){
-            if(larek.getAssortment().contains(sausage)){
-                saleswoman.giveSausage(workers.get(i), sausage);
-                scuperfild.lowerSalary(workers.get(i)/*, sausage.getPrice()*/);
-                fabricManager.makeNote(workers.get(i), notebook);
-            }
-        }
-        
+    } catch(IOException e) {
+        throw new RuntimeException(e);
     }
+        }
 }
-
-
