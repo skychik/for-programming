@@ -1,7 +1,7 @@
 /*
 Дописать PrintWriter - записаь данных в файл;
  */
-package pkgnew;
+package laba2;
 
 import java.util.ArrayDeque;
 import java.io.BufferedReader;
