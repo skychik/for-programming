@@ -12,7 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class New {
+public class Laba2 {
 
     public static void main(String[] args) throws IOException { 
         try {
