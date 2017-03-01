@@ -15,10 +15,9 @@ import java.io.InputStreamReader;
 public class Laba2 {
 
     public static void main(String[] args) throws IOException { 
+        String fileWay = System.getenv("EmployeeFile");
         try {
-            String fileWay = System.getenv("EmployeeFile");
             BufferedReader reader = new BufferedReader(new FileReader(fileWay));
-            
             reader = new BufferedReader(new InputStreamReader(System.in));
             String command = reader.readLine().trim();
             String save = "save";
@@ -31,10 +30,10 @@ public class Laba2 {
         }catch(NullPointerException e){
             System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
         } 
-       /* catch (FileNotFoundException e) {
+        catch (FileNotFoundException e) {
             File file = new File(fileWay); 
         }
-        try {
+        /* try {
             //PrintWriter обеспечит возможности записи в файл
             PrintWriter out = new PrintWriter(fileWay);
 
