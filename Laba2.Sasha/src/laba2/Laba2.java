@@ -14,26 +14,24 @@ import java.io.InputStreamReader;
 
 public class Laba2 {
 
-    public static void main(String[] args) throws IOException { 
-        String fileWay = System.getenv("EmployeeFile");
-        try {
+    public static void main(String[] args) throws IOException {
+        try {//checks path to file with collection and it's existence  
+            String fileWay = System.getenv("EmployeeFile");
             BufferedReader reader = new BufferedReader(new FileReader(fileWay));
+        } catch(NullPointerException e){
+            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
+            System.exit(0);
+        } catch (FileNotFoundException e) {
+            System.out.println("Нет файла с данными о коллекции");
+            System.exit(0);
+        }
+        //тут должно быть заполнение коллекции из файла
+        while {
             reader = new BufferedReader(new InputStreamReader(System.in));
             String command = reader.readLine().trim();
-            String save = "save";
-            String load = "load";
-            String remove = "remove";
-            String removeEl = "remove {element}";
-            String removeAllTheSame = "remove_all {element}";
-            String removeLower = "remove_lower {element}";
             if (command.equals(save));
-        }catch(NullPointerException e){
-            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
-        } 
-        catch (FileNotFoundException e) {
-            File file = new File(fileWay); 
         }
-        /* try {
+            /* try {
             //PrintWriter обеспечит возможности записи в файл
             PrintWriter out = new PrintWriter(fileWay);
 
