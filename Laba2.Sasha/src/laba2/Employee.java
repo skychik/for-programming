@@ -72,4 +72,6 @@ public class Employee extends Character{
         return true;
     }
 
+    // todo comparator
+
 }
