@@ -16,12 +16,12 @@ import java.util.Objects;
 public class Product {
     private String name;
     private int price;
-    
+
     public Product(String name, int price){
         this.name = name;
         this.price = price;
     }
-    
+
     public int getPrice(){
         return price;
     }
@@ -46,13 +46,7 @@ public class Product {
             return false;
         }
         final Product other = (Product) obj;
-        if (this.price != other.price) {
-            return false;
-        }
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
+        return this.price == other.price && Objects.equals(this.name, other.name);
     }
 
     @Override
@@ -60,4 +54,3 @@ public class Product {
         return "Product{" + "name=" + name + ", price=" + price + '}';
     }
 }
-

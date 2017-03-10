@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 
 public class MovableShop extends Shop implements Movement{
-    
+
     public MovableShop(String name, String shopType, ArrayList <Product> assortment, ArrayList <Employee> employeeList) {
         super(name, shopType, assortment, employeeList);
     }
@@ -21,5 +21,5 @@ public class MovableShop extends Shop implements Movement{
     @Override
     public void move(String address) {
         System.out.println("Передвижной магазин \"" + this.name + "\" направляется по адресу:" + address);
-    }   
+    }
 }

@@ -14,20 +14,20 @@ import java.util.*;
 abstract class Character implements Movement{
     protected String name;
     protected String profession;
-    protected Workplace workplace;
-    
+    protected laba2.Workplace workplace;
+
     public Character(String name, String profession, Workplace workplace){
         this.name = name;
         this.profession = profession;
         this.workplace = workplace;
     }
-    
+
     public String getName(){
         return this.name;
     }
-    
+
     abstract public void work();
-    
+
     @Override
     public void move(String address) {
         System.out.println(this.name + " направляется по адресу:" + address);
@@ -54,16 +54,9 @@ abstract class Character implements Movement{
             return false;
         }
         final Character other = (Character) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (!Objects.equals(this.profession, other.profession)) {
-            return false;
-        }
-        if (!Objects.equals(this.workplace, other.workplace)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.name, other.name) &&
+                Objects.equals(this.profession, other.profession) &&
+                Objects.equals(this.workplace, other.workplace);
     }
 
     @Override
@@ -71,5 +64,4 @@ abstract class Character implements Movement{
         return "Character{" + "name=" + name + ", profession=" + profession + ", workplace=" + workplace + '}';
     }
 }
-
 

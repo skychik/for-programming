@@ -17,7 +17,7 @@ public class ManagerNotebook implements Owned{
     private ArrayList<FactoryWorker> workerList;
     private ArrayList<String> signs;
     private Employer owner;
-    
+
     public ManagerNotebook(Employer owner){
         this.owner = owner;
         signs = new ArrayList<String>();
@@ -50,27 +50,20 @@ public class ManagerNotebook implements Owned{
             return false;
         }
         final ManagerNotebook other = (ManagerNotebook) obj;
-        if (!Objects.equals(this.workerList, other.workerList)) {
-            return false;
-        }
-        if (!Objects.equals(this.signs, other.signs)) {
-            return false;
-        }
-        if (!Objects.equals(this.owner, other.owner)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.workerList, other.workerList) &&
+                Objects.equals(this.signs, other.signs) &&
+                Objects.equals(this.owner, other.owner);
     }
-    
+
     @Override
     public void setOwner(Employer owner){
         this.owner = owner;
     }
-    
+
     public void addSign(String workerName){
         signs.add("Я, " + workerName + ", получил бутерброд с сосиской");
     }
-    
+
     public void addWorker(FactoryWorker worker){
         workerList.add(worker);
     }
