@@ -5,10 +5,10 @@
  */
 package laba2;
 
-import java.util.ArrayList;
-import java.util.Collection;
+//import java.util.ArrayList;
+//import java.util.Collection;
 import java.util.ArrayDeque;
-import java.util.Iterator;
+//import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -18,20 +18,20 @@ import java.util.Objects;
 
 public class FactoryWorker extends Employee{
     private ArrayDeque<Product> bagpack;
-    
+
     public FactoryWorker(String name, String profession, Workplace workplace, int salary, byte attitudeToBoss, byte workQuality) {
         super(name, profession, workplace, salary, attitudeToBoss, workQuality);
-        bagpack = new ArrayDeque<Product>();
-    }   
-    
+        bagpack = new ArrayDeque<>();
+    }
+
     public void changeQuality(byte up){
         super.workQuality += up;
-    }   
-    
+    }
+
     public void changeAttitude (byte up){
         super.attitudeToBoss += up;
-    } 
-    
+    }
+
     public void receiveSausage(Product sausage){
         bagpack.add(sausage);
         byte up = 5;
@@ -63,33 +63,30 @@ public class FactoryWorker extends Employee{
             return false;
         }
         final FactoryWorker other = (FactoryWorker) obj;
-        if (!Objects.equals(this.bagpack, other.bagpack)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.bagpack, other.bagpack);
     }
-    
+
     public void sign(ManagerNotebook notebook){
         notebook.addSign(this.getName());
-    }  
-    
+    }
+
     public void save() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-            public void load() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
+    public void load() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-            public void remove(Object o) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
+    public void remove(Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-            public void remove_lower(Object o) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
+    public void remove_lower(Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-            public void removea_all(Object o) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
+    public void removea_all(Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

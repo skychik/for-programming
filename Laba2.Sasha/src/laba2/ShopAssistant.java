@@ -14,7 +14,7 @@ package laba2;
 public class ShopAssistant extends Employee{
     public ShopAssistant(String name, String profession, Workplace workplace, int salary, byte attitude, byte workQuality) {
         super(name, profession, workplace, salary, attitude, workQuality);
-    }   
+    }
     public void giveSausage(FactoryWorker worker, Product sausage){
         worker.receiveSausage(sausage);
     }

@@ -12,5 +12,5 @@ package laba2;
  */
 
 public interface Movement{
-    public void move(String address);
+    void move(String address);
 } 

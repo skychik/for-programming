@@ -17,9 +17,9 @@ public class Workplace{
     protected String name;
     protected String type;
     protected Employer employer;
-    protected ArrayList<Employee> employeeList; 
+    protected ArrayList<Employee> employeeList;
     protected ArrayList<Product> assortment;
-    
+
     Workplace(String name, String type, ArrayList <Product> assortment, ArrayList <Employee> employeeList){
         this.name = name;
         this.type = type;
@@ -30,20 +30,20 @@ public class Workplace{
     public void setAssortment(ArrayList <Product> assortment){
         this.assortment = assortment;
     }
-    
+
     public ArrayList <Product> getAssortment(){
         return assortment;
     }
-    
+
     public void setEmployer(Employer employer){
         this.employer = employer;
     }
-    
+
     public void addEmployee(Employee employee){
         //incorrect realisation 
         this.employeeList.add(employee);
     }
-    
+
     public ArrayList<Employee> getEmployeeList(){
         return(employeeList);
     }
@@ -71,29 +71,16 @@ public class Workplace{
             return false;
         }
         final Workplace other = (Workplace) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (!Objects.equals(this.type, other.type)) {
-            return false;
-        }
-        if (!Objects.equals(this.employer, other.employer)) {
-            return false;
-        }
-        if (!Objects.equals(this.employeeList, other.employeeList)) {
-            return false;
-        }
-        if (!Objects.equals(this.assortment, other.assortment)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.name, other.name) &&
+                Objects.equals(this.type, other.type) &&
+                Objects.equals(this.employer, other.employer) &&
+                Objects.equals(this.employeeList, other.employeeList) &&
+                Objects.equals(this.assortment, other.assortment);
     }
 
     @Override
     public String toString() {
         return "Workplace{" + "name=" + name + ", type=" + type + ", employer=" + employer + ", employeeList=" + employeeList + ", assortment=" + assortment + '}';
     }
-    
+
 }
-
-

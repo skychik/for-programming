@@ -9,21 +9,21 @@ package laba2;
  *
  * @author саша и кирюша
  */
-   
-public class Employer extends Character {
+
+public class Employer extends laba2.Character {
     private int profit;
-    
-    public Employer(String name, String profession, Workplace workplace, int profit){
+
+    public Employer(String name, String profession, laba2.Workplace workplace, int profit){
         super(name, profession, workplace);
         this.profit = profit;
 
     }
-    
+
     public void lowerSalary(Employee employee){
         if (employee.salary == Salary.High) employee.salary = Salary.Normal;
         if (employee.salary == Salary.Normal) employee.salary = Salary.Low;
     }
-    
+
     @Override
     public void work() {
         System.out.println("Выполняет обязанности: " + profession);
@@ -48,17 +48,14 @@ public class Employer extends Character {
             return false;
         }
         final Employer other = (Employer) obj;
-        if (this.profit != other.profit) {
-            return false;
-        }
-        return true;
+        return this.profit == other.profit;
     }
 
     @Override
     public String toString() {
         return "Employer{" + "profit=" + profit + '}';
     }
-    
+
     public void makeNote(FactoryWorker worker, ManagerNotebook notebook){
         notebook.setOwner(this);
         notebook.addWorker(worker);

@@ -16,22 +16,22 @@ public class Employee extends Character{
     protected Salary salary;
     protected byte attitudeToBoss;
     protected byte workQuality;
-    
+
     public Employee(String name, String profession, Workplace workplace, int salary ,byte attitudeToBoss, byte workQuality) {
         super(name, profession, workplace);
         this.salary = Salary.Low;
         this.attitudeToBoss = attitudeToBoss;
         this.workQuality = workQuality;
-    }   
-            
+    }
+
     @Override
     public void work() {
         if (attitudeToBoss < 0)
             workQuality --;
         else
-            if (attitudeToBoss > 0) 
-                workQuality ++;
-    }      
+        if (attitudeToBoss > 0)
+            workQuality ++;
+    }
 
     @Override
     public String toString() {
@@ -47,7 +47,7 @@ public class Employee extends Character{
         return hash;
     }
 
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -60,18 +60,9 @@ public class Employee extends Character{
             return false;
         }
         final Employee other = (Employee) obj;
-        if (this.salary != other.salary) {
-            return false;
-        }
-        if (this.attitudeToBoss != other.attitudeToBoss) {
-            return false;
-        }
-        if (this.workQuality != other.workQuality) {
-            return false;
-        }
-        return true;
+        return (this.salary == other.salary) &&
+                (this.attitudeToBoss == other.attitudeToBoss) &&
+                (this.workQuality == other.workQuality);
     }
-
-    // todo comparator
 
 }

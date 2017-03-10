@@ -15,11 +15,11 @@ import java.util.Objects;
 
 public class Shop extends Workplace{
     private String shopType;
-    
+
     public Shop(String name, String shopType, ArrayList <Product> assortment, ArrayList <Employee> employeeList) {
         super(name, "Магазин", assortment, employeeList);
         this.shopType = shopType;
-    }   
+    }
 
     @Override
     public String toString() {
@@ -45,9 +45,6 @@ public class Shop extends Workplace{
             return false;
         }
         final Shop other = (Shop) obj;
-        if (!Objects.equals(this.shopType, other.shopType)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.shopType, other.shopType);
     }
 }
