@@ -21,7 +21,6 @@ public class Laba2 {
 
             void load(){
                 initReader();
-
             }
 
             void save(){
