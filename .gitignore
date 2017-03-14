@@ -3,6 +3,7 @@ Laba2.Sasha/build/
 Laba2.Sasha/out/
 .idea/.name
 Laba2.Sasha/src/laba2/.idea/
+.idea/
 out/
 **/*.xml
 .idea/libraries/
