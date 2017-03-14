@@ -6,9 +6,9 @@ package laba2;
 import java.util.Objects;
 
 public class Employee extends Character implements Comparable{
-    protected int salary;
-    protected AttitudeToBoss attitudeToBoss;
-    protected byte workQuality;
+    int salary;
+    AttitudeToBoss attitudeToBoss;
+    byte workQuality;
 
     public Employee(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession);
@@ -66,12 +66,22 @@ public class Employee extends Character implements Comparable{
         return this.salary == other.salary &&
                 this.attitudeToBoss == other.attitudeToBoss &&
                 this.workQuality == other.workQuality;
+
     }
 
     // todo comparator
 
     @Override
     public int compareTo(Object o) {
-        return 0;
+        Employee tmp = (Employee)o;
+        if (this.workQuality != tmp.workQuality)
+            return this.workQuality - tmp.workQuality;
+        if (this.salary != tmp.salary)
+            return this.salary - tmp.salary;
+        if (this.attitudeToBoss != tmp.attitudeToBoss) {
+            return this.attitudeToBoss.compareTo(tmp.attitudeToBoss);
+        } else {
+            return 0;
+        }
     }
 }

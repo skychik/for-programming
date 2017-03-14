@@ -1,6 +1,6 @@
 package laba2;
 
-public enum AttitudeToBoss{
+public enum AttitudeToBoss {
     HATE((byte) -128),
     LOW((byte) -64),
     DEFAULT((byte) 0),
