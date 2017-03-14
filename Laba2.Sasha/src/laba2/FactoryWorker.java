@@ -78,3 +78,4 @@ public class FactoryWorker extends Employee{
     public void parseFactoryWorker(String line) {
     }
 }
+
