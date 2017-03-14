@@ -6,7 +6,7 @@ package laba2;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Employee extends Character{
+public class Employee extends Character implements Comparable{
     protected int salary;
     protected AttitudeToBoss attitudeToBoss;
     protected byte workQuality;
@@ -52,8 +52,6 @@ public class Employee extends Character{
         return hash;
     }
 
-
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -66,16 +64,9 @@ public class Employee extends Character{
             return false;
         }
         final Employee other = (Employee) obj;
-        if (this.salary != other.salary) {
-            return false;
-        }
-        if (this.attitudeToBoss != other.attitudeToBoss) {
-            return false;
-        }
-        if (this.workQuality != other.workQuality) {
-            return false;
-        }
-        return true;
+        return this.salary == other.salary &&
+                this.attitudeToBoss == other.attitudeToBoss &&
+                this.workQuality == other.workQuality;
     }
 
     public void parseEmployee(String line) {
@@ -165,5 +156,12 @@ public class Employee extends Character{
             System.exit(0);
         }
     }
+    }
+}
+    // todo comparator
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
 }
