@@ -7,19 +7,18 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class FactoryWorker extends Employee{
-    protected ArrayList<Product> bagpack;
+    ArrayList<Product> bagpack;
 
     public FactoryWorker(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession, salary, attitudeToBoss, workQuality);
         bagpack = new ArrayList<Product>();
     }
 
-
-    public void changeQuality(byte up){
+    private void changeQuality(byte up){
         super.workQuality += up;
     }
 
-    public void raiseAttitude (){
+    private void raiseAttitude(){
         if (attitudeToBoss == AttitudeToBoss.HATE)
             super.attitudeToBoss = AttitudeToBoss.LOW;
         if (attitudeToBoss == AttitudeToBoss.LOW)
@@ -30,7 +29,7 @@ public class FactoryWorker extends Employee{
             super.attitudeToBoss = AttitudeToBoss.HIGH;
     }
 
-    public void receiveSausage(Product sausage){
+    void receiveSausage(Product sausage){
         bagpack.add(sausage);
         byte up = 5;
         this.changeQuality(up);
@@ -64,7 +63,7 @@ public class FactoryWorker extends Employee{
         return Objects.equals(this.bagpack, other.bagpack);
     }
 
-    public void sign(ManagerNotebook notebook){
+    void sign(ManagerNotebook notebook){
         notebook.addSign(this.getName());
     }
 }

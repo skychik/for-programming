@@ -71,15 +71,6 @@ public class Employee extends Character implements Comparable{
 
     @Override
     public int compareTo(Object o) {
-        Employee tmp = (Employee)o;
-        if (this.workQuality != tmp.workQuality)
-            return this.workQuality - tmp.workQuality;
-        if (this.salary != tmp.salary)
-            return this.salary - tmp.salary;
-        if (this.attitudeToBoss != tmp.attitudeToBoss) {
-            return this.attitudeToBoss.compareTo(tmp.attitudeToBoss);
-        } else {
-            return 0;
-        }
+        return this.toString().compareTo(o.toString());
     }
 }
