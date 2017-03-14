@@ -71,3 +71,4 @@ public class FactoryWorker extends Employee{
         notebook.addSign(this.getName());
     }
 }
+
