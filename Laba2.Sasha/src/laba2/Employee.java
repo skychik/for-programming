@@ -69,8 +69,6 @@ public class Employee extends Character implements Comparable{
 
     }
 
-    // todo comparator
-
     @Override
     public int compareTo(Object o) {
         Employee tmp = (Employee)o;
