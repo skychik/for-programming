@@ -65,10 +65,7 @@ public class FactoryWorker extends Employee{
             return false;
         }
         final FactoryWorker other = (FactoryWorker) obj;
-        if (!Objects.equals(this.bagpack, other.bagpack)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.bagpack, other.bagpack);
     }
 
     public void sign(ManagerNotebook notebook){
