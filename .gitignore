@@ -2,9 +2,7 @@
 Laba2.Sasha/build/
 Laba2.Sasha/out/
 .idea/.name
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
 Laba2.Sasha/src/laba2/.idea/
 out/
+**/*.xml
+.idea/libraries/
