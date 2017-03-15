@@ -9,10 +9,11 @@ import java.util.Objects;
 public class FactoryWorker extends Employee{
     protected ArrayList<Product> bagpack;
 
-    public FactoryWorker(String name, String profession, Workplace workplace, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
-        super(name, profession, workplace, salary, attitudeToBoss, workQuality);
+    public FactoryWorker(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
+        super(name, profession, salary, attitudeToBoss, workQuality);
         bagpack = new ArrayList<Product>();
     }
+
 
     public void changeQuality(byte up){
         super.workQuality += up;

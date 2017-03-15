@@ -9,8 +9,8 @@ public class Employer extends Character{
     private int profit;
     Exception e = new Exception();
 
-    public Employer(String name, String profession, Workplace workplace, int profit){
-        super(name, profession, workplace);
+    public Employer(String name, String profession, int profit){
+        super(name, profession);
         this.profit = profit;
 
     }
@@ -36,16 +36,6 @@ public class Employer extends Character{
             }
 
         };
-    }
-
-    public void method() {
-        try {
-            if(new Random().nextBoolean()) {
-                throw getError();
-            }
-        } catch (Error er) {
-
-        }
     }
 
     @Override

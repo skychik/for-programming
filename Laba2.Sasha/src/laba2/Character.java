@@ -14,13 +14,13 @@ import java.util.*;
 abstract class Character implements Movement{
     protected String name;
     protected String profession;
-    protected laba2.Workplace workplace;
 
-    public Character(String name, String profession, Workplace workplace){
+    public Character(String name, String profession){
         this.name = name;
         this.profession = profession;
-        this.workplace = workplace;
     }
+
+    public Character() {}
 
     public String getName(){
         return this.name;
@@ -38,7 +38,6 @@ abstract class Character implements Movement{
         int hash = 7;
         hash = 47 * hash + Objects.hashCode(this.name);
         hash = 47 * hash + Objects.hashCode(this.profession);
-        hash = 47 * hash + Objects.hashCode(this.workplace);
         return hash;
     }
 
@@ -55,13 +54,12 @@ abstract class Character implements Movement{
         }
         final Character other = (Character) obj;
         return Objects.equals(this.name, other.name) &&
-                Objects.equals(this.profession, other.profession) &&
-                Objects.equals(this.workplace, other.workplace);
+                Objects.equals(this.profession, other.profession);
     }
 
     @Override
     public String toString() {
-        return "Character{" + "name=" + name + ", profession=" + profession + ", workplace=" + workplace + '}';
+        return "Character{" + "name=" + name + ", profession=" + profession + '}';
     }
 }
 

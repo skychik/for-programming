@@ -10,11 +10,15 @@ public class Employee extends Character{
     protected AttitudeToBoss attitudeToBoss;
     protected byte workQuality;
 
-    public Employee(String name, String profession, Workplace workplace, int salary ,AttitudeToBoss attitudeToBoss, byte workQuality) {
-        super(name, profession, workplace);
+    public Employee(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
+        super(name, profession);
         this.salary = salary;
         this.attitudeToBoss = attitudeToBoss;
         this.workQuality = workQuality;
+    }
+
+    public Employee() {
+        super();
     }
 
     @Override
