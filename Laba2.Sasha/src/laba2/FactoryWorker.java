@@ -14,6 +14,10 @@ public class FactoryWorker extends Employee{
         bagpack = new ArrayList<Product>();
     }
 
+    public FactoryWorker() {
+        
+    }
+
 
     public void changeQuality(byte up){
         super.workQuality += up;
@@ -69,5 +73,8 @@ public class FactoryWorker extends Employee{
 
     public void sign(ManagerNotebook notebook){
         notebook.addSign(this.getName());
+    }
+
+    public void parseFactoryWorker(String line) {
     }
 }
