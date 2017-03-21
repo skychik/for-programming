@@ -1,5 +1,9 @@
 /*
-Просмотреть блоки try-catch
+ *
+ * Саша: взаимодействие с файлом
+ *
+ * Кирилл: работа в интерактивном режиме
+ *
  */
 package ru.ifmo.cs.programming.lab5;
 
@@ -20,6 +24,23 @@ public class App {
 
         String filePath = System.getenv("EmployeeFile");
         BufferedReader reader = new BufferedReader(new FileReader(filePath));;
+    public static void main(String[] args) throws IOException {
+        /*String filePath = System.getenv("EmployeeFile");
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));*/
+        //The same thing, but also checks path to file with collection and file's existence:
+        /*
+        try {
+            String filePath = System.getenv("EmployeeFile");
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        } catch(NullPointerException e){
+            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
+            System.exit(0);
+        } catch (FileNotFoundException e) {
+            System.out.println("Нет файла с данными о коллекции, путь к которому указан в переменной окружения EmployeeFile");
+            System.exit(0);
+        }
+        */
+
         ArrayDeque deque = new ArrayDeque<Employee>() {
             void load() {
                 initReader();
@@ -28,11 +49,11 @@ public class App {
             void save() throws IOException {
             }
 
-            //void remove(){
+            void remove(Employee employee){
 
-            //}
+            }
 
-            void remove_lower() {
+            void remove_lower(Employee employee) {
 
             }
 
@@ -40,7 +61,9 @@ public class App {
 
             }
 
-            void initReader() {       //checks path to file with collection and file's existence
+            //checks path to file with collection and file's existence
+            //нужен ли?
+            void initReader(){
                 try {
                     String line = null;
                     int index = 0;
@@ -139,61 +162,108 @@ public class App {
             }
         };
 
+        deque.load();
 
-        // todo заполнить автоматически коллекцию при запуске
+        BufferedReader bufferedReader = new BufferedReader();
 
-//        try {                                               //checks path to file with collection and file's existence
-//            String filePath = System.getenv("EmployeeFile");
-//            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-//        } catch(NullPointerException e){
-//            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
-//            System.exit(0);
-//        } catch (FileNotFoundException e) {
-//            System.out.println("Нет файла с данными о коллекции, путь к которому указан в переменной окружения EmployeeFile");
-//            System.exit(0);
-//        }
+        JsonReader jsonReader = new JsonReader();
 
-        //deque.load();
+        /**This is an interactive mode:*/
+        while (true){
+            String command = scanner.next();
+            Employee employee;
 
-    //        try {
-    //            //PrintWriter обеспечит возможности записи в файл
-    //            PrintWriter out = new PrintWriter(filePath);
-    //
-    //            try {
-    //                for (int i = 0; i < deque.size(); i++){
-    //
-    //                }
-    //            } finally {
-    //                out.close();
-    //            }
-    //        } catch (IOException e) {
-    //            System.out.println("e = " + e);
-    //        }
-    //    }
-
-        {
-            Scanner in = new Scanner(System.in);
-            String command = in.next();
-            String element = in.next();
-            String [] param = element.split(", ");
-            if (param.length < 6) {
-                System.out.println("Неверно задан элемент: введены не все параметры.");
-                System.exit(0);
+            switch (command){
+                case "remove" :
+                case "remove_lower" :
+                    employee = readEmployee(reader);
+                    break;
             }
-            for (int i = 0; i != param.length; i++){
-                param[i] = param[i].split(": ")[1];
-                int length = param[i].length() - 1;
-                param[i] = param[i].substring(1, length);
-            }
-            String forCompare = param[0] + "{name =" + param[1] + ", profession=" + param[2]
-                                                     + ", salary=" + param[3] + ", attitudeToBoss=" + param[4]
-                                                                              + ", workQuality=" + param[5] + "}";
-            for (int i = param.length; i > 6; i--){
-                Product[] products;
-//                products[param.length - i] = new Product(param[param.length - i].);
-            }
+
+
         }
     }
+
+    /*public List<Employee> readJsonStream(InputStream in) throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+        try {
+            return readEmployeesArray(reader);
+        } finally {
+            reader.close();
+        }
+    }*/
+
+    /*public List<Employee> readEmployeesArray(JsonReader reader) throws IOException {
+        List<Employee> employees = new ArrayList<Employee>();
+
+        reader.beginArray();
+        while (reader.hasNext()) {
+            employees.add(readEmployee(reader));
+        }
+        reader.endArray();
+        return employees;
+    }*/
+
+    public Employee readEmployee(JsonReader reader) throws IOException {
+        String name = null;
+        String profession = null;
+        int salary = 0;
+        AttitudeToBoss attitudeToBoss = null;
+        byte workQuality = 0;
+
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String nextName = reader.nextName();
+            if (nextName.equals("name")) {
+                name = reader.nextString();
+            } else if (nextName.equals("profession")) {
+                profession = reader.nextString();
+            } else if (nextName.equals("salary")) {
+                salary = reader.nextInt();
+            } else if (nextName.equals("attitudeToBoss") && reader.peek() != JsonToken.NULL) {
+                attitudeToBoss = readAttitudeToBoss(reader);
+            } else if (nextName.equals("workQuality")) {
+                int i = reader.nextInt();
+                if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE))
+                    throw new ByteOverflowException("workQuality value isn't a byte value");
+                workQuality = (byte) i;
+            } else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return new Employee(name, profession, salary, attitudeToBoss, workQuality);
+    }
+
+    public AttitudeToBoss readAttitudeToBoss(JsonReader reader) throws IOException {
+        List<Double> doubles = new ArrayList<Double>();
+
+        reader.beginArray();
+        while (reader.hasNext()) {
+            doubles.add(reader.nextDouble());
+        }
+        reader.endArray();
+        return doubles;
+    }
+
+    /*public User readUser(JsonReader reader) throws IOException {
+        String username = null;
+        int followersCount = -1;
+
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+            if (name.equals("name")) {
+                username = reader.nextString();
+            } else if (name.equals("followers_count")) {
+                followersCount = reader.nextInt();
+            } else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return new User(username, followersCount);
+    }*/
 
 }
 
