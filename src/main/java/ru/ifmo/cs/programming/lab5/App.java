@@ -47,6 +47,29 @@ public class App {
             //checks path to file with collection and file's existence
             //нужен ли?
             void initReader(){
+            void initReader() {       //checks path to file with collection and file's existence
+            void load() {
+                initReader();
+            }
+
+            void save() throws IOException {
+            }
+
+            void remove(Employee employee){
+
+            }
+
+            void remove_lower(Employee employee) {
+
+            }
+
+            void remove_all() {
+
+            }
+
+            //checks path to file with collection and file's existence
+            //нужен ли?
+            void initReader(){
                 try {
                     String line = null;
                     int index = 0;
