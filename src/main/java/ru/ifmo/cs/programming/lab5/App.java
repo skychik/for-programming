@@ -21,7 +21,25 @@ public class App {
         String filePath = System.getenv("EmployeeFile");
         BufferedReader reader = new BufferedReader(new FileReader(filePath));;
         ArrayDeque deque = new ArrayDeque<Employee>() {
-        Gson gson = new Gson();
+            void load() {
+                initReader();
+            }
+
+            void save() throws IOException {
+            }
+
+            //void remove(){
+
+            //}
+
+            void remove_lower() {
+
+            }
+
+            void remove_all() {
+
+            }
+
             void initReader() {       //checks path to file with collection and file's existence
                 try {
                     String line = null;
