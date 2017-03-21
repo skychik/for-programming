@@ -38,12 +38,6 @@ public class Employer extends Character {
 
         abstract class Responsibility {
 
-            {
-                // WAT ?
-                int x = 777;
-                System.out.print(x);
-            }
-
             private String responsibility;
 
             Responsibility(String profession){
@@ -64,7 +58,7 @@ public class Employer extends Character {
                 System.out.println(this.getResponsibility());
             }
         };
-        resp.sout(); // мама плачет
+        resp.sout(); // мама плачет (skychik: "Понятие не имею, че это и зачем")
     }
 
     @Override
