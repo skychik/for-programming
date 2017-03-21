@@ -1,10 +1,7 @@
-# Created by .ignore support plugin (hsz.mobi)
-
-Laba2.Sasha/build/
-Laba2.Sasha/out/
-Laba2.Sasha/src/laba2/.idea/
 .idea/
-out/
-**/*.xml
-Laba2.Sasha/target/
-*.class
+**/target
+*.log
+.settings/
+.project
+.classpath
+.class

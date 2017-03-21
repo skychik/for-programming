@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package laba2;
+package ru.ifmo.cs.programming.lab5.core;
 
 /**
  *

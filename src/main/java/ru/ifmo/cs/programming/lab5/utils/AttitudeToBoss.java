@@ -1,6 +1,7 @@
-package laba2;
+package ru.ifmo.cs.programming.lab5.utils;
 
 public enum AttitudeToBoss {
+
     HATE((byte) -128),
     LOW((byte) -64),
     DEFAULT((byte) 0),
@@ -10,9 +11,13 @@ public enum AttitudeToBoss {
     /**
      * Created by admin on 10.03.2017.
      */
-    protected final byte attitude;
+    private byte attitude;
 
     AttitudeToBoss(byte attitude){
         this.attitude = attitude;
+    }
+
+    public byte getAttitude() {
+        return this.attitude;
     }
 }
