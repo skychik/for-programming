@@ -49,6 +49,26 @@ public class App {
             void save() throws IOException {
             }
 
+            //void remove(){
+
+            //}
+
+            void remove_lower() {
+
+            }
+
+            void remove_all() {
+
+            }
+
+            void initReader() {       //checks path to file with collection and file's existence
+            void load() {
+                initReader();
+            }
+
+            void save() throws IOException {
+            }
+
             void remove(Employee employee){
 
             }
