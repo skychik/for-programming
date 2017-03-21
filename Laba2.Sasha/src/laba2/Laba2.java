@@ -15,8 +15,6 @@ public class Laba2 {
         String filePath = System.getenv("EmployeeFile");
         BufferedReader reader = new BufferedReader(new FileReader(filePath));;
         ArrayDeque deque = new ArrayDeque<Employee>() {
-        Gson gson = new Gson();
-
             void load() {
                 initReader();
             }
@@ -167,11 +165,12 @@ public class Laba2 {
     //        }
     //    }
 
-        {
-            Scanner in = new Scanner(System.in);
-            String command = in.next();
-            String element = in.next();
-            String [] param = element.split(", ");
+        Scanner scanner = new Scanner(System.in);
+
+        while (){
+            String command = scanner.next();
+            String element = scanner.next();
+            String[] param = element.split(", ");
             if (param.length < 6) {
                 System.out.println("Неверно задан элемент: введены не все параметры.");
                 System.exit(0);
