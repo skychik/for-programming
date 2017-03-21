@@ -1,7 +1,14 @@
 package laba2;
 
 /**
- * Created by admin on 21.03.2017.
+ * Created by skychik on 21.03.2017.
  */
-public class ByteOverflowException {
+
+class ByteOverflowException extends ArithmeticException{
+
+    ByteOverflowException(){}
+
+    ByteOverflowException(String msg){
+        super(msg);
+    }
 }
