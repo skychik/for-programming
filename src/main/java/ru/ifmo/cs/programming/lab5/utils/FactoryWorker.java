@@ -71,6 +71,10 @@ public class FactoryWorker extends Employee {
         notebook.addSign(this.getName());
     }
 
+    public ArrayList<Product> getBagpack() {
+        return bagpack;
+    }
+
     public void parseFactoryWorker(String line) {
     }
 
