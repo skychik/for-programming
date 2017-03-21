@@ -38,12 +38,6 @@ public class Employer extends Character {
 
         abstract class Responsibility {
 
-            {
-                // WAT ?
-                int x = 777;
-                System.out.print(x);
-            }
-
             private String responsibility;
 
             Responsibility(String profession){
