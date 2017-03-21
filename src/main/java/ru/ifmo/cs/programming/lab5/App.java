@@ -49,11 +49,11 @@ public class App {
             void save() throws IOException {
             }
 
-            //void remove(){
+            void remove(Employee employee){
 
-            //}
+            }
 
-            void remove_lower() {
+            void remove_lower(Employee employee) {
 
             }
 
@@ -61,6 +61,9 @@ public class App {
 
             }
 
+            //checks path to file with collection and file's existence
+            //нужен ли?
+            void initReader(){
             void initReader() {       //checks path to file with collection and file's existence
             void load() {
                 initReader();
