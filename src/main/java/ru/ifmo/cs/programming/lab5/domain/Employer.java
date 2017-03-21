@@ -1,13 +1,18 @@
 /**
  * Created by саша on 09.03.2017.
+ * Updated by леша on 21.03.2017.
  */
-package laba2;
+package ru.ifmo.cs.programming.lab5.domain;
 
-import java.util.Random;
+import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
+import ru.ifmo.cs.programming.lab5.utils.ManagerNotebook;
+import ru.ifmo.cs.programming.lab5.core.NegativeSalaryException;
 
-public class Employer extends Character{
+import java.lang.*;
+
+public class Employer extends Character {
+
     private int profit;
-    Exception e = new Exception();
 
     public Employer(String name, String profession, int profit){
         super(name, profession);
@@ -15,40 +20,31 @@ public class Employer extends Character{
 
     }
 
-    public void lowerSalary(Employee employee,int subtraction) throws /*NegativeSalary*/Exception{
+    public void lowerSalary(Employee employee,int subtraction) {
         try{
-            if (employee.salary - subtraction >= 0){
-                employee.salary -= subtraction;
+            if (employee.getSalary() - subtraction >= 0){
+                employee.setSalary(employee.getSalary() - subtraction);
                 profit += subtraction;
             } else{
-                throw e;//new NegativeSalaryException("Зарплата не может быть отрицательной");
+                throw new NegativeSalaryException();
             }
         } catch(NegativeSalaryException e){
-            employee.salary = 0;
+            employee.setSalary(0);
         }
-    }
-
-    public Error getError() {
-        return new Error() {
-            @Override
-            public String getMessage() {
-                return "ёу"; //To change body of generated methods, choose Tools | Templates.
-            }
-
-        };
     }
 
     @Override
     public void work() {
 
-        abstract class Responsibility{
+        abstract class Responsibility {
 
             {
+                // WAT ?
                 int x = 777;
                 System.out.print(x);
             }
 
-            String responsibility;
+            private String responsibility;
 
             Responsibility(String profession){
                 System.out.println("pre");
@@ -62,13 +58,13 @@ public class Employer extends Character{
             abstract void sout();
         }
 
-        Responsibility resp = new Responsibility(profession){
+        Responsibility resp = new Responsibility(getProfession()) {
             @Override
             public void sout(){
                 System.out.println(this.getResponsibility());
             }
         };
-        resp.sout();
+        resp.sout(); // мама плачет
     }
 
     @Override
@@ -90,7 +86,7 @@ public class Employer extends Character{
             return false;
         }
         final Employer other = (Employer) obj;
-        if (this.profit != other.profit) {
+        if (getProfit() != other.getProfit()) {
             return false;
         }
         return true;
@@ -105,6 +101,10 @@ public class Employer extends Character{
         notebook.setOwner(this);
         notebook.addWorker(worker);
         worker.sign(notebook);
+    }
+
+    public int getProfit() {
+        return profit;
     }
 }
 

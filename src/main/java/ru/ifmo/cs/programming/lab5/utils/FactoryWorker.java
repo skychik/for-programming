@@ -1,13 +1,17 @@
 /**
  * Created by саша on 09.03.2017.
  */
-package laba2;
+package ru.ifmo.cs.programming.lab5.utils;
+
+import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.domain.Product;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class FactoryWorker extends Employee{
-    ArrayList<Product> bagpack;
+public class FactoryWorker extends Employee {
+
+    private ArrayList<Product> bagpack;
 
     public FactoryWorker(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession, salary, attitudeToBoss, workQuality);
@@ -15,21 +19,21 @@ public class FactoryWorker extends Employee{
     }
 
     private void changeQuality(byte up){
-        super.workQuality += up;
+        setWorkQuality((byte)(getWorkQuality() + up));
     }
 
     private void raiseAttitude(){
-        if (attitudeToBoss == AttitudeToBoss.HATE)
-            super.attitudeToBoss = AttitudeToBoss.LOW;
-        if (attitudeToBoss == AttitudeToBoss.LOW)
-            super.attitudeToBoss = AttitudeToBoss.DEFAULT;
-        if (attitudeToBoss == AttitudeToBoss.DEFAULT)
-            super.attitudeToBoss = AttitudeToBoss.NORMAL;
-        if (attitudeToBoss == AttitudeToBoss.NORMAL)
-            super.attitudeToBoss = AttitudeToBoss.HIGH;
+        if (getAttitudeToBoss() == AttitudeToBoss.HATE)
+            setAttitudeToBoss(AttitudeToBoss.LOW);
+        if (getAttitudeToBoss() == AttitudeToBoss.LOW)
+            setAttitudeToBoss(AttitudeToBoss.DEFAULT);
+        if (getAttitudeToBoss() == AttitudeToBoss.DEFAULT)
+            setAttitudeToBoss(AttitudeToBoss.NORMAL);
+        if (getAttitudeToBoss() == AttitudeToBoss.NORMAL)
+            setAttitudeToBoss(AttitudeToBoss.HIGH);
     }
 
-    void receiveSausage(Product sausage){
+    public void receiveSausage(Product sausage) {
         bagpack.add(sausage);
         byte up = 5;
         this.changeQuality(up);
@@ -63,8 +67,12 @@ public class FactoryWorker extends Employee{
         return Objects.equals(this.bagpack, other.bagpack);
     }
 
-    void sign(ManagerNotebook notebook){
+    public void sign(ManagerNotebook notebook){
         notebook.addSign(this.getName());
+    }
+
+    public ArrayList<Product> getBagpack() {
+        return bagpack;
     }
 }
 

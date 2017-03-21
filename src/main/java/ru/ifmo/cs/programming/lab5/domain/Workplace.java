@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package laba2;
+package ru.ifmo.cs.programming.lab5.domain;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -14,13 +14,14 @@ import java.util.Objects;
  */
 
 public class Workplace{
-    protected String name;
-    protected String type;
-    protected Employer employer;
-    protected ArrayList<Employee> employeeList;
-    protected ArrayList<Product> assortment;
 
-    Workplace(String name, String type, ArrayList <Product> assortment, ArrayList <Employee> employeeList){
+    private String name;
+    private String type;
+    private Employer employer;
+    private ArrayList<Employee> employeeList;
+    private ArrayList<Product> assortment;
+
+    public Workplace(String name, String type, ArrayList <Product> assortment, ArrayList <Employee> employeeList){
         this.name = name;
         this.type = type;
         this.assortment = assortment;
@@ -71,16 +72,43 @@ public class Workplace{
             return false;
         }
         final Workplace other = (Workplace) obj;
-        return Objects.equals(this.name, other.name) &&
-                Objects.equals(this.type, other.type) &&
-                Objects.equals(this.employer, other.employer) &&
-                Objects.equals(this.employeeList, other.employeeList) &&
-                Objects.equals(this.assortment, other.assortment);
+        return Objects.equals(getName(), other.getName()) &&
+                Objects.equals(getType(), other.getType()) &&
+                Objects.equals(getEmployer(), other.getEmployer()) &&
+                Objects.equals(getEmployeeList(), other.getEmployeeList()) &&
+                Objects.equals(getAssortment(), other.getAssortment());
     }
 
     @Override
     public String toString() {
-        return "Workplace{" + "name=" + name + ", type=" + type + ", employer=" + employer + ", employeeList=" + employeeList + ", assortment=" + assortment + '}';
+        return "Workplace{name="    + getName()
+                + ", type="         + getType()
+                + ", employer="     + getEmployer()
+                + ", employeeList=" + getEmployeeList()
+                + ", assortment="   + getAssortment() + '}';
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Employer getEmployer() {
+        return employer;
+    }
+
+    public void setEmployeeList(ArrayList<Employee> employeeList) {
+        this.employeeList = employeeList;
+    }
 }

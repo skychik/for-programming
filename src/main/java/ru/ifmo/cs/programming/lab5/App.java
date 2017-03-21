@@ -1,41 +1,27 @@
 /*
 Просмотреть блоки try-catch
  */
-package laba2;
+package ru.ifmo.cs.programming.lab5;
 
 import com.google.gson.Gson;
+import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.domain.Product;
+import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
+import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 
 import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Scanner;
 
-public class Laba2 {
+public class App {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
+
         String filePath = System.getenv("EmployeeFile");
         BufferedReader reader = new BufferedReader(new FileReader(filePath));;
         ArrayDeque deque = new ArrayDeque<Employee>() {
         Gson gson = new Gson();
-
-            void load() {
-                initReader();
-            }
-
-            void save() throws IOException {
-            }
-
-            //void remove(){
-
-            //}
-
-            void remove_lower() {
-
-            }
-
-            void remove_all() {
-
-            }
-
             void initReader() {       //checks path to file with collection and file's existence
                 try {
                     String line = null;
@@ -92,7 +78,7 @@ public class Laba2 {
                                     while (sc.hasNext()) try {
                                         String[] name_and_price = next.split("- ");
                                         Product product = new Product(name_and_price[0], Integer.parseInt(name_and_price[1]));
-                                        fw.bagpack.add(product);
+                                        fw.getBagpack().add(product);
                                     } catch (NumberFormatException e) {
                                         System.out.println("Неверно задан формат предмета. В ячейке надо указать название продукта и цену через \"-\".");
                                         System.exit(0);

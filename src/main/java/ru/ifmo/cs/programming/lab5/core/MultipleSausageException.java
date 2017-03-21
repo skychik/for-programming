@@ -1,13 +1,9 @@
-package laba2;
+package ru.ifmo.cs.programming.lab5.core;
 
+/**
+ * todo Зачем? (С) Алеша
+ */
 public class MultipleSausageException extends RuntimeException {
-
-    /**
-     * Creates a new instance of <code>MultipleSausageException</code> without
-     * detail message.
-     */
-    public MultipleSausageException() {
-    }
 
     /**
      * Constructs an instance of <code>MultipleSausageException</code> with the
