@@ -26,7 +26,6 @@ public class Employer extends Character {
                 employee.setSalary(employee.getSalary() - subtraction);
                 profit += subtraction;
             } else{
-                throw new NegativeSalaryException();
                 throw new NegativeSalaryException("Зарплата не может быть отрицательной");
             }
         } catch(NegativeSalaryException e){
@@ -45,7 +44,6 @@ public class Employer extends Character {
                 System.out.print(x);
             }
 
-            private String responsibility;
             private String responsibility;
 
             Responsibility(String profession){
