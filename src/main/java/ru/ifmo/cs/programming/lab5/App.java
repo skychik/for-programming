@@ -1,15 +1,20 @@
 /*
 Просмотреть блоки try-catch
  */
-package laba2;
+package ru.ifmo.cs.programming.lab5;
 
 import com.google.gson.Gson;
+import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.domain.Product;
+import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
+import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 
 import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Scanner;
 
-public class Laba2 {
+public class App {
 
     public static void main(String[] args) throws IOException {
         java.lang.String filePath = System.getenv("EmployeeFile");
@@ -170,8 +175,7 @@ public class Laba2 {
 //                Product[] products;
 ////                products[param.length - i] = new Product(param[param.length - i].);}}
         }
+    }
+
 }
-
-
-
 

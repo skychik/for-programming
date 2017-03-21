@@ -4,7 +4,10 @@
  * and open the template in the editor.
  */
 
-package laba2;
+package ru.ifmo.cs.programming.lab5.utils;
+
+import ru.ifmo.cs.programming.lab5.core.Owned;
+import ru.ifmo.cs.programming.lab5.domain.Employer;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -13,7 +16,7 @@ import java.util.Objects;
  *
  * @author саша и кирюша
  */
-public class ManagerNotebook implements Owned{
+public class ManagerNotebook implements Owned {
     private ArrayList<FactoryWorker> workerList;
     private ArrayList<String> signs;
     private Employer owner;

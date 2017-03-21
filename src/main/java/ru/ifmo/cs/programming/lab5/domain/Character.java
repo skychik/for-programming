@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package laba2;
+package ru.ifmo.cs.programming.lab5.domain;
+
+import ru.ifmo.cs.programming.lab5.core.Movement;
 
 import java.util.*;
 
@@ -11,9 +13,11 @@ import java.util.*;
  *
  * @author саша и кирюша
  */
-abstract class Character implements Movement{
-    protected String name;
-    protected String profession;
+abstract class Character implements Movement {
+
+    private String name;
+
+    private String profession;
 
     public Character(String name, String profession){
         this.name = name;
@@ -30,7 +34,7 @@ abstract class Character implements Movement{
 
     @Override
     public void move(String address) {
-        System.out.println(this.name + " направляется по адресу:" + address);
+        System.out.println(getName() + " направляется по адресу:" + address);
     }
 
     @Override
@@ -53,13 +57,25 @@ abstract class Character implements Movement{
             return false;
         }
         final Character other = (Character) obj;
-        return Objects.equals(this.name, other.name) &&
-                Objects.equals(this.profession, other.profession);
+        return Objects.equals(getName(), other.getName()) &&
+                Objects.equals(getProfession(), other.getProfession());
     }
 
     @Override
     public String toString() {
-        return "Character{" + "name=" + name + ", profession=" + profession + '}';
+        return "Character{name=" + getName() + ", profession=" + getProfession() + '}';
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getProfession() {
+        return profession;
+    }
+
+    public void setProfession(String profession) {
+        this.profession = profession;
     }
 }
 
