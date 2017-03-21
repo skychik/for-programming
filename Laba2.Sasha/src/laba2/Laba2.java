@@ -125,6 +125,28 @@ public class Laba2 {
     //        }
     //    }
 
+        Scanner scanner = new Scanner(System.in);
+
+        while (){
+            String command = scanner.next();
+            String element = scanner.next();
+            String[] param = element.split(", ");
+            if (param.length < 6) {
+                System.out.println("Неверно задан элемент: введены не все параметры.");
+                System.exit(0);
+            }
+            for (int i = 0; i != param.length; i++){
+                param[i] = param[i].split(": ")[1];
+                int length = param[i].length() - 1;
+                param[i] = param[i].substring(1, length);
+            }
+            String forCompare = param[0] + "{name =" + param[1] + ", profession=" + param[2]
+                                                     + ", salary=" + param[3] + ", attitudeToBoss=" + param[4]
+                                                                              + ", workQuality=" + param[5] + "}";
+            for (int i = param.length; i > 6; i--){
+                Product[] products;
+//                products[param.length - i] = new Product(param[param.length - i].);
+            }
 //        {
 //            Scanner in = new Scanner(System.in);
 //            String command = in.next();
