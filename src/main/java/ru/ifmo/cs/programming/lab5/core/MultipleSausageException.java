@@ -8,7 +8,7 @@ public class MultipleSausageException extends RuntimeException {
     public MultipleSausageException() {
     }
 
-    MultipleSausageException(String msg) {
+    public MultipleSausageException(String msg) {
         super(msg);
     }
 }
