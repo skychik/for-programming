@@ -3,8 +3,12 @@
  */
 package ru.ifmo.cs.programming.lab5.domain;
 
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import ru.ifmo.cs.programming.lab5.core.ByteOverflowException;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 
+import java.io.IOException;
 import java.lang.*;
 import java.util.Objects;
 
@@ -103,5 +107,36 @@ public class Employee extends Character implements Comparable{
 
     public void setWorkQuality(byte workQuality) {
         this.workQuality = workQuality;
+    }
+
+    public static Employee readEmployee(JsonReader reader) throws IOException {
+        String name = null;
+        String profession = null;
+        int salary = 0;
+        AttitudeToBoss attitudeToBoss = null;
+        byte workQuality = 0;
+
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String nextName = reader.nextName();
+            if (nextName.equals("name")) {
+                name = reader.nextString();
+            } else if (nextName.equals("profession")) {
+                profession = reader.nextString();
+            } else if (nextName.equals("salary")) {
+                salary = reader.nextInt();
+            } else if (nextName.equals("attitudeToBoss") && reader.peek() != JsonToken.NULL) {
+                attitudeToBoss = AttitudeToBoss.readAttitudeToBoss(reader);
+            } else if (nextName.equals("workQuality")) {
+                int i = reader.nextInt();
+                if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE))
+                    throw new ByteOverflowException("workQuality value isn't a byte value");
+                workQuality = (byte) i;
+            } else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return new Employee(name, profession, salary, attitudeToBoss, workQuality);
     }
 }
