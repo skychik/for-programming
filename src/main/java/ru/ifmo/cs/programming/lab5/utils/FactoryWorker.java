@@ -74,5 +74,7 @@ public class FactoryWorker extends Employee {
     public ArrayList<Product> getBagpack() {
         return bagpack;
     }
-}
 
+    public void parseFactoryWorker(String line) {
+    }
+}
