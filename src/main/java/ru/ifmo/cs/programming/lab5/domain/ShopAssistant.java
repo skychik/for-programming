@@ -13,10 +13,6 @@ public class ShopAssistant extends Employee {
         super(name, profession, salary, attitude, workQuality);
     }
 
-    public ShopAssistant() {
-        
-    }
-
     public void giveSausage(FactoryWorker worker, Product sausage){
         if(worker.getBagpack().contains(sausage)){
             throw new MultipleSausageException("Сосиска уже есть!");

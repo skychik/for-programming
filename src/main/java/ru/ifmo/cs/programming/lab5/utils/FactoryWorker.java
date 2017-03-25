@@ -75,11 +75,11 @@ public class FactoryWorker extends Employee {
         return bagpack;
     }
 
-    public void parseFactoryWorker(String line) {
+    public void addProduct (Product product){
+        bagpack.add(product);
     }
 
-    public ArrayList<Product> getBagpack() {
-        return bagpack;
+    public void parseFactoryWorker(String line) {
     }
 }
 
