@@ -142,92 +142,58 @@ public class Employee extends Character implements Comparable{
         return new Employee(name, profession, salary, attitudeToBoss, workQuality);
     }
 
-    public Employee parseEmployee(String line) {
-        Scanner sc = new Scanner(line);
-        sc.useDelimiter(",");
-        while (line.length() < 6) {//todo почему while
-            System.out.println("Неверно задан объект в строке " + line + ". Описаны не все параметры.");
-            System.exit(0);
-        }
-        while (sc.hasNext()/*todo зачем тут проверка*/) {
-            try {
-                int index = 0;
-                switch (index) { //todo WAAAAAAAAAAAAAAT
-                    case 0: {
-                        index++;
-                        break;
-                    }
-                    case 1: {
-                        index++;
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+public void parseEmployee(String arg, int index, int lineNumber) {
+        try {
+            switch (index){
+                case 1 : {
+                    this.name = arg;
+                    break;
                 }
-                String objClass = sc.next();
-                String name = sc.next();
-                String profession = sc.next();
-                Integer salary = Integer.parseInt(sc.next());
-                AttitudeToBoss attitudeToBoss = null;
-                switch (sc.next()) {
-                    case "HATE": {
-                        attitudeToBoss = AttitudeToBoss.HATE;
-                        break;
-                    }
-                    case "LOW": {
-                        attitudeToBoss = AttitudeToBoss.LOW;
-                        break;
-                    }
-                    case "NORMAL": {
-                        attitudeToBoss = AttitudeToBoss.NORMAL;
-                        break;
-                    }
-                    case "HIGH": {
-                        attitudeToBoss = AttitudeToBoss.HIGH;
-                        break;
-                    }
-                    case "DEFAULT": {
-                        attitudeToBoss = AttitudeToBoss.DEFAULT;
-                        break;
-                    }
-                    default: {
-                        System.out.println("Неверно указано значение в ячейке " + line + "D.");
-                        System.exit(0);
-                    }
+                case 2 : {
+                    this.profession = arg;
+                    break;
                 }
-                Byte workQuality = Byte.parseByte(sc.next());
-                switch (objClass) {
-                    case "FactoryWorker": {
-                        FactoryWorker fw = new FactoryWorker(name, profession, salary, attitudeToBoss, workQuality);
-                        while (sc.hasNext()) try {
-                            String[] name_and_price = sc.next().split("- ");
-                            Product product = new Product(name_and_price[0], Integer.parseInt(name_and_price[1]));
-                            fw.addProduct(product);
-                        } catch (NumberFormatException e) {
-                            System.out.println("Неверно задан формат предмета. В ячейке надо указать название продукта и цену через \"-\".");
+                case 3 : {
+                    this.salary = Integer.parseInt(arg);
+                    break;
+                }
+                case 4 : {
+                    switch (arg) {
+                        case "HATE": {
+                            this.attitudeToBoss = AttitudeToBoss.HATE;
+                            break;
+                        }
+                        case "LOW": {
+                            attitudeToBoss = AttitudeToBoss.LOW;
+                            break;
+                        }
+                        case "NORMAL": {
+                            attitudeToBoss = AttitudeToBoss.NORMAL;
+                            break;
+                        }
+                        case "HIGH": {
+                            attitudeToBoss = AttitudeToBoss.HIGH;
+                            break;
+                        }
+                        case "DEFAULT": {
+                            attitudeToBoss = AttitudeToBoss.DEFAULT;
+                            break;
+                        }
+                        default: {
+                            System.out.println("Неверно указано значение в ячейке E" + lineNumber + ".");
                             System.exit(0);
                         }
-                        return fw;
                     }
-                    case "ShopAssistant": {
-                        ShopAssistant shAs = new ShopAssistant(name, profession, salary, attitudeToBoss, workQuality);
-                        return shAs;//todo поддержка не только factoryWorker
+                    break;
                     }
-                    case "Employee": {
-                        Employee emp = new Employee(name, profession, salary, attitudeToBoss, workQuality);
-                        return emp;
-                    }
-                    default: {
-                        System.out.println("Приложение не обрабатывает указанный класс.");
-                        System.exit(0);
-                    }
+                case 5 : {
+                    this.workQuality = Byte.parseByte(arg);
+                    break;
                 }
-            } catch (NumberFormatException e) {//todo зачем это отлавливать
-                System.out.println("Исправьте значения в строке " + line + ". Столбцы C и E должны содержать числа.");
-                System.exit(0);
             }
+        } catch (NumberFormatException e) {
+            System.out.println("Исправьте значения в строке " + lineNumber + ". Столбцы D и F должны содержать числа.");
+            System.exit(0);
         }
-        return null;
     }
 }
