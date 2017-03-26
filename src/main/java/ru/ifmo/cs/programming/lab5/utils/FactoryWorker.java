@@ -79,6 +79,13 @@ public class FactoryWorker extends Employee {
         bagpack.add(product);
     }
 
-    public void parseFactoryWorker(String line) {
+    public void parseFactoryWorker(String arg, int index, int lineNumber) {
+        try {
+            String[] anything = arg.split(" : ");
+            Product product = new Product(anything[0], Integer.parseInt(anything[1]));
+            bagpack.add(product);
+        }catch (NumberFormatException e){
+            System.out.println("Неверно задан предмет. Для него должны бать указаны название и цена, разделенные \":\".");
+        }
     }
 }
