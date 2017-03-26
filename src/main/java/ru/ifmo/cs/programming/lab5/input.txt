@@ -1,0 +1,8 @@
+remove {
+    "name": "Sasha",
+    "profession": "programmer",
+    "salary": 0,
+    "attitudeToBoss": "LOW",
+    "workQuality": 4
+} }
+end
