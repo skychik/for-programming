@@ -8,10 +8,20 @@
 package ru.ifmo.cs.programming.lab5;
 
 import com.google.gson.Gson;
-import ru.ifmo.cs.programming.lab5.domain.Employee;
 
-import java.io.FileReader;
-import java.io.InputStreamReader;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.constraint.NotNull;
+import org.supercsv.cellprocessor.constraint.UniqueHashCode;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
+
+import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
+import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
+
+import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Scanner;
 
@@ -19,31 +29,32 @@ import static ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss.LOW;
 
 public class App {
 
+    static int lineNumber = 1;
+
     public static void main(String[] args) throws Exception {
 
-        String filePath = System.getenv("EmployeeFile");
-
-        //BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
-        /*
-        String filePath = System.getenv("EmployeeFile");
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        */
-        //
-        //The same thing, but also checks path to file with collection and file's existence:
-        /*
-        try {
-            String filePath = System.getenv("EmployeeFile");
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        } catch(NullPointerException e){
-            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
-            System.exit(0);
-        } catch (FileNotFoundException e) {
-            System.out.println("Нет файла с данными о коллекции, путь к которому указан в переменной окружения EmployeeFile");
-            System.exit(0);
-        }
-        */
+        //        //BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
+//        /*
+//        String filePath = System.getenv("EmployeeFile");
+//        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+//        */
+//        //
+//        //The same thing, but also checks path to file with collection and file's existence:
+//        /*
+//        try {
+//            String filePath = System.getenv("EmployeeFile");
+//            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+//        } catch(NullPointerException e){
+//            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
+//            System.exit(0);
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Нет файла с данными о коллекции, путь к которому указан в переменной окружения EmployeeFile");
+//            System.exit(0);
+//        }
+//        */
 
         ArrayDeque deque = new ArrayDeque<Employee>();
+        String filePath = System.getenv("EmployeeFile");
 
         //First loading of the deque from our File
         //load(deque);
@@ -93,11 +104,11 @@ public class App {
                     break;
                 case "save":
                     //System.out.println("command: \'" + command + '\'');
-                    save(deque);
+                    save(deque, filePath);
                     break;
                 case "load":
                     //System.out.println("command: \'" + command + '\'');
-                    load(deque);
+                    load(deque, filePath);
                     break;
                 case "end":
                     //System.out.println("command: \'" + command + '\'');
@@ -150,17 +161,6 @@ public class App {
         }
     }
 
-    private static void load(ArrayDeque deque) {
-        //todo Sasha: load
-        //initReader();
-        throw new UnsupportedOperationException();
-    }
-
-    private static void save(ArrayDeque deque) {
-        //todo Sasha: save
-        throw new UnsupportedOperationException();
-    }
-
     private static void remove(ArrayDeque deque, Employee employee) {
         throw new UnsupportedOperationException();
     }
@@ -173,103 +173,54 @@ public class App {
         throw new UnsupportedOperationException();
     }
 
-    //checks path to file with collection and file's existence
-    //нужен ли?
-    /*static void initReader() {
+    private static void load(ArrayDeque<Employee> deque, String filePath) throws IOException {
         try {
-            String line = null;
-            int index = 0;
-            while ((line = fileReader.readLine()) != null) {
-                Employee emp;             //  Создание объектов
-                FactoryWorker fw;         //  Класса Employee или его наследников
-                ShopAssistant shAs;       //
-                ArrayDeque deq = new ArrayDeque<Employee>();
-                Scanner sc = new Scanner(line);
-                sc.useDelimiter(",");
-                String next = sc.next();
-                if (line.length() < 6) {
-                    System.out.println("Неверно задан объект в строке " + line + ". Описаны не все параметры.");
-                    System.exit(0);
-                }
-                try {
-                    String objClass = next;
-                    String name = next;
-                    String profession = next;
-                    Integer salary = Integer.parseInt(next);
-                    AttitudeToBoss attitudeToBoss = null;
-                    switch (next) {
-                        case "HATE": {
-                            attitudeToBoss = AttitudeToBoss.HATE;
-                            break;
-                        }
-                        case "LOW": {
-                            attitudeToBoss = AttitudeToBoss.LOW;
-                            break;
-                        }
-                        case "NORMAL": {
-                            attitudeToBoss = AttitudeToBoss.NORMAL;
-                            break;
-                        }
-                        case "HIGH": {
-                            attitudeToBoss = AttitudeToBoss.HIGH;
-                            break;
-                        }
-                        case "DEFAULT": {
-                            attitudeToBoss = AttitudeToBoss.DEFAULT;
-                            break;
-                        }
-                        default: {
-                            System.out.println("Неверно указано значение в ячейке " + line + "D.");
-                            System.exit(0);
-                        }
-                    }
-                    Byte workQuality = Byte.parseByte(next);
-                    switch (objClass) {
-                        case "FactoryWorker": {
-                            fw = new FactoryWorker(name, profession, salary, attitudeToBoss, workQuality);
-                            while (sc.hasNext()) try {
-                                String[] name_and_price = next.split("- ");
-                                Product product = new Product(name_and_price[0], Integer.parseInt(name_and_price[1]));
-                                fw.getBagpack().add(product);
-                            } catch (NumberFormatException e) {
-                                System.out.println("Неверно задан формат предмета. В ячейке надо указать название продукта и цену через \"-\".");
-                                System.exit(0);
-                            }
-                            deq.addFirst(fw);
-                            break;
-                        }
-                        case "ShopAssistant": {
-                            shAs = new ShopAssistant(name, profession, salary, attitudeToBoss, workQuality);
-                            deq.addFirst(shAs);
-                            break;
-                        }
-                        case "Employee": {
-                            emp = new Employee(name, profession, salary, attitudeToBoss, workQuality);
-                            deq.addFirst(emp);
-                            break;
-                        }
-                        default: {
-                            System.out.println("Приложение не обрабатывает указанный класс.");
-                            System.exit(0);
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Исправьте значения в строке " + line + ". Столбцы C и E должны содержать числа.");
-                    System.exit(0);
-                }
+
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                Employee employee = new Employee();
+                employee = employee.parseEmployee(line);
+                deque.add(employee);
+                incLineNumber();
             }
-            fileReader.close();
-        } catch (NullPointerException e) {
-            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, " +
-                    "указав путь к файлу.");
-            System.exit(0);
-        } catch (FileNotFoundException e) {
-            System.out.println("Нет файла с данными о коллекции, путь к которому указан в переменной " +
-                    "окружения EmployeeFile");
-            System.exit(0);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        } catch (FileNotFoundException e){ //ToDO IOEx. - ?
+            System.out.println("Указанного файла не существует.");
+        } catch (NullPointerException e){
+            System.out.println("Не существует переменной окружения EmployeeFile.");
         }
-    }*/
+
+        //Состояние очереди после считывания
+        System.out.println(deque.toString());
+    }
+
+    private static void save(ArrayDeque<Employee> deque, String filepath) throws IOException {
+
+        File file = new File(filepath);
+
+        PrintWriter writer = new PrintWriter(file);
+        // Стандартные настройки (кодировка, переносы строк, разделители и т.д.)
+        ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
+
+        for (Employee employee : deque) {
+            //Запись имени класса + объект
+            csvBeanWriter.write(employee.getClass().getSimpleName() + employee);
+        }
+
+        csvBeanWriter.close();
+
+        //Проверка записанного в файл содержимого, посредством вывода на экран
+        System.out.println(writer.toString());
+    }
+
+    public static void incLineNumber(){
+        lineNumber++;
+    }
+
+    public static int getLineNumber(){
+        return (lineNumber);
+    }
 }
 

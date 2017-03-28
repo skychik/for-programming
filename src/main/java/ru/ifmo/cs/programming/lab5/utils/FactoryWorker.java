@@ -3,11 +3,13 @@
  */
 package ru.ifmo.cs.programming.lab5.utils;
 
+import ru.ifmo.cs.programming.lab5.App;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.domain.Product;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class FactoryWorker extends Employee {
 
@@ -16,6 +18,10 @@ public class FactoryWorker extends Employee {
     public FactoryWorker(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession, salary, attitudeToBoss, workQuality);
         bagpack = new ArrayList<Product>();
+    }
+
+    public FactoryWorker() {
+        super();
     }
 
     private void changeQuality(byte up){
@@ -79,13 +85,19 @@ public class FactoryWorker extends Employee {
         bagpack.add(product);
     }
 
-    public void parseFactoryWorker(String arg, int index, int lineNumber) {
+    public void parseFactoryWorker(String line) {
+
+        Scanner scanner = new Scanner(line);
+
         try {
-            String[] anything = arg.split(" : ");
+
+            while (scanner.hasNext()){
+            String[] anything = scanner.next().split(" : ");
             Product product = new Product(anything[0], Integer.parseInt(anything[1]));
-            bagpack.add(product);
+            bagpack.add(product);}
+
         }catch (NumberFormatException e){
-            System.out.println("Неверно задан предмет. Для него должны бать указаны название и цена, разделенные \":\".");
+            System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() + ". Должны быть указаны название и цена, разделенные \":\".");
         }
     }
 }
