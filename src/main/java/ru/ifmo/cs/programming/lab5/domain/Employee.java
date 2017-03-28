@@ -2,6 +2,7 @@ package ru.ifmo.cs.programming.lab5.domain;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import ru.ifmo.cs.programming.lab5.App;
 import ru.ifmo.cs.programming.lab5.core.ByteOverflowException;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
@@ -26,6 +27,10 @@ public class Employee extends Character implements Comparable {
         this.workQuality = workQuality;
     }
 
+    public Employee() {
+
+    }
+
     @Override
     public void work() {
         if (getAttitudeToBoss() == AttitudeToBoss.HATE)
@@ -48,9 +53,9 @@ public class Employee extends Character implements Comparable {
 
     @Override
     public String toString() {
-        return "Employee{salary=" + getSalary()
-            + ", attitudeToBoss=" + getAttitudeToBoss().getAttitude()
-            + ", workQuality="    + getWorkQuality() + '}';
+        return (super.toString() + getName() + "," + getProfession() + "," + getSalary()
+                + "," + getAttitudeToBoss().getAttitude()
+                + "," + getWorkQuality());
     }
 
     @Override
@@ -139,58 +144,112 @@ public class Employee extends Character implements Comparable {
         return new Employee(name, profession, salary, attitudeToBoss, workQuality);
     }
 
-    public void parseEmployee(String arg, int index, int lineNumber) {
-        try {
-            switch (index){
-                case 1 : {
-                    this.name = arg;
-                    break;
+    public static Employee parseEmployee(String line) {
+
+        Scanner sc = new Scanner(line);
+        sc.useDelimiter(",");
+        int index;
+        Employee employee = null;
+        String className = sc.next();
+
+        switch (className) {
+            case "FactoryWorker": {
+                FactoryWorker fw = new FactoryWorker();
+                index = fw.stringToEmployee(line);
+                if (index < 6) {
+                    System.out.println("Заданы не все параметры в строке " + App.getLineNumber());
+                    System.exit(0);
                 }
-                case 2 : {
-                    this.profession = arg;
-                    break;
-                }
-                case 3 : {
-                    this.salary = Integer.parseInt(arg);
-                    break;
-                }
-                case 4 : {
-                    switch (arg) {
-                        case "HATE": {
-                            this.attitudeToBoss = AttitudeToBoss.HATE;
-                            break;
-                        }
-                        case "LOW": {
-                            attitudeToBoss = AttitudeToBoss.LOW;
-                            break;
-                        }
-                        case "NORMAL": {
-                            attitudeToBoss = AttitudeToBoss.NORMAL;
-                            break;
-                        }
-                        case "HIGH": {
-                            attitudeToBoss = AttitudeToBoss.HIGH;
-                            break;
-                        }
-                        case "DEFAULT": {
-                            attitudeToBoss = AttitudeToBoss.DEFAULT;
-                            break;
-                        }
-                        default: {
-                            System.out.println("Неверно указано значение в ячейке E" + lineNumber + ".");
-                            System.exit(0);
-                        }
-                    }
-                    break;
-                    }
-                case 5 : {
-                    this.workQuality = Byte.parseByte(arg);
-                    break;
-                }
+                fw.parseFactoryWorker(line);
+                employee = fw;
+                break;
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Исправьте значения в строке " + lineNumber + ". Столбцы D и F должны содержать числа.");
-            System.exit(0);
+            case "ShopAssistant": {
+                ShopAssistant shAs = new ShopAssistant();
+                index = shAs.stringToEmployee(line);
+                if (index < 6 || sc.hasNext()) {
+                    System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
+                    System.exit(0);
+                }
+                employee = shAs;
+                break;
+            }
+            case "Employee": {
+                Employee emp = new Employee();
+                index = emp.stringToEmployee(line);
+                if (index < 6 || sc.hasNext()) {
+                    System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
+                    System.exit(0);
+                }
+                employee = emp;
+                break;
+            }
+            default: {
+                System.out.println("Приложение не обрабатывает указанный в строке " + App.getLineNumber() + " класс.");
+                System.exit(0);
+            }
         }
+
+        return (employee);
     }
+
+    public int stringToEmployee(String line) {
+                int index = 1;
+                Scanner sc = new Scanner(line);
+                try {
+                    for (; sc.hasNext() && index < 6; index++)
+                    switch (index){
+                        case 1 : {
+                            this.setName(sc.next());
+                            break;
+                        }
+                        case 2 : {
+                            this.setProfession(sc.next());
+                            break;
+                        }
+                        case 3 : {
+                            this.salary = Integer.parseInt(sc.next());
+                            break;
+                        }
+                        case 4 : {
+                            switch (sc.next()) {
+                                case "HATE": {
+                                    this.attitudeToBoss = AttitudeToBoss.HATE;
+                                    break;
+                                }
+                                case "LOW": {
+                                    attitudeToBoss = AttitudeToBoss.LOW;
+                                    break;
+                                }
+                                case "NORMAL": {
+                                    attitudeToBoss = AttitudeToBoss.NORMAL;
+                                    break;
+                                }
+                                case "HIGH": {
+                                    attitudeToBoss = AttitudeToBoss.HIGH;
+                                    break;
+                                }
+                                case "DEFAULT": {
+                                    attitudeToBoss = AttitudeToBoss.DEFAULT;
+                                    break;
+                                }
+                                default: {
+                                    System.out.println("Неверно указано значение в ячейке E" + App.getLineNumber() + ".");
+                                    System.exit(0);
+                                }
+                            }
+                            break;
+                            }
+                        case 5 : {
+                            this.workQuality = Byte.parseByte(sc.next());
+                            break;
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Исправьте значения в строке " + App.getLineNumber() + ". Столбцы D и F должны содержать числа.");
+                    System.exit(0);
+                }
+                return (index);
+            }
 }
+

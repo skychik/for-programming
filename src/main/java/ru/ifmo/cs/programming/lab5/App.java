@@ -8,10 +8,20 @@
 package ru.ifmo.cs.programming.lab5;
 
 import com.google.gson.Gson;
-import ru.ifmo.cs.programming.lab5.domain.Employee;
 
-import java.io.FileReader;
-import java.io.InputStreamReader;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.constraint.NotNull;
+import org.supercsv.cellprocessor.constraint.UniqueHashCode;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
+
+import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
+import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
+
+import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Scanner;
 
@@ -19,31 +29,32 @@ import static ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss.LOW;
 
 public class App {
 
+    static int lineNumber = 1;
+
     public static void main(String[] args) throws Exception {
 
-        String filePath = System.getenv("EmployeeFile");
-
-        //BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
-        /*
-        String filePath = System.getenv("EmployeeFile");
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        */
-        //
-        //The same thing, but also checks path to file with collection and file's existence:
-        /*
-        try {
-            String filePath = System.getenv("EmployeeFile");
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        } catch(NullPointerException e){
-            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
-            System.exit(0);
-        } catch (FileNotFoundException e) {
-            System.out.println("Нет файла с данными о коллекции, путь к которому указан в переменной окружения EmployeeFile");
-            System.exit(0);
-        }
-        */
+        //        //BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
+//        /*
+//        String filePath = System.getenv("EmployeeFile");
+//        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+//        */
+//        //
+//        //The same thing, but also checks path to file with collection and file's existence:
+//        /*
+//        try {
+//            String filePath = System.getenv("EmployeeFile");
+//            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+//        } catch(NullPointerException e){
+//            System.out.println("Не существует переменной окружения EmployeeFile. Создайте её, указав путь к файлу.");
+//            System.exit(0);
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Нет файла с данными о коллекции, путь к которому указан в переменной окружения EmployeeFile");
+//            System.exit(0);
+//        }
+//        */
 
         ArrayDeque deque = new ArrayDeque<Employee>();
+        String filePath = System.getenv("EmployeeFile");
 
         //First loading of the deque from our File
         //load(deque);
@@ -95,11 +106,11 @@ public class App {
                     break;
                 case "save":
                     //System.out.println("command: \'" + command + '\'');
-                    save(deque);
+                    save(deque, filePath);
                     break;
                 case "load":
                     //System.out.println("command: \'" + command + '\'');
-                    load(deque);
+                    load(deque, filePath);
                     break;
                 case "end":
                     //System.out.println("command: \'" + command + '\'');
@@ -152,17 +163,6 @@ public class App {
         }
     }
 
-    private static void load(ArrayDeque deque) {
-        //todo Sasha: load
-        //initReader();
-        throw new UnsupportedOperationException();
-    }
-
-    private static void save(ArrayDeque deque) {
-        //todo Sasha: save
-        throw new UnsupportedOperationException();
-    }
-
     private static void remove(ArrayDeque deque, Employee employee) {
         throw new UnsupportedOperationException();
     }
@@ -173,6 +173,56 @@ public class App {
 
     private static void remove_all(ArrayDeque deque, Employee employee) {
         throw new UnsupportedOperationException();
+    }
+
+    private static void load(ArrayDeque<Employee> deque, String filePath) throws IOException {
+        try {
+
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                Employee employee = new Employee();
+                employee = employee.parseEmployee(line);
+                deque.add(employee);
+                incLineNumber();
+            }
+
+        } catch (FileNotFoundException e){ //ToDO IOEx. - ?
+            System.out.println("Указанного файла не существует.");
+        } catch (NullPointerException e){
+            System.out.println("Не существует переменной окружения EmployeeFile.");
+        }
+
+        //Состояние очереди после считывания
+        System.out.println(deque.toString());
+    }
+
+    private static void save(ArrayDeque<Employee> deque, String filepath) throws IOException {
+
+        File file = new File(filepath);
+
+        PrintWriter writer = new PrintWriter(file);
+        // Стандартные настройки (кодировка, переносы строк, разделители и т.д.)
+        ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
+
+        for (Employee employee : deque) {
+            //Запись имени класса + объект
+            csvBeanWriter.write(employee.getClass().getSimpleName() + employee);
+        }
+
+        csvBeanWriter.close();
+
+        //Проверка записанного в файл содержимого, посредством вывода на экран
+        System.out.println(writer.toString());
+    }
+
+    public static void incLineNumber(){
+        lineNumber++;
+    }
+
+    public static int getLineNumber(){
+        return (lineNumber);
     }
 }
 
