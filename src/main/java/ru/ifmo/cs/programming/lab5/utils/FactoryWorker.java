@@ -12,17 +12,14 @@ public class FactoryWorker extends Employee {
 
     private ArrayList<Product> bagpack;
 
+    public FactoryWorker() {super();}
+
     public FactoryWorker(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession, salary, attitudeToBoss, workQuality);
         bagpack = new ArrayList<Product>();
     }
 
     public void changeQuality(byte up){
-    public FactoryWorker() {
-        super();
-    }
-
-    private void changeQuality(byte up){
         setWorkQuality((byte)(getWorkQuality() + up));
     }
 
@@ -46,7 +43,13 @@ public class FactoryWorker extends Employee {
 
     @Override
     public String toString() {
-        return "FactoryWorker{" + "bagpack=" + bagpack + '}';
+        return ("FactoryWorker{name=" + getName()  +
+                ", profession=" + getProfession() +
+                ", salary=" + getSalary() +
+                ", attitudeToBoss=" + getAttitudeToBoss().toString() +
+                ", workQuality=" + getWorkQuality() +
+                ", bagpack=" + bagpack) +
+                "}";
     }
 
     @Override

@@ -1,11 +1,8 @@
-/**
- * Created by саша on 09.03.2017.
- */
 package ru.ifmo.cs.programming.lab5.domain;
 
+import com.sun.nio.sctp.IllegalReceiveException;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
-import ru.ifmo.cs.programming.lab5.core.MultipleSausageException;
 
 public class ShopAssistant extends Employee {
 
@@ -14,12 +11,12 @@ public class ShopAssistant extends Employee {
     }
 
     public ShopAssistant() {
-
+        super();
     }
 
-    public void giveSausage(FactoryWorker worker, Product sausage){
+    public void giveSausage(FactoryWorker worker, Product sausage) {
         if(worker.getBagpack().contains(sausage)){
-            throw new MultipleSausageException("Сосиска уже есть!");
+            throw new IllegalReceiveException(sausage.getName() + " уже есть!");
         } else{
             worker.receiveSausage(sausage);
         }

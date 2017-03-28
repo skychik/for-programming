@@ -8,28 +8,24 @@
 package ru.ifmo.cs.programming.lab5;
 
 import com.google.gson.Gson;
-
-import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.constraint.NotNull;
-import org.supercsv.cellprocessor.constraint.UniqueHashCode;
-import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
-
 import ru.ifmo.cs.programming.lab5.domain.Employee;
-import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 
 import java.io.*;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Scanner;
 
+import static ru.ifmo.cs.programming.lab5.domain.Employee.parseEmployee;
 import static ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss.LOW;
+import static ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss.NORMAL;
 
 public class App {
 
-    static int lineNumber = 1;
+    private static int lineNumber = 1;
 
     public static void main(String[] args) throws Exception {
 
@@ -53,7 +49,9 @@ public class App {
 //        }
 //        */
 
-        ArrayDeque deque = new ArrayDeque<Employee>();
+        /*это наш дек*/
+        ArrayDeque<Employee> deque = new ArrayDeque<>();
+
         String filePath = System.getenv("EmployeeFile");
 
         //First loading of the deque from our File
@@ -65,72 +63,80 @@ public class App {
         Gson gson = new Gson();
         String command;
 
-        Employee employee;
-
         //todo Let gson.fromJson work with other classes, which extend Employee
         /*This is an interactive mode:*/
         System.out.println("Write your command:");
         intMode: while (true) {
             command = scanner.next();
-            //System.out.println("!switch");
+            System.out.println("!switch");
+
             String obj;
+            Employee employee;
+
             switch (command) {
                 case "remove":
-                    //System.out.println("command: \'" + command + '\'');
+                    System.out.println("command: \'" + command + '\'');
                     obj = jsonFormatedObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
-                    //System.out.println(obj);
+                    System.out.println(obj);
                     //todo учитывать остаток после вычленения одной команты из потока ввода
                     employee = gson.fromJson(obj, Employee.class);
 
-                    Employee employeeFromRemove = new Employee("Sasha", "programmer", 0, LOW, (byte) 4);
-                    assert employee.equals(employeeFromRemove) : employee.toString();
+                    assert employee.equals(new Employee("Sasha", "programmer", 1, LOW, (byte) 4)) :
+                            employee.toString();
 
-                    //remove(deque, employee);
+                    remove(deque, employee);
                     break;
                 case "remove_lower":
-                    //System.out.println("command: \'" + command + '\'');
+                    System.out.println("command: \'" + command + '\'');
                     obj = jsonFormatedObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
-                    //System.out.println(obj);
+                    System.out.println(obj);
                     employee = gson.fromJson(obj, Employee.class);
                     remove_lower(deque, employee);
                     break;
                 case "remove_all":
-                    //System.out.println("command: \'" + command + '\'');
+                    System.out.println("command: \'" + command + '\'');
                     obj = jsonFormatedObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
-                    //System.out.println(obj);
+                    System.out.println(obj);
                     employee = gson.fromJson(obj, Employee.class);
+
+                    ArrayDeque<Employee> arrayDeque = new ArrayDeque<>();
+                    arrayDeque.add(new FactoryWorker("Pasha", "programmer", 18, NORMAL, (byte) 21));
+
+                    assert employee.equals(arrayDeque.peekFirst()) :
+                            arrayDeque.peekFirst().toString();
+
                     remove_all(deque, employee);
                     break;
                 case "save":
-                    //System.out.println("command: \'" + command + '\'');
+                    System.out.println("command: \'" + command + '\'');
                     save(deque, filePath);
                     break;
                 case "load":
-                    //System.out.println("command: \'" + command + '\'');
+                    System.out.println("command: \'" + command + '\'');
                     load(deque, filePath);
                     break;
                 case "end":
-                    //System.out.println("command: \'" + command + '\'');
+                    System.out.println("command: \'" + command + '\'');
                     //save(deque);
                     break intMode;
             }
-            //System.out.println("!end");
+            System.out.println("!end");
         }
     }
 
     private static String jsonFormatedObject(Scanner scanner) {
         int numberOfOpeningBrackets = 0;
         int numberOfClosingBrackets = 0;
-        String obj = "";
+        StringBuilder obj = new StringBuilder();
         String line;
 
         while (true) {
             //System.out.println('#');
             line = scanner.nextLine();
-            obj += line.trim();
+            obj.append(line.trim());
             //countNumberOfBrackets
             for (int pos = 0; pos < line.length(); ++pos)
             {
@@ -146,7 +152,7 @@ public class App {
                 }
             }
 
-            if (numberOfOpeningBrackets == numberOfClosingBrackets) return obj;
+            if (numberOfOpeningBrackets == numberOfClosingBrackets) return obj.toString();
                 /*//Gson should do this itself
                 if (line.trim().toCharArray()[line.length() - 1] == '}')
                     return;
@@ -163,16 +169,27 @@ public class App {
         }
     }
 
-    private static void remove(ArrayDeque deque, Employee employee) {
-        throw new UnsupportedOperationException();
+    private static void remove(ArrayDeque<Employee> deque, Employee employee) {
+        deque.remove(employee);
     }
 
-    private static void remove_lower(ArrayDeque deque, Employee employee) {
-        throw new UnsupportedOperationException();
+    private static void remove_lower(ArrayDeque<Employee> deque, Employee employee) {
+        Arrays.sort(deque.toArray(new Employee[0]));
+        while (!deque.isEmpty() && (employee.compareTo(deque.peekFirst())) > 0){
+            deque.removeFirst();
+        }
     }
-
-    private static void remove_all(ArrayDeque deque, Employee employee) {
-        throw new UnsupportedOperationException();
+    private static void remove_all(ArrayDeque<Employee> deque, Employee employee) {
+        ArrayDeque <Employee> anotherDeque = new ArrayDeque<>();
+        //put all Employees < employee in anotherDeque
+        while (!deque.isEmpty() && (employee.compareTo(deque.peekFirst()) > 0))
+            anotherDeque.addFirst(deque.pollFirst());
+        //remove all Employees == employee from deque
+        while (!deque.isEmpty() && (employee.compareTo(deque.peekFirst()) == 0))
+            deque.removeFirst();
+        //put all Employees from anotherDeque back in deque
+        while (!anotherDeque.isEmpty())
+            deque.addFirst(anotherDeque.pollFirst());
     }
 
     private static void load(ArrayDeque<Employee> deque, String filePath) throws IOException {
@@ -182,8 +199,7 @@ public class App {
             String line;
 
             while ((line = reader.readLine()) != null) {
-                Employee employee = new Employee();
-                employee = employee.parseEmployee(line);
+                Employee employee = parseEmployee(line);
                 deque.add(employee);
                 incLineNumber();
             }
@@ -217,7 +233,7 @@ public class App {
         System.out.println(writer.toString());
     }
 
-    public static void incLineNumber(){
+    private static void incLineNumber(){
         lineNumber++;
     }
 

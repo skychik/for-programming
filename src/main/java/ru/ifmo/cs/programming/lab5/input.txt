@@ -1,8 +1,15 @@
 remove {
     "name": "Sasha",
     "profession": "programmer",
-    "salary": 0,
+    "salary": 1,
     "attitudeToBoss": "LOW",
     "workQuality": 4
-} }
+}
+remove_all {
+    "name": "Pasha",
+    "profession": "programmer",
+    "salary": 18,
+    "attitudeToBoss": "NORMAL",
+    "workQuality": 21
+}
 end

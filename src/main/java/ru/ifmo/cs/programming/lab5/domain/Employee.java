@@ -3,7 +3,6 @@ package ru.ifmo.cs.programming.lab5.domain;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import ru.ifmo.cs.programming.lab5.App;
-import ru.ifmo.cs.programming.lab5.core.ByteOverflowException;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 
@@ -14,11 +13,11 @@ import java.util.Scanner;
 
 public class Employee extends Character implements Comparable {
 
-    private int salary;
+    private int salary = 0;
 
-    private AttitudeToBoss attitudeToBoss;
+    private AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
 
-    private byte workQuality;
+    private byte workQuality = 0;
 
     public Employee(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession);
@@ -28,7 +27,7 @@ public class Employee extends Character implements Comparable {
     }
 
     public Employee() {
-
+        super();
     }
 
     @Override
@@ -53,9 +52,12 @@ public class Employee extends Character implements Comparable {
 
     @Override
     public String toString() {
-        return (super.toString() + getName() + "," + getProfession() + "," + getSalary()
-                + "," + getAttitudeToBoss().getAttitude()
-                + "," + getWorkQuality());
+        return ("Employee{name=" + getName()  +
+                ", profession=" + getProfession() +
+                ", salary=" + getSalary() +
+                ", attitudeToBoss=" + getAttitudeToBoss().toString() +
+                ", workQuality=" + getWorkQuality() +
+                "}");
     }
 
     @Override
@@ -134,7 +136,7 @@ public class Employee extends Character implements Comparable {
             } else if (nextName.equals("workQuality")) {
                 int i = reader.nextInt();
                 if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE))
-                    throw new ByteOverflowException("workQuality value isn't a byte value");
+                    throw new IllegalArgumentException("workQuality value isn't a byte value");
                 workQuality = (byte) i;
             } else {
                 reader.skipValue();
@@ -193,7 +195,7 @@ public class Employee extends Character implements Comparable {
         return (employee);
     }
 
-    public int stringToEmployee(String line) {
+    protected int stringToEmployee(String line) {
                 int index = 1;
                 Scanner sc = new Scanner(line);
                 try {
@@ -212,7 +214,7 @@ public class Employee extends Character implements Comparable {
                             break;
                         }
                         case 4 : {
-                            switch (sc.next()) {
+                            switch (sc.next().toUpperCase()) {
                                 case "HATE": {
                                     this.attitudeToBoss = AttitudeToBoss.HATE;
                                     break;

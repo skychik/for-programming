@@ -6,16 +6,16 @@ import java.util.*;
 
 public abstract class Character implements Movement {
 
-    private String name;
+    private String name = "";
 
-    private String profession;
+    private String profession = "";
 
-    public Character(String name, String profession){
+    Character(String name, String profession){
         this.name = name;
         this.profession = profession;
     }
 
-    public Character() {}
+    Character() {}
 
     public String getName(){
         return this.name;
@@ -54,7 +54,7 @@ public abstract class Character implements Movement {
 
     @Override
     public String toString() {
-        return "Character{name=" + getName() + ", profession=" + getProfession() + '}';
+        return "Character{name=" + getName() + ", profession=" + getProfession() + "}";
     }
 
     public void setName(String name) {

@@ -1,7 +1,6 @@
 package ru.ifmo.cs.programming.lab5.utils;
 
 import com.google.gson.stream.JsonReader;
-import ru.ifmo.cs.programming.lab5.core.OutOfAttitudeToBossException;
 
 import java.io.IOException;
 
@@ -11,15 +10,18 @@ public enum AttitudeToBoss {
     LOW((byte) -64),
     DEFAULT((byte) 0),
     NORMAL((byte) 63),
-    HIGH((byte) 127);
+    HIGH((byte) 127),
+    NONE();
 
-    /**
-     * Created by admin on 10.03.2017.
-     */
     private byte attitude;
 
     AttitudeToBoss(byte attitude){
         this.attitude = attitude;
+    }
+
+
+    AttitudeToBoss() {
+
     }
 
     public byte getAttitude() {
@@ -30,7 +32,7 @@ public enum AttitudeToBoss {
 
         String attitude = reader.nextString();
 
-        switch (attitude){
+        switch (attitude.toUpperCase()){
             case "HATE":
             case "-128":
                 return AttitudeToBoss.HATE;
@@ -47,7 +49,24 @@ public enum AttitudeToBoss {
             case "127":
                 return AttitudeToBoss.HIGH;
             default:
-                throw  new OutOfAttitudeToBossException("Value of attitudeToBoss isn't written correctly");
+                throw new IllegalArgumentException("Value of attitudeToBoss isn't written correctly");
+        }
+    }
+
+    public String toString(){
+        switch (getAttitude()){
+            case -128:
+                return "HATE";
+            case -64:
+                return "LOW";
+            case 0:
+                return "DEFAULT";
+            case 63:
+                return "NORMAL";
+            case 127:
+                return "HIGH";
+            default:
+                return "NONE";
         }
     }
 }

@@ -2,30 +2,25 @@ package ru.ifmo.cs.programming.lab5.domain;
 
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab5.utils.ManagerNotebook;
-import ru.ifmo.cs.programming.lab5.core.NegativeSalaryException;
 
 import java.lang.*;
 
 public class Employer extends Character {
 
-    private int profit;
+    private int profit = 0;
 
     public Employer(String name, String profession, int profit){
         super(name, profession);
         this.profit = profit;
-
     }
 
     public void lowerSalary(Employee employee,int subtraction) {
-        try{
-            if (employee.getSalary() - subtraction >= 0){
-                employee.setSalary(employee.getSalary() - subtraction);
-                profit += subtraction;
-            } else{
-                throw new NegativeSalaryException("Зарплата не может быть отрицательной");
-            }
-        } catch(NegativeSalaryException e){
-            employee.setSalary(0);
+
+        if (employee.getSalary() - subtraction >= 0){
+            employee.setSalary(employee.getSalary() - subtraction);
+            profit += subtraction;
+        } else{
+            throw new ArithmeticException("Зарплата не может быть отрицательной");
         }
     }
 
@@ -76,10 +71,7 @@ public class Employer extends Character {
             return false;
         }
         final Employer other = (Employer) obj;
-        if (getProfit() != other.getProfit()) {
-            return false;
-        }
-        return true;
+        return getProfit() == other.getProfit();
     }
 
     @Override
