@@ -1,6 +1,3 @@
-/**
- * Created by саша on 09.03.2017.
- */
 package ru.ifmo.cs.programming.lab5.domain;
 
 import com.google.gson.stream.JsonReader;
@@ -14,7 +11,7 @@ import java.lang.*;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Employee extends Character implements Comparable{
+public class Employee extends Character implements Comparable {
 
     private int salary;
 
@@ -142,7 +139,7 @@ public class Employee extends Character implements Comparable{
         return new Employee(name, profession, salary, attitudeToBoss, workQuality);
     }
 
-public void parseEmployee(String arg, int index, int lineNumber) {
+    public void parseEmployee(String arg, int index, int lineNumber) {
         try {
             switch (index){
                 case 1 : {

@@ -1,7 +1,3 @@
-/**
- * Created by саша on 09.03.2017.
- * Updated by леша on 21.03.2017.
- */
 package ru.ifmo.cs.programming.lab5.domain;
 
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;

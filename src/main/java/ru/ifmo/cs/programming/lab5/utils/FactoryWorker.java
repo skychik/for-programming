@@ -1,6 +1,3 @@
-/**
- * Created by саша on 09.03.2017.
- */
 package ru.ifmo.cs.programming.lab5.utils;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
@@ -18,11 +15,11 @@ public class FactoryWorker extends Employee {
         bagpack = new ArrayList<Product>();
     }
 
-    private void changeQuality(byte up){
+    public void changeQuality(byte up){
         setWorkQuality((byte)(getWorkQuality() + up));
     }
 
-    private void raiseAttitude(){
+    public void raiseAttitude(){
         if (getAttitudeToBoss() == AttitudeToBoss.HATE)
             setAttitudeToBoss(AttitudeToBoss.LOW);
         if (getAttitudeToBoss() == AttitudeToBoss.LOW)
