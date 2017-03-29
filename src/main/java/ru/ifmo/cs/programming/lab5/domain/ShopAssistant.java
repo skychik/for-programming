@@ -1,8 +1,11 @@
 package ru.ifmo.cs.programming.lab5.domain;
 
 import com.sun.nio.sctp.IllegalReceiveException;
+import ru.ifmo.cs.programming.lab5.App;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
+
+import static ru.ifmo.cs.programming.lab5.App.save;
 
 public class ShopAssistant extends Employee {
 

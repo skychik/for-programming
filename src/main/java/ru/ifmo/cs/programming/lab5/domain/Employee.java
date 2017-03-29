@@ -11,6 +11,8 @@ import java.lang.*;
 import java.util.Objects;
 import java.util.Scanner;
 
+import static ru.ifmo.cs.programming.lab5.App.save;
+
 public class Employee extends Character implements Comparable {
 
     private int salary = 0;
@@ -135,8 +137,9 @@ public class Employee extends Character implements Comparable {
                 attitudeToBoss = AttitudeToBoss.readAttitudeToBoss(reader);
             } else if (nextName.equals("workQuality")) {
                 int i = reader.nextInt();
-                if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE))
+                if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE)) {
                     throw new IllegalArgumentException("workQuality value isn't a byte value");
+                }
                 workQuality = (byte) i;
             } else {
                 reader.skipValue();
@@ -160,7 +163,7 @@ public class Employee extends Character implements Comparable {
                 index = fw.stringToEmployee(line);
                 if (index < 6) {
                     System.out.println("Заданы не все параметры в строке " + App.getLineNumber());
-                    System.exit(0);
+                    return null;
                 }
                 fw.parseFactoryWorker(line);
                 employee = fw;
@@ -171,7 +174,7 @@ public class Employee extends Character implements Comparable {
                 index = shAs.stringToEmployee(line);
                 if (index < 6 || sc.hasNext()) {
                     System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
-                    System.exit(0);
+                    return null;
                 }
                 employee = shAs;
                 break;
@@ -181,18 +184,18 @@ public class Employee extends Character implements Comparable {
                 index = emp.stringToEmployee(line);
                 if (index < 6 || sc.hasNext()) {
                     System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
-                    System.exit(0);
+                    return null;
                 }
                 employee = emp;
                 break;
             }
             default: {
                 System.out.println("Приложение не обрабатывает указанный в строке " + App.getLineNumber() + " класс.");
-                System.exit(0);
+                return null;
             }
         }
 
-        return (employee);
+        return employee;
     }
 
     protected int stringToEmployee(String line) {
@@ -237,7 +240,7 @@ public class Employee extends Character implements Comparable {
                                 }
                                 default: {
                                     System.out.println("Неверно указано значение в ячейке E" + App.getLineNumber() + ".");
-                                    System.exit(0);
+                                    return 0;
                                 }
                             }
                             break;

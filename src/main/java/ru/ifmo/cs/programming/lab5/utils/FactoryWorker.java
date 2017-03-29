@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class FactoryWorker extends Employee {
 
-    private ArrayList<Product> bagpack;
+    private ArrayList<Product> bagpack = new ArrayList<Product>();
 
     public FactoryWorker() {super();}
 

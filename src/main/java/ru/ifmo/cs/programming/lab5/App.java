@@ -26,6 +26,8 @@ import static ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss.NORMAL;
 public class App {
 
     private static int lineNumber = 1;
+    private static ArrayDeque<Employee> deque;
+    private static String filePath = null;
 
     public static void main(String[] args) throws Exception {
 
@@ -50,12 +52,20 @@ public class App {
 //        */
 
         /*это наш дек*/
-        ArrayDeque<Employee> deque = new ArrayDeque<>();
-
-        String filePath = System.getenv("EmployeeFile");
+        deque = new ArrayDeque<>();
+        setFilePath(System.getenv("EmployeeFile"));
 
         //First loading of the deque from our File
-        //load(deque);
+        load(deque, getFilePath());
+
+        //save deque after every shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                save(deque, getFilePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
 
         InputStreamReader in = new FileReader("src\\main\\java\\ru\\ifmo\\cs\\programming\\lab5\\input.txt")
                 /*InputStreamReader(System.in)*/; //input stream
@@ -63,7 +73,6 @@ public class App {
         Gson gson = new Gson();
         String command;
 
-        //todo Let gson.fromJson work with other classes, which extend Employee
         /*This is an interactive mode:*/
         System.out.println("Write your command:");
         intMode: while (true) {
@@ -78,9 +87,11 @@ public class App {
                     System.out.println("command: \'" + command + '\'');
                     obj = jsonFormatedObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
+
                     System.out.println(obj);
                     //todo учитывать остаток после вычленения одной команты из потока ввода
-                    employee = gson.fromJson(obj, Employee.class);
+                    employee = gson.fromJson(obj, withEmployeeAndItsExtendings.class)
+                            .getEmployee();
 
                     assert employee.equals(new Employee("Sasha", "programmer", 1, LOW, (byte) 4)) :
                             employee.toString();
@@ -91,40 +102,80 @@ public class App {
                     System.out.println("command: \'" + command + '\'');
                     obj = jsonFormatedObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
+
                     System.out.println(obj);
-                    employee = gson.fromJson(obj, Employee.class);
+                    employee = gson.fromJson(obj, withEmployeeAndItsExtendings.class)
+                        .getEmployee();
                     remove_lower(deque, employee);
                     break;
                 case "remove_all":
                     System.out.println("command: \'" + command + '\'');
                     obj = jsonFormatedObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
+
                     System.out.println(obj);
-                    employee = gson.fromJson(obj, Employee.class);
+                    Employee fw= gson.fromJson(obj, withEmployeeAndItsExtendings.class)
+                        .getEmployee();
 
                     ArrayDeque<Employee> arrayDeque = new ArrayDeque<>();
                     arrayDeque.add(new FactoryWorker("Pasha", "programmer", 18, NORMAL, (byte) 21));
 
-                    assert employee.equals(arrayDeque.peekFirst()) :
-                            arrayDeque.peekFirst().toString();
+                    assert fw.equals(arrayDeque.peekFirst()) :
+                            arrayDeque.peekFirst().toString() +
+                                    '\n' +
+                                    fw.toString();
 
-                    remove_all(deque, employee);
+                    remove_all(deque, fw);
                     break;
                 case "save":
                     System.out.println("command: \'" + command + '\'');
-                    save(deque, filePath);
+                    save(deque, getFilePath());
                     break;
                 case "load":
                     System.out.println("command: \'" + command + '\'');
-                    load(deque, filePath);
+                    load(deque, getFilePath());
                     break;
                 case "end":
                     System.out.println("command: \'" + command + '\'');
-                    //save(deque);
+                    save(deque, getFilePath());
                     break intMode;
             }
             System.out.println("!end");
         }
+        save(deque, getFilePath());
+    }
+
+    //used to read class type from command line
+    private class withEmployeeAndItsExtendings{
+        private Employee employee = null;
+//        private FactoryWorker factoryWorker = null;
+//        private ShopAssistant shopAssistant = null;
+
+        withEmployeeAndItsExtendings(){}
+
+        public Employee getEmployee() {
+            return employee;
+        }
+
+        public void setEmployee(Employee employee) {
+            this.employee = employee;
+        }
+
+//        public FactoryWorker getFactoryWorker() {
+//            return factoryWorker;
+//        }
+//
+//        public void setFactoryWorker(FactoryWorker factoryWorker) {
+//            this.factoryWorker = factoryWorker;
+//        }
+//
+//        public ShopAssistant getShopAssistant() {
+//            return shopAssistant;
+//        }
+//
+//        public void setShopAssistant(ShopAssistant shopAssistant) {
+//            this.shopAssistant = shopAssistant;
+//        }
     }
 
     private static String jsonFormatedObject(Scanner scanner) {
@@ -179,6 +230,7 @@ public class App {
             deque.removeFirst();
         }
     }
+
     private static void remove_all(ArrayDeque<Employee> deque, Employee employee) {
         ArrayDeque <Employee> anotherDeque = new ArrayDeque<>();
         //put all Employees < employee in anotherDeque
@@ -193,32 +245,47 @@ public class App {
     }
 
     private static void load(ArrayDeque<Employee> deque, String filePath) throws IOException {
+        BufferedReader reader;
+        String line;
+
         try {
+            reader = new BufferedReader(new FileReader(filePath));
+        } catch (FileNotFoundException e) {
+            System.out.println("Указанного файла не существует. ");
+            return;
+        } catch (NullPointerException e){
+            System.out.println("Не существует переменной окружения EmployeeFile.");
+            return;
+        }
 
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            String line;
-
+        try {
             while ((line = reader.readLine()) != null) {
                 Employee employee = parseEmployee(line);
                 deque.add(employee);
                 incLineNumber();
             }
-
-        } catch (FileNotFoundException e){ //ToDO IOEx. - ?
-            System.out.println("Указанного файла не существует.");
-        } catch (NullPointerException e){
-            System.out.println("Не существует переменной окружения EmployeeFile.");
+        } catch(IOException ex){
+            System.out.println(ex.getMessage());
         }
 
         //Состояние очереди после считывания
         System.out.println(deque.toString());
     }
 
-    private static void save(ArrayDeque<Employee> deque, String filepath) throws IOException {
+    public static void save(ArrayDeque<Employee> deque, String filepath) throws IOException {
+        PrintWriter writer;
 
-        File file = new File(filepath);
+        /*try{*/
+            File file = new File(filepath);
+            writer = new PrintWriter(file);
+        /*} catch (FileNotFoundException e){
+            System.out.println("Указанного файла не существует.");
+            return;
+        } catch (NullPointerException e){
+            System.out.println("Не существует переменной окружения EmployeeFile.");
+            return;
+        }*/
 
-        PrintWriter writer = new PrintWriter(file);
         // Стандартные настройки (кодировка, переносы строк, разделители и т.д.)
         ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
 
@@ -239,6 +306,14 @@ public class App {
 
     public static int getLineNumber(){
         return (lineNumber);
+    }
+
+    public static String getFilePath() {
+        return filePath;
+    }
+
+    private static void setFilePath(String filePath) {
+        App.filePath = filePath;
     }
 }
 
