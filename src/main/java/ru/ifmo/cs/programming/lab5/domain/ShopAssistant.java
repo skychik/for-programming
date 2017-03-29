@@ -1,11 +1,8 @@
 package ru.ifmo.cs.programming.lab5.domain;
 
 import com.sun.nio.sctp.IllegalReceiveException;
-import ru.ifmo.cs.programming.lab5.App;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
-
-import static ru.ifmo.cs.programming.lab5.App.save;
 
 public class ShopAssistant extends Employee {
 
@@ -23,5 +20,14 @@ public class ShopAssistant extends Employee {
         } else{
             worker.receiveSausage(sausage);
         }
+    }
+
+    public String toString(){
+        return ("ShopAssistant{name=" + getName()  +
+                ", profession=" + getProfession() +
+                ", salary=" + getSalary() +
+                ", attitudeToBoss=" + getAttitudeToBoss().toString() +
+                ", workQuality=" + getWorkQuality() +
+                "}");
     }
 }
