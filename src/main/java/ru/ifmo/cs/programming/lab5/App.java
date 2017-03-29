@@ -85,7 +85,7 @@ public class App {
             switch (command) {
                 case "remove":
                     System.out.println("command: \'" + command + '\'');
-                    obj = jsonFormatedObject(scanner);
+                    obj = jsonObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
 
                     System.out.println(obj);
@@ -100,7 +100,7 @@ public class App {
                     break;
                 case "remove_lower":
                     System.out.println("command: \'" + command + '\'');
-                    obj = jsonFormatedObject(scanner);
+                    obj = jsonObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
 
                     System.out.println(obj);
@@ -110,7 +110,7 @@ public class App {
                     break;
                 case "remove_all":
                     System.out.println("command: \'" + command + '\'');
-                    obj = jsonFormatedObject(scanner);
+                    obj = jsonObject(scanner);
                     if (obj == null) continue;//if incorrect input: more closing brackets than opening
 
                     System.out.println(obj);
@@ -145,40 +145,31 @@ public class App {
         save(deque, getFilePath());
     }
 
-    //used to read class type from command line
+    /**
+     * Exists to read from command line as json class
+     * @author skychik
+     */
     private class withEmployeeAndItsExtendings{
         private Employee employee = null;
-//        private FactoryWorker factoryWorker = null;
-//        private ShopAssistant shopAssistant = null;
 
         withEmployeeAndItsExtendings(){}
 
+        /**
+         * Returns field employee
+         * @author skychik
+         * @return field employee
+         */
         public Employee getEmployee() {
             return employee;
         }
-
-        public void setEmployee(Employee employee) {
-            this.employee = employee;
-        }
-
-//        public FactoryWorker getFactoryWorker() {
-//            return factoryWorker;
-//        }
-//
-//        public void setFactoryWorker(FactoryWorker factoryWorker) {
-//            this.factoryWorker = factoryWorker;
-//        }
-//
-//        public ShopAssistant getShopAssistant() {
-//            return shopAssistant;
-//        }
-//
-//        public void setShopAssistant(ShopAssistant shopAssistant) {
-//            this.shopAssistant = shopAssistant;
-//        }
     }
 
-    private static String jsonFormatedObject(Scanner scanner) {
+    /**
+     * Returns String, which contains object in json format
+     * @param scanner has thread from System.in
+     * @return String which contains object in json format
+     */
+    private static String jsonObject(Scanner scanner) {
         int numberOfOpeningBrackets = 0;
         int numberOfClosingBrackets = 0;
         StringBuilder obj = new StringBuilder();
@@ -220,10 +211,20 @@ public class App {
         }
     }
 
+    /**
+     * Removes employee from deque
+     * @param deque ArrayDeque
+     * @param employee Employee, that gotta be removed from deque
+     */
     private static void remove(ArrayDeque<Employee> deque, Employee employee) {
         deque.remove(employee);
     }
 
+    /**
+     * Removes all employees from deque, which are lower(compares .toStrings), than this employee
+     * @param deque ArrayDeque
+     * @param employee Employee
+     */
     private static void remove_lower(ArrayDeque<Employee> deque, Employee employee) {
         Arrays.sort(deque.toArray(new Employee[0]));
         while (!deque.isEmpty() && (employee.compareTo(deque.peekFirst())) > 0){
@@ -231,6 +232,11 @@ public class App {
         }
     }
 
+    /**
+     * Removes all Emloyees = this employee
+     * @param deque ArrayDeque
+     * @param employee Employee
+     */
     private static void remove_all(ArrayDeque<Employee> deque, Employee employee) {
         ArrayDeque <Employee> anotherDeque = new ArrayDeque<>();
         //put all Employees < employee in anotherDeque
