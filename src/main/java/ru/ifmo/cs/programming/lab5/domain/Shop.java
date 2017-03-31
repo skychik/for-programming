@@ -1,5 +1,6 @@
 package ru.ifmo.cs.programming.lab5.domain;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -7,8 +8,8 @@ public class Shop extends Workplace {
 
     private String shopType;
 
-    public Shop(String name, String shopType, ArrayList <Product> assortment, ArrayList <Employee> employeeList) {
-        super(name, "Магазин", assortment, employeeList);
+    public Shop(String name, String shopType, ArrayList <Product> assortment, ArrayDeque<Employee> employeeDeque) {
+        super(name, "Магазин", assortment, employeeDeque);
         this.shopType = shopType;
     }
 

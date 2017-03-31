@@ -10,13 +10,13 @@ import java.util.Scanner;
 
 public class FactoryWorker extends Employee {
 
-    private ArrayList<Product> bagpack = new ArrayList<Product>();
+    private ArrayList<Product> bagpack = new ArrayList<>();
 
     public FactoryWorker() {super();}
 
     public FactoryWorker(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession, salary, attitudeToBoss, workQuality);
-        bagpack = new ArrayList<Product>();
+        bagpack = new ArrayList<>();
     }
 
     public void changeQuality(byte up){
@@ -42,7 +42,7 @@ public class FactoryWorker extends Employee {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return ("FactoryWorker{name=" + getName()  +
                 ", profession=" + getProfession() +
                 ", salary=" + getSalary() +

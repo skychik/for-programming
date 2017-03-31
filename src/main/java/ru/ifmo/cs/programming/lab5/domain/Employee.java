@@ -121,7 +121,7 @@ public class Employee extends Character implements Comparable {
         String name = null;
         String profession = null;
         int salary = 0;
-        AttitudeToBoss attitudeToBoss = null;
+        AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
         byte workQuality = 0;
 
         reader.beginObject();
@@ -154,7 +154,7 @@ public class Employee extends Character implements Comparable {
         Scanner sc = new Scanner(line);
         sc.useDelimiter(",");
         int index;
-        Employee employee = null;
+        Employee employee;
         String className = sc.next();
 
         switch (className) {

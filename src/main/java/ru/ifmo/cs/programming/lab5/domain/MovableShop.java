@@ -2,12 +2,13 @@ package ru.ifmo.cs.programming.lab5.domain;
 
 import ru.ifmo.cs.programming.lab5.core.Movement;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 public class MovableShop extends Shop implements Movement {
 
-    public MovableShop(String name, String shopType, ArrayList <Product> assortment, ArrayList <Employee> employeeList) {
-        super(name, shopType, assortment, employeeList);
+    public MovableShop(String name, String shopType, ArrayList <Product> assortment, ArrayDeque<Employee> employeeDeque) {
+        super(name, shopType, assortment, employeeDeque);
     }
 
     @Override

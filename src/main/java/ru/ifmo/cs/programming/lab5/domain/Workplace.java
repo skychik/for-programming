@@ -1,5 +1,6 @@
 package ru.ifmo.cs.programming.lab5.domain;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -13,14 +14,14 @@ public class Workplace{
     private String name;
     private String type;
     private Employer employer;
-    private ArrayList<Employee> employeeList;
+    private ArrayDeque<Employee> employeeDeque;
     private ArrayList<Product> assortment;
 
-    public Workplace(String name, String type, ArrayList <Product> assortment, ArrayList <Employee> employeeList){
+    public Workplace(String name, String type, ArrayList <Product> assortment, ArrayDeque <Employee> employeeDeque){
         this.name = name;
         this.type = type;
         this.assortment = assortment;
-        this.employeeList = employeeList;
+        this.employeeDeque = employeeDeque;
     }
 
     public void setAssortment(ArrayList <Product> assortment){
@@ -37,11 +38,7 @@ public class Workplace{
 
     public void addEmployee(Employee employee){
         //incorrect realisation 
-        this.employeeList.add(employee);
-    }
-
-    public ArrayList<Employee> getEmployeeList(){
-        return(employeeList);
+        this.employeeDeque.add(employee);
     }
 
     @Override
@@ -50,7 +47,7 @@ public class Workplace{
         hash = 67 * hash + Objects.hashCode(this.name);
         hash = 67 * hash + Objects.hashCode(this.type);
         hash = 67 * hash + Objects.hashCode(this.employer);
-        hash = 67 * hash + Objects.hashCode(this.employeeList);
+        hash = 67 * hash + Objects.hashCode(this.employeeDeque);
         hash = 67 * hash + Objects.hashCode(this.assortment);
         return hash;
     }
@@ -70,7 +67,7 @@ public class Workplace{
         return Objects.equals(getName(), other.getName()) &&
                 Objects.equals(getType(), other.getType()) &&
                 Objects.equals(getEmployer(), other.getEmployer()) &&
-                Objects.equals(getEmployeeList(), other.getEmployeeList()) &&
+                Objects.equals(getEmployeeDeque(), other.getEmployeeDeque()) &&
                 Objects.equals(getAssortment(), other.getAssortment());
     }
 
@@ -79,7 +76,7 @@ public class Workplace{
         return "Workplace{name="    + getName()
                 + ", type="         + getType()
                 + ", employer="     + getEmployer()
-                + ", employeeList=" + getEmployeeList()
+                + ", employeeList=" + getEmployeeDeque()
                 + ", assortment="   + getAssortment() + '}';
     }
 
@@ -103,7 +100,11 @@ public class Workplace{
         return employer;
     }
 
-    public void setEmployeeList(ArrayList<Employee> employeeList) {
-        this.employeeList = employeeList;
+    public void setEmployeeDeque(ArrayDeque<Employee> employeeDeque) {
+        this.employeeDeque = employeeDeque;
+    }
+
+    public ArrayDeque<Employee> getEmployeeDeque(){
+        return(employeeDeque);
     }
 }
