@@ -63,42 +63,35 @@ public class App extends InteractiveModeFunctions {
             switch (command) {
                 case "remove":
                     obj = jsonObject(scanner);
-                    if (obj == null) continue;//if incorrect input: more closing brackets than opening
-
-                    System.out.println(obj);
+                    if (obj == null) continue;//if incorrect input (more closing brackets than opening)
+                    //System.out.println(obj);
                     //todo учитывать остаток после вычленения одной команды из потока ввода
                     employee = gson.fromJson(obj, Employee.class);
-
-                    assert employee.equals(new Employee("Sasha", "programmer", 1, LOW, (byte) 4)) :
-                            employee.toString();
-
+                    //assert employee.equals(new Employee("Sasha", "programmer", 1, LOW, (byte) 4)) :
+                    //        employee.toString();
                     remove(deque, employee);
                     break;
                 case "remove_lower":
                     obj = jsonObject(scanner);
-                    if (obj == null) continue;//if incorrect input: more closing brackets than opening
-
-                    System.out.println(obj);
+                    if (obj == null) continue;//if incorrect input (more closing brackets than opening)
+                    //System.out.println(obj);
                     employee = gson.fromJson(obj, Employee.class);
                     remove_lower(deque, employee);
                     break;
                 case "remove_all":
                     obj = jsonObject(scanner);
-                    if (obj == null) continue;//if incorrect input: more closing brackets than opening
-
-                    System.out.println(obj);
+                    if (obj == null) continue;//if incorrect input (more closing brackets than opening)
+                    //System.out.println(obj);
                     Employee emp = gson.fromJson(obj, FactoryWorker.class);
+                    //ArrayDeque<Employee> arrayDeque = new ArrayDeque<>();
+                    //arrayDeque.add(new FactoryWorker("Pasha", "programmer", 18, NORMAL, (byte) 21));
 
-                    ArrayDeque<Employee> arrayDeque = new ArrayDeque<>();
-                    arrayDeque.add(new FactoryWorker("Pasha", "programmer", 18, NORMAL, (byte) 21));
+                    //assert (emp instanceof FactoryWorker);
 
-                    assert (emp instanceof FactoryWorker);
-
-                    assert emp.equals(arrayDeque.peekFirst()) :
-                            arrayDeque.peekFirst().toString() +
-                                    '\n' +
-                                    emp.toString();
-
+                    //assert emp.equals(arrayDeque.peekFirst()) :
+                    //        arrayDeque.peekFirst().toString() +
+                    //                '\n' +
+                    //                emp.toString();
                     remove_all(deque, emp);
                     break;
                 case "save":

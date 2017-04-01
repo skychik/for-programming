@@ -100,6 +100,7 @@ public class InteractiveModeFunctions {
         for (Employee aDeque : deque) {
             System.out.println(aDeque);
         }
+        System.out.println();
     }
 
     /**
@@ -116,12 +117,12 @@ public class InteractiveModeFunctions {
         ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
 
         //todo не доделано
-        for (Employee employee : deque) {
+        //for (Employee employee : deque) {
             //Вывод считанной коллекции
             for (Object aDeque : deque) {
                 System.out.println(aDeque);
             }
-        }
+        //}
 
         csvBeanWriter.close();
 
@@ -142,7 +143,7 @@ public class InteractiveModeFunctions {
         }
     }
 
-    private static void setFilePath(File filePath) {
+    public static void setFilePath(File filePath) {
         InteractiveModeFunctions.filePath = filePath;
     }
 
