@@ -14,7 +14,7 @@ public class AppTests {
     @Test
     public void test1() throws FileNotFoundException {
         App.setInputStreamReader(new FileReader("input1.txt"));
-        App.setFilePath(new File("EmployeeFileTest1Input"));
+        //App.setFilePath(new File("EmployeeFileTest1Input"));
 
 
     }

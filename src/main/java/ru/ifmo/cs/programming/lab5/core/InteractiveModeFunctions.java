@@ -96,7 +96,7 @@ public class InteractiveModeFunctions {
             System.exit(1);
         }
 
-        //Состояние очереди после считывания
+        System.out.println("Состояние очереди после считывания:");
         for (Employee aDeque : deque) {
             System.out.println(aDeque);
         }
