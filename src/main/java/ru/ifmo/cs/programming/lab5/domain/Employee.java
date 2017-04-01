@@ -11,8 +11,6 @@ import java.lang.*;
 import java.util.Objects;
 import java.util.Scanner;
 
-import static ru.ifmo.cs.programming.lab5.App.save;
-
 public class Employee extends Character implements Comparable {
 
     private int salary = 0;
@@ -137,9 +135,8 @@ public class Employee extends Character implements Comparable {
                 attitudeToBoss = AttitudeToBoss.readAttitudeToBoss(reader);
             } else if (nextName.equals("workQuality")) {
                 int i = reader.nextInt();
-                if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE)) {
+                if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE))
                     throw new IllegalArgumentException("workQuality value isn't a byte value");
-                }
                 workQuality = (byte) i;
             } else {
                 reader.skipValue();
@@ -149,29 +146,35 @@ public class Employee extends Character implements Comparable {
         return new Employee(name, profession, salary, attitudeToBoss, workQuality);
     }
 
+    /**
+     * Метод, определяет класс объекта и вызывает методы по преобразованию строки в объект,
+     * возвращает объект класса Employee
+     * @author Zhurbova A.E.
+     * @param line - строка, в которой хранятся данные об объекте
+     */
     public static Employee parseEmployee(String line) {
 
         Scanner sc = new Scanner(line);
         sc.useDelimiter(",");
         int index;
-        Employee employee;
+        Employee employee = null;
         String className = sc.next();
 
         switch (className) {
             case "FactoryWorker": {
                 FactoryWorker fw = new FactoryWorker();
-                index = fw.stringToEmployee(line);
+                index = fw.stringToEmployee(sc);
                 if (index < 6) {
                     System.out.println("Заданы не все параметры в строке " + App.getLineNumber());
                     return null;
                 }
-                fw.parseFactoryWorker(line);
+                fw.parseFactoryWorker(sc);
                 employee = fw;
                 break;
             }
             case "ShopAssistant": {
                 ShopAssistant shAs = new ShopAssistant();
-                index = shAs.stringToEmployee(line);
+                index = shAs.stringToEmployee(sc);
                 if (index < 6 || sc.hasNext()) {
                     System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
                     return null;
@@ -181,7 +184,7 @@ public class Employee extends Character implements Comparable {
             }
             case "Employee": {
                 Employee emp = new Employee();
-                index = emp.stringToEmployee(line);
+                index = emp.stringToEmployee(sc);
                 if (index < 6 || sc.hasNext()) {
                     System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
                     return null;
@@ -198,9 +201,13 @@ public class Employee extends Character implements Comparable {
         return employee;
     }
 
-    protected int stringToEmployee(String line) {
+    /**
+     * Метод, преобразующий строку в параметры объекта класса Employee
+     * @author Zhurbova A.E.
+     * @param sc - строка, в которой хранятся данные объекта
+     */
+    protected int stringToEmployee(Scanner sc) {
                 int index = 1;
-                Scanner sc = new Scanner(line);
                 try {
                     for (; sc.hasNext() && index < 6; index++)
                     switch (index){

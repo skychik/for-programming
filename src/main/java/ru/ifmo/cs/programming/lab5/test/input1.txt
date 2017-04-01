@@ -1,5 +1,4 @@
 remove {
-
     "name": "Sasha",
     "profession": "programmer",
     "salary": 1,

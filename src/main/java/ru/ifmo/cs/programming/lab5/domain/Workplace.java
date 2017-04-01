@@ -1,5 +1,7 @@
 package ru.ifmo.cs.programming.lab5.domain;
 
+import ru.ifmo.cs.programming.lab5.utils.Product;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Objects;

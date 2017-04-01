@@ -1,11 +1,8 @@
 package ru.ifmo.cs.programming.lab5.utils;
 
 import com.google.gson.stream.JsonReader;
-import ru.ifmo.cs.programming.lab5.App;
 
 import java.io.IOException;
-
-import static ru.ifmo.cs.programming.lab5.App.save;
 
 public enum AttitudeToBoss {
 

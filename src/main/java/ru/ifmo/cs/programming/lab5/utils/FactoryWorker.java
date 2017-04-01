@@ -2,7 +2,6 @@ package ru.ifmo.cs.programming.lab5.utils;
 
 import ru.ifmo.cs.programming.lab5.App;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
-import ru.ifmo.cs.programming.lab5.domain.Product;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -42,7 +41,7 @@ public class FactoryWorker extends Employee {
     }
 
     @Override
-    public final String toString() {
+    public String toString() {
         return ("FactoryWorker{name=" + getName()  +
                 ", profession=" + getProfession() +
                 ", salary=" + getSalary() +
@@ -86,19 +85,35 @@ public class FactoryWorker extends Employee {
         bagpack.add(product);
     }
 
-    public void parseFactoryWorker(String line) {
-
-        Scanner scanner = new Scanner(line);
+    /**
+     * Метод, преобразующий оставшуюся часть строки в коллекцию bagPack,
+     * принадлежащую классу FactoryWorker
+     * @author Zhurbova A.E.
+     * @param scanner - строка, в которой хранятся данные о содержимом bagpack
+     */
+    public void parseFactoryWorker(Scanner scanner) {
 
         try {
+            Product product;
 
             while (scanner.hasNext()){
-            String[] anything = scanner.next().split(" : ");
-            Product product = new Product(anything[0], Integer.parseInt(anything[1]));
-            bagpack.add(product);}
+                String[] anything = scanner.next().split(" : ");
 
-        }catch (NumberFormatException e){
-            System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() + ". Должны быть указаны название и цена, разделенные \":\".");
+                if (anything.length == 2) {
+                    product = new Product(anything[0], Integer.parseInt(anything[1]));
+                } else {
+                    System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() +
+                            ". Должны быть указаны название и цена, разделенные \":\".");
+                    System.exit(1);
+                    return;
+                }
+
+                addProduct(product);
+            }
+        } catch (NumberFormatException e){
+            System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() +
+                    ". Должны быть указаны название и цена, разделенные \":\".");
+            System.exit(1);
         }
     }
 }
