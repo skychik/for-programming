@@ -9,24 +9,27 @@ package ru.ifmo.cs.programming.lab5;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Scanner;
-
-import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
-
-import static ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss.LOW;
-import static ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss.NORMAL;
 
 public class App extends InteractiveModeFunctions {
 
     /*это наш дек*/
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
+
+    //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
+
+    //for working with Gson library
     private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+
+
     private static Scanner scanner;//todo has to stop at enter
 
     public static void main(String[] args) throws Exception {
@@ -159,10 +162,6 @@ public class App extends InteractiveModeFunctions {
 
     public static void setInputStreamReader(InputStreamReader inputStreamReader) {
         App.inputStreamReader = inputStreamReader;
-    }
-
-    public static void setScanner(Scanner scanner) {
-        App.scanner = scanner;
     }
 }
 

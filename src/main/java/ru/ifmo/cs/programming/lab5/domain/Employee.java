@@ -258,8 +258,7 @@ public class Employee extends Character implements Comparable {
                         }
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("Исправьте значения в строке " + App.getLineNumber() + ". Столбцы D и F должны содержать числа.");
-                    System.exit(0);
+                    throw new NumberFormatException("Исправьте значения в строке " + App.getLineNumber() + ". Столбцы D и F должны содержать числа.");
                 }
                 return (index);
             }

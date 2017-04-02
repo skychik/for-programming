@@ -9,11 +9,10 @@ import ru.ifmo.cs.programming.lab5.App;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
 
 public class AppTests {
-    //dir - current directory
-    private static String dir = System.getProperty("user.dir") + "/src/main/java/ru/ifmo/cs/programming/lab5/tests";
+    //testingDir - current directory
+    private static String testingDir = System.getProperty("user.testingDir") + "/src/main/java/ru/ifmo/cs/programming/lab5/tests";
 
     //how many tests
     private static int numberOfTests = 1;
@@ -27,20 +26,20 @@ public class AppTests {
 
     private void testWithFiles(int i) throws Exception {
         //copy input and EmployeeFile
-        FileUtils.copyFile(new File(dir, "input" + i + ".txt"), new File(dir, "input.txt"));
-        App.setInputStreamReader(new FileReader(dir + "\\input.txt"));
-        FileUtils.copyFile(new File(dir, "EmployeeFileTest" + i + "Input.csv"), new File(dir, "EmployeeFile.csv"));
-        App.setFilePath(new File(dir, "EmployeeFile.csv"));
+        FileUtils.copyFile(new File(testingDir, "input" + i + ".txt"), new File(testingDir, "input.txt"));
+        App.setInputStreamReader(new FileReader(testingDir + "\\input.txt"));
+        FileUtils.copyFile(new File(testingDir, "EmployeeFileTest" + i + "Input.csv"), new File(testingDir, "EmployeeFile.csv"));
+        App.setFilePath(new File(testingDir, "EmployeeFile.csv"));
 
-        //System.out.println(new Scanner(new FileReader(dir + "\\input.txt")).next());
+        //System.out.println(new Scanner(new FileReader(testingDir + "\\input.txt")).next());
         App.main(new String[0]);
 
-        assert new File(dir, "EmployeeFile.csv") == new File(dir, "EmployeeFileTest" + i + "Output.csv");
+        assert new File(testingDir, "EmployeeFile.csv") == new File(testingDir, "EmployeeFileTest" + i + "Output.csv");
     }
 
     @After
     public void after() throws IOException {
-        //Files.delete(new File(dir, "input.txt").toPath());
-        //Files.delete(new File(dir, "EmployeeFile.csv").toPath());
+        //Files.delete(new File(testingDir, "input.txt").toPath());
+        //Files.delete(new File(testingDir, "EmployeeFile.csv").toPath());
     }
 }

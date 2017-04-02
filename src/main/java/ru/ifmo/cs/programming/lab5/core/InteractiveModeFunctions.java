@@ -78,22 +78,15 @@ public class InteractiveModeFunctions {
         try {
             reader = new BufferedReader(new FileReader(filePath));
         } catch (FileNotFoundException e) {
-            System.out.println("Указанного файла не существует. ");
-            return;
+            throw new FileNotFoundException("Указанного файла не существует. ");
         } catch (NullPointerException e) {
-            System.out.println("Не существует переменной окружения EmployeeFile.");
-            return;
+            throw new NullPointerException("Не существует переменной окружения EmployeeFile.");
         }
 
-        try {
-            while ((line = reader.readLine()) != null) {
-                Employee employee = parseEmployee(line);
-                deque.add(employee);
-                incLineNumber();
-            }
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            System.exit(1);
+        while ((line = reader.readLine()) != null) {
+            Employee employee = parseEmployee(line);
+            deque.add(employee);
+            incLineNumber();
         }
 
         System.out.println("Состояние очереди после считывания:");
@@ -138,8 +131,7 @@ public class InteractiveModeFunctions {
         try {
             InteractiveModeFunctions.filePath = new File(filePath);
         } catch (NullPointerException e) {
-            System.out.println("Environment variable is null. Set it");
-            throw e;
+            throw new NullPointerException("Environment variable is null. Set it");
         }
     }
 
