@@ -157,7 +157,7 @@ public class Employee extends Character implements Comparable {
         Scanner sc = new Scanner(line);
         sc.useDelimiter(",");
         int index;
-        Employee employee = null;
+        Employee employee;
         String className = sc.next();
 
         switch (className) {
@@ -258,7 +258,8 @@ public class Employee extends Character implements Comparable {
                         }
                     }
                 } catch (NumberFormatException e) {
-                    throw new NumberFormatException("Исправьте значения в строке " + App.getLineNumber() + ". Столбцы D и F должны содержать числа.");
+                    System.out.println("Исправьте значения в строке " + App.getLineNumber() + ". Столбцы D и F должны содержать числа.");
+                    System.exit(1);
                 }
                 return (index);
             }

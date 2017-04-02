@@ -111,8 +111,9 @@ public class FactoryWorker extends Employee {
                 addProduct(product);
             }
         } catch (NumberFormatException e){
-            throw new NumberFormatException("Неверно заданы предметы багажа в строке " + App.getLineNumber() +
+            System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() +
                     ". Должны быть указаны название и цена, разделенные \":\".");
+            System.exit(1);
         }
     }
 }

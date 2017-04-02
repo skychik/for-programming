@@ -14,7 +14,7 @@ import static ru.ifmo.cs.programming.lab5.domain.Employee.parseEmployee;
 public class InteractiveModeFunctions {
 
     /*файл, который хранит deque*/
-    private static File filePath = new File(System.getenv("EmployeeFile"));
+    private static File filePath = null;
     private static int lineNumber = 1;
 
     /**
@@ -25,6 +25,7 @@ public class InteractiveModeFunctions {
      */
     protected static void remove(ArrayDeque<Employee> deque, Employee employee) {
         deque.remove(employee);
+        System.out.println("First employee, which you typed, removed");
     }
 
     /**
@@ -38,6 +39,7 @@ public class InteractiveModeFunctions {
         while (!deque.isEmpty() && (employee.compareTo(deque.peekFirst())) > 0) {
             deque.removeFirst();
         }
+        System.out.println("Removed all employees, which are lower, than your typed employee");
     }
 
     /**
@@ -63,6 +65,7 @@ public class InteractiveModeFunctions {
          */
         while (!anotherDeque.isEmpty())
             deque.addFirst(anotherDeque.pollFirst());
+        System.out.println("All employees, which are the same with your typed employee, removed from deque");
     }
 
     /**
@@ -71,16 +74,19 @@ public class InteractiveModeFunctions {
      * @param deque - коллекция, в которую происходит запись
      * @author Zhurbova A.E.
      */
+    //TODO: не доделано
     protected static void load(ArrayDeque<Employee> deque) throws IOException {
-        BufferedReader reader;
+        BufferedReader reader = null;
         String line;
 
         try {
             reader = new BufferedReader(new FileReader(filePath));
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("Указанного файла не существует. ");
+            System.out.println("Указанного файла не существует. ");
+            System.exit(1);
         } catch (NullPointerException e) {
-            throw new NullPointerException("Не существует переменной окружения EmployeeFile.");
+            System.out.println("Не существует переменной окружения EmployeeFile.");
+            System.exit(1);
         }
 
         while ((line = reader.readLine()) != null) {
@@ -89,11 +95,7 @@ public class InteractiveModeFunctions {
             incLineNumber();
         }
 
-        System.out.println("Состояние очереди после считывания:");
-        for (Employee aDeque : deque) {
-            System.out.println(aDeque);
-        }
-        System.out.println();
+        show(deque);
     }
 
     /**
@@ -102,41 +104,60 @@ public class InteractiveModeFunctions {
      * @param deque - коллекция, из которой считываются данные
      * @author Zhurbova A.E.
      */
-    //todo нужна стабильность
-    protected static void save(ArrayDeque<Employee> deque) throws IOException {
-        PrintWriter writer = new PrintWriter(filePath);
+    //TODO: нужна стабильность(не доделано)
+    protected static void save(ArrayDeque<Employee> deque) {
+        PrintWriter writer;
+
+        try{
+            writer = new PrintWriter(filePath);
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot save current Employees: File (" + filePath + ") not found");
+            return;
+        }
 
         // Стандартные настройки (кодировка, переносы строк, разделители и т.д.)
         ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
 
-        //todo не доделано
         //for (Employee employee : deque) {
             //Вывод считанной коллекции
-            for (Object aDeque : deque) {
+            for (Employee aDeque : deque) {
                 System.out.println(aDeque);
             }
         //}
 
-        csvBeanWriter.close();
+        try {
+            csvBeanWriter.close();
+        } catch (IOException e) {
+            System.out.println("Cannot close file with Employees");
+            return;
+        }
 
         //Проверка записанного в файл содержимого, посредством вывода на экран
-        System.out.println(writer.toString());
+        //System.out.println(writer.toString());
+        System.out.println("saved");
     }
 
-    private static File getFilePath() {
-        return filePath;
+    protected static void add(ArrayDeque<Employee> deque, Employee employee) {
+        deque.add(employee);
     }
 
-    private static void setFilePath(String filePath) {
-        try {
-            InteractiveModeFunctions.filePath = new File(filePath);
-        } catch (NullPointerException e) {
-            throw new NullPointerException("Environment variable is null. Set it");
-        }
+    protected static void show(ArrayDeque<Employee> deque) {
+        System.out.println("Current employees now are the same with the file:");
+        if (!deque.isEmpty()) {
+            for (Employee aDeque : deque) {
+                System.out.println(aDeque);
+            }
+        } else System.out.println("empty");
+        System.out.println();
     }
 
     public static void setFilePath(File filePath) {
-        InteractiveModeFunctions.filePath = filePath;
+        //if (filePath)
+            InteractiveModeFunctions.filePath = filePath;
+    }
+
+    public static File getFilePath() {
+        return filePath;
     }
 
     /**

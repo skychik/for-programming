@@ -13,63 +13,65 @@ import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class App extends InteractiveModeFunctions {
 
     /*это наш дек*/
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
-
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
-
     //for working with Gson library
     private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-
-
-    private static Scanner scanner;//todo has to stop at enter
+    private static Scanner scanner;//TODO: has to stop at enter
 
     public static void main(String[] args) throws Exception {
-        scanner = new Scanner(inputStreamReader);
+        scanner = new Scanner(inputStreamReader).useDelimiter(Pattern.compile("\\s"));
+        if (getFilePath() == null)
+            setFilePath(new File(System.getenv("EmployeeFile")));
 
         //First loading of the deque from our File
         load(deque);
 
         //save deque after every shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                save(deque);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> save(deque)));
 
         /*This is an interactive mode:*/
         interactiveMode();
-
-        save(deque);
     }
 
     private static void interactiveMode() throws IOException {
         String command;
 
+        System.out.println("** To stop this program, type 'end'\n");
+
         intMode:
         while (true) {
-            System.out.println("Write your command:");
+            System.out.print("Write your command:\n");
             command = scanner.next();
+                //System.out.println('\"' + command + '\"');
 
             String obj;
             Employee employee;
 
             switch (command) {
+                case "add":
+                    obj = jsonObject(scanner);
+                    if (obj == null) continue;//if incorrect input (more closing brackets than opening)
+                    //System.out.println(obj);
+                    employee = gson.fromJson(obj, Employee.class);
+                    add(deque, employee);
+                    break;
                 case "remove":
                     obj = jsonObject(scanner);
                     if (obj == null) continue;//if incorrect input (more closing brackets than opening)
                     //System.out.println(obj);
-                    //todo учитывать остаток после вычленения одной команды из потока ввода
+                    //TODO: учитывать остаток после вычленения одной команды из потока ввода
                     employee = gson.fromJson(obj, Employee.class);
                     //assert employee.equals(new Employee("Sasha", "programmer", 1, LOW, (byte) 4)) :
                     //        employee.toString();
@@ -104,9 +106,13 @@ public class App extends InteractiveModeFunctions {
                 case "load":
                     load(deque);
                     break;
+                case "show":
+                    show(deque);
+                    break;
                 case "end":
-                    save(deque);
                     break intMode;
+                default:
+                    System.out.println("No such command: '" + command + "'");
             }
         }
     }
