@@ -9,7 +9,6 @@ package ru.ifmo.cs.programming.lab5;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
@@ -67,7 +66,7 @@ public class App extends InteractiveModeFunctions {
                     //System.out.println(obj);
                     try {
                         employee = gson.fromJson(obj, Employee.class);
-                    } catch (JsonSyntaxException e) {
+                    } catch (IllegalStateException e) {
                         System.out.println(e.getMessage());
                         continue;
                     }
