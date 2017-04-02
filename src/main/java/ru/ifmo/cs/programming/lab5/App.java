@@ -27,9 +27,10 @@ public class App extends InteractiveModeFunctions {
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
     private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-    private static Scanner scanner = new Scanner(inputStreamReader);//todo has to stop at enter
+    private static Scanner scanner;//todo has to stop at enter
 
     public static void main(String[] args) throws Exception {
+        scanner = new Scanner(inputStreamReader);
 
         //First loading of the deque from our File
         load(deque);
@@ -158,6 +159,10 @@ public class App extends InteractiveModeFunctions {
 
     public static void setInputStreamReader(InputStreamReader inputStreamReader) {
         App.inputStreamReader = inputStreamReader;
+    }
+
+    public static void setScanner(Scanner scanner) {
+        App.scanner = scanner;
     }
 }
 
