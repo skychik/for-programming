@@ -32,7 +32,7 @@ public class App extends InteractiveModeFunctions {
     private static Scanner scanner;//TODO: has to stop at enter
 
     public static void main(String[] args) throws Exception {
-        scanner = new Scanner(inputStreamReader).useDelimiter(Pattern.compile("\\s"));
+        scanner = new Scanner(inputStreamReader).useDelimiter(Pattern.compile("[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]"));
         if (getFilePath() == null)
             setFilePath(new File(System.getenv("EmployeeFile")));
 
@@ -47,15 +47,19 @@ public class App extends InteractiveModeFunctions {
     }
 
     private static void interactiveMode() {
-        String command;
+        String command = null;
 
         System.out.println("** To stop this program, type 'end'\n");
 
         intMode:
         while (true) {
             System.out.print("Write your command:\n");
-            command = scanner.next();
-                System.out.println('\"' + command + '\"');
+            if (scanner.hasNextLine()) {
+                command = scanner.next();
+            } else {
+                System.exit(0);
+            }
+                //System.out.println('\"' + command + '\"');
 
             String obj;
             Employee employee;
