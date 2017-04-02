@@ -75,7 +75,7 @@ public class InteractiveModeFunctions {
      * @author Zhurbova A.E.
      */
     //TODO: не доделано
-    protected static void load(ArrayDeque<Employee> deque) throws IOException {
+    protected static void load(ArrayDeque<Employee> deque) {
         BufferedReader reader = null;
         String line;
 
@@ -89,10 +89,15 @@ public class InteractiveModeFunctions {
             System.exit(1);
         }
 
-        while ((line = reader.readLine()) != null) {
-            Employee employee = parseEmployee(line);
-            deque.add(employee);
-            incLineNumber();
+        try {
+            while ((line = reader.readLine()) != null) {
+                Employee employee = parseEmployee(line);
+                deque.add(employee);
+                incLineNumber();
+            }
+        } catch (IOException e){
+            System.out.println("Cannot load file");
+            System.exit(1);
         }
 
         show(deque);

@@ -9,6 +9,7 @@ package ru.ifmo.cs.programming.lab5;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
@@ -45,7 +46,7 @@ public class App extends InteractiveModeFunctions {
         interactiveMode();
     }
 
-    private static void interactiveMode() throws IOException {
+    private static void interactiveMode() {
         String command;
 
         System.out.println("** To stop this program, type 'end'\n");
@@ -54,7 +55,7 @@ public class App extends InteractiveModeFunctions {
         while (true) {
             System.out.print("Write your command:\n");
             command = scanner.next();
-                //System.out.println('\"' + command + '\"');
+                System.out.println('\"' + command + '\"');
 
             String obj;
             Employee employee;
@@ -64,7 +65,12 @@ public class App extends InteractiveModeFunctions {
                     obj = jsonObject(scanner);
                     if (obj == null) continue;//if incorrect input (more closing brackets than opening)
                     //System.out.println(obj);
-                    employee = gson.fromJson(obj, Employee.class);
+                    try {
+                        employee = gson.fromJson(obj, Employee.class);
+                    } catch (JsonSyntaxException e) {
+                        System.out.println(e.getMessage());
+                        continue;
+                    }
                     add(deque, employee);
                     break;
                 case "remove":
@@ -149,6 +155,8 @@ public class App extends InteractiveModeFunctions {
                 }
             }
 
+            if ((numberOfOpeningBrackets == 0) && (numberOfClosingBrackets == 0))
+                    continue;
             if (numberOfOpeningBrackets == numberOfClosingBrackets) return obj.toString();
 //                /*//Gson should do this itself
 //                if (line.trim().toCharArray()[line.length() - 1] == '}')

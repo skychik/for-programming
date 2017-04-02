@@ -31,7 +31,8 @@ public class AppTests {
         //copy input and EmployeeFile
         FileUtils.copyFile(new File(testingDir, "Test" + testNumber + "input.txt"), new File(testingDir, "input.txt"));
         App.setInputStreamReader(new FileReader(testingDir + "\\input.txt"));
-        FileUtils.copyFile(new File(testingDir, "Test" + testNumber + "EmployeeFileInput.csv"), new File(testingDir, "EmployeeFile.csv"));
+        FileUtils.copyFile(new File(testingDir, "Test" + testNumber + "EmployeeFileInput.csv"),
+                new File(testingDir, "EmployeeFile.csv"));
         App.setFilePath(new File(testingDir, "EmployeeFile.csv"));
 
         //System.out.println(new Scanner(new FileReader(testingDir + "\\input.txt")).next());

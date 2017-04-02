@@ -1,5 +1,5 @@
 remove
- {
+{
     "name": "Sasha",
     "profession": "programmer",
     "salary": 1,
@@ -14,4 +14,7 @@ remove_all {
     "workQuality": 21
 }
 load
+add aa
+end
+{}
 end
