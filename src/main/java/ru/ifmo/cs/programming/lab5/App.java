@@ -23,8 +23,9 @@ public class App extends InteractiveModeFunctions {
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
 
-    public static void main(String[] args) throws Exception {
-        //i'm not sure, than Pattern has to be that big, but it works
+    public static void main(String[] args) {
+
+        //i'm not sure, that the Pattern has to be that big, but it works
         setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile("[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
         if (getFilePath() == null)
             setFilePath(new File(System.getenv("EmployeeFile")));
@@ -46,7 +47,7 @@ public class App extends InteractiveModeFunctions {
                 "** To stop this program, type 'end'\n");
         intMode:
         while (true) {
-            System.out.print("Write your command:\n");
+            System.out.print("Type your command:\n");
             if (getScanner().hasNextLine()) {
                 command = getScanner().next();
             } else {
@@ -87,7 +88,7 @@ public class App extends InteractiveModeFunctions {
         }
     }
 
-    public static void setInputStreamReader(InputStreamReader inputStreamReader) {
+    static void setInputStreamReader(InputStreamReader inputStreamReader) {
         App.inputStreamReader = inputStreamReader;
     }
 }

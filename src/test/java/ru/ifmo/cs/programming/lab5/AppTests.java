@@ -1,6 +1,5 @@
 package ru.ifmo.cs.programming.lab5;
 
-
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -9,25 +8,25 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class AppTests {
+public class AppTests extends App{
+
     /**
-     * testingDir - current directory
+     * testingDir - directory with this class
      */
     private static String testingDir = System.getProperty("user.dir") + "/src/test/java/ru/ifmo/cs/programming/lab5";
 
-    /**
-     * how many tests
-     */
-    private static int numberOfTests = 1;
-
     @Test(timeout = 5000)
-    public void test1() throws Exception {
+    public void test1() throws IOException {
+
+        int numberOfTests = 1;
+
         for (int i = 1; i <= numberOfTests; i++) {
             testWithFiles(i);
         }
     }
 
-    private void testWithFiles(int testNumber) throws Exception {
+    private void testWithFiles(int testNumber) throws IOException {
+
         //copy input and EmployeeFile
         FileUtils.copyFile(new File(testingDir, "Test" + testNumber + "input.txt"), new File(testingDir, "input.txt"));
         App.setInputStreamReader(new FileReader(testingDir + "\\input.txt"));
@@ -43,7 +42,7 @@ public class AppTests {
     }
 
     @After
-    public void after() throws IOException {
+    public void after() {
         //Files.delete(new File(testingDir, "input.txt").toPath());
         //Files.delete(new File(testingDir, "EmployeeFile.csv").toPath());
     }

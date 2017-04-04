@@ -15,6 +15,5 @@ remove_all {
 }
 load
 add aa
-end
-{}
+show
 end

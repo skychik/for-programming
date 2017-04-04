@@ -42,15 +42,19 @@ public class InteractiveModeFunctions {
      * @param deque Works with this deque
      */
     protected static void add(ArrayDeque<Employee> deque) {
+
         obj = jsonObject(scanner);
+
         if (obj == null) return;//if incorrect input (more closing brackets than opening)
         //System.out.println(obj);
+
         try {
             employee = gson.fromJson(obj, Employee.class);
         } catch (JsonSyntaxException e) {
             System.out.println(e.getMessage());
             return;
         }
+
         deque.add(employee);
     }
 
@@ -68,7 +72,7 @@ public class InteractiveModeFunctions {
         //assert employee.equals(new Employee("Sasha", "programmer", 1, LOW, (byte) 4)) :
         //        employee.toString();
         deque.remove(employee);
-        System.out.println("First employee, which you typed, removed");
+        System.out.println("First met employee, which you typed, removed");
     }
 
     /**
@@ -140,12 +144,15 @@ public class InteractiveModeFunctions {
         try {
             reader = new BufferedReader(new FileReader(filePath));
         } catch (FileNotFoundException e) {
-            System.out.println("Указанного файла не существует. ");
+            System.out.println("Указанный файл не найден.");//TODO: сделать корректный вывод
             System.exit(1);
         } catch (NullPointerException e) {
-            System.out.println("Не существует переменной окружения EmployeeFile.");
+            System.out.println("Не существует переменной окружения EmployeeFile.");//TODO: сделать корректный вывод
             System.exit(1);
         }
+
+        ArrayDeque<Employee> bufferedDeque = deque;
+        deque.clear();
 
         try {
             while ((line = reader.readLine()) != null) {
@@ -154,7 +161,8 @@ public class InteractiveModeFunctions {
                 incLineNumber();
             }
         } catch (IOException e){
-            System.out.println("Cannot load file");
+            deque = bufferedDeque;
+            System.out.println("Cannot read from file");
             System.exit(1);
         }
 
@@ -206,10 +214,10 @@ public class InteractiveModeFunctions {
      * @param deque Current deque
      */
     protected static void show(ArrayDeque<Employee> deque) {
-        System.out.println("Current employees now are the same with the file:");
+        System.out.println("Current employees now are the same with the file:\n");
         if (!deque.isEmpty()) {
-            for (Employee aDeque : deque) {
-                System.out.println(aDeque);
+            for (Employee employee : deque) {
+                System.out.println(employee);
             }
         } else System.out.println("empty");
         System.out.println();
@@ -222,15 +230,20 @@ public class InteractiveModeFunctions {
      * @return String which contains object in json format
      */
     private static String jsonObject(Scanner scanner) {
+
         int numberOfOpeningBrackets = 0;
         int numberOfClosingBrackets = 0;
         StringBuilder obj = new StringBuilder();
         String line;
 
         while (true) {
-            //System.out.println('#');
             line = scanner.nextLine();
             obj.append(line.trim());
+
+            if ((obj.length() != 0) && (obj.charAt(0) != '{')) {
+                System.out.println("Incorrect json format. You typed: \'" + obj + "\'");
+                return null;
+            }
 
             //countNumberOfBrackets
             for (int pos = 0; pos < line.length(); ++pos) {
@@ -266,9 +279,9 @@ public class InteractiveModeFunctions {
         }
     }
 
-    public static void setFilePath(File filePath) {InteractiveModeFunctions.filePath = filePath;}
+    protected static void setFilePath(File filePath) {InteractiveModeFunctions.filePath = filePath;}
 
-    public static File getFilePath() { return filePath; }
+    protected static File getFilePath() { return filePath; }
 
     /**
      * Метод, осуществляющий увеличение на единицу номера считываемой строки
@@ -288,11 +301,11 @@ public class InteractiveModeFunctions {
         return lineNumber;
     }
 
-    public static Scanner getScanner() {
+    protected static Scanner getScanner() {
         return scanner;
     }
 
-    public static void setScanner(Scanner scanner) {
+    protected static void setScanner(Scanner scanner) {
         InteractiveModeFunctions.scanner = scanner;
     }
 }
