@@ -23,7 +23,7 @@ public class InteractiveModeFunctions {
     private static int lineNumber = 1;
     private static String obj;
     private static Employee employee;
-    private static Scanner scanner;//TODO: has to stop at enter
+    private static Scanner scanner;
     //for working with Gson library
     private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
@@ -67,7 +67,6 @@ public class InteractiveModeFunctions {
         obj = jsonObject(scanner);
         if (obj == null) return;//if incorrect input (more closing brackets than opening)
         //System.out.println(obj);
-        //TODO: учитывать остаток после вычленения одной команды из потока ввода
         employee = gson.fromJson(obj, Employee.class);
         //assert employee.equals(new Employee("Sasha", "programmer", 1, LOW, (byte) 4)) :
         //        employee.toString();
@@ -262,7 +261,13 @@ public class InteractiveModeFunctions {
 
             if ((numberOfOpeningBrackets == 0) && (numberOfClosingBrackets == 0))
                 continue;
-            if (numberOfOpeningBrackets == numberOfClosingBrackets) return obj.toString();
+            if (numberOfOpeningBrackets == numberOfClosingBrackets) {
+                if ((obj.length() != 0) && (obj.charAt(obj.length() - 1) != '}')) {
+                    System.out.println("Incorrect json format. You typed: \'" + obj + "\'");
+                    return null;
+                }
+                return obj.toString();
+            }
 //                /*//Gson should do this itself
 //                if (line.trim().toCharArray()[line.length() - 1] == '}')
 //                    return;
