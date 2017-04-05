@@ -72,10 +72,16 @@ public class App extends InteractiveModeFunctions {
                     remove_all(deque);
                     break;
                 case "save":
-                    save(deque);
+                    new Thread(()->save(deque)).run();
+                    try {
+                        Thread.currentThread().join(500);
+                    } catch (InterruptedException ignored) {}
                     break;
                 case "load":
-                    load(deque);
+                    new Thread(()->load(deque)).run();
+                    try {
+                        Thread.currentThread().join(500);
+                    } catch (InterruptedException ignored) {}
                     break;
                 case "show":
                     show(deque);
