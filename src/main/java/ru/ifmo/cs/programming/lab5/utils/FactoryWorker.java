@@ -42,13 +42,12 @@ public class FactoryWorker extends Employee {
 
     @Override
     public String toString() {
-        return ("FactoryWorker{name=" + getName()  +
-                ", profession=" + getProfession() +
-                ", salary=" + getSalary() +
-                ", attitudeToBoss=" + getAttitudeToBoss().toString() +
-                ", workQuality=" + getWorkQuality() +
-                ", bagpack=" + bagpack) +
-                "}";
+        return ("FactoryWorker," + getName()  +
+                "," + getProfession() +
+                "," + getSalary() +
+                "," + getAttitudeToBoss().toString() +
+                "," + getWorkQuality() +
+                "," + bagpack);
     }
 
     @Override
@@ -100,7 +99,7 @@ public class FactoryWorker extends Employee {
                 String[] anything = scanner.next().split(" : ");
 
                 if (anything.length == 2) {
-                    product = new Product(anything[0], Integer.parseInt(anything[1]));
+                    product = new Product(anything[0].replace("[", ""), Integer.parseInt(anything[1].replace("]", "")));
                 } else {
                     System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() +
                             ". Должны быть указаны название и цена, разделенные \":\".");

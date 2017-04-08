@@ -135,18 +135,20 @@ public class InteractiveModeFunctions {
      * @param deque - коллекция, в которую происходит запись
      * @author Zhurbova A.E.
      */
-    //TODO: не доделано
     protected static void load(ArrayDeque<Employee> deque) {
+
         BufferedReader reader = null;
         String line;
 
         try {
-            reader = new BufferedReader(new FileReader(filePath));
+
+            reader = new BufferedReader(new FileReader(getFilePath()));
+
         } catch (FileNotFoundException e) {
-            System.out.println("Указанный файл не найден.");//TODO: сделать корректный вывод
+            System.out.println("Невозможно считать данные из файла по пути: " + getFilePath());
             System.exit(1);
         } catch (NullPointerException e) {
-            System.out.println("Не существует переменной окружения EmployeeFile.");//TODO: сделать корректный вывод
+            System.out.println("Не существует переменной окружения EmployeeFile."); //ToDo??
             System.exit(1);
         }
 
@@ -174,37 +176,21 @@ public class InteractiveModeFunctions {
      * @param deque - коллекция, из которой считываются данные
      * @author Zhurbova A.E.
      */
-    //TODO: нужна стабильность(не доделано)
-    protected static void save(ArrayDeque<Employee> deque) {
-        PrintWriter writer;
+    protected static void save(ArrayDeque<Employee> deque){
 
-        try{
-            writer = new PrintWriter(filePath);
-        } catch (FileNotFoundException e) {
-            System.out.println("Cannot save current Employees: File (" + filePath + ") not found");
-            return;
-        }
-
-        // Стандартные настройки (кодировка, переносы строк, разделители и т.д.)
-        ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
-
-        //for (Employee employee : deque) {
-            //Вывод считанной коллекции
-            for (Employee aDeque : deque) {
-                System.out.println(aDeque);
-            }
-        //}
-
+        PrintWriter writer = null;
         try {
-            csvBeanWriter.close();
-        } catch (IOException e) {
-            System.out.println("Cannot close file with Employees");
-            return;
-        }
+            writer = new PrintWriter(getFilePath());
 
-        //Проверка записанного в файл содержимого, посредством вывода на экран
-        //System.out.println(writer.toString());
-        System.out.println("saved");
+            for (Employee employee : deque) {
+                //Запись имени класса + объект
+                writer.println(employee);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Невозможно произвести запись в файл по пути: " + getFilePath());
+        }finally {
+            writer.close();
+        }
     }
 
     /**

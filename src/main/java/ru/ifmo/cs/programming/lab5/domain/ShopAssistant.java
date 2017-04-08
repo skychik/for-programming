@@ -24,11 +24,10 @@ public class ShopAssistant extends Employee {
     }
 
     public String toString(){
-        return ("ShopAssistant{name=" + getName()  +
-                ", profession=" + getProfession() +
-                ", salary=" + getSalary() +
-                ", attitudeToBoss=" + getAttitudeToBoss().toString() +
-                ", workQuality=" + getWorkQuality() +
-                "}");
+        return ("ShopAssistant," + getName()  +
+                "," + getProfession() +
+                "," + getSalary() +
+                "," + getAttitudeToBoss().toString() +
+                "," + getWorkQuality());
     }
 }

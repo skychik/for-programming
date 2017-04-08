@@ -8,6 +8,7 @@ import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 
 import java.io.IOException;
 import java.lang.*;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -52,12 +53,11 @@ public class Employee extends Character implements Comparable {
 
     @Override
     public String toString() {
-        return ("Employee{name=" + getName()  +
-                ", profession=" + getProfession() +
-                ", salary=" + getSalary() +
-                ", attitudeToBoss=" + getAttitudeToBoss().toString() +
-                ", workQuality=" + getWorkQuality() +
-                "}");
+        return ("Employee," + getName()  +
+                "," + getProfession() +
+                "," + getSalary() +
+                "," + getAttitudeToBoss().toString() +
+                "," + getWorkQuality());
     }
 
     @Override
@@ -153,52 +153,56 @@ public class Employee extends Character implements Comparable {
      * @param line - строка, в которой хранятся данные об объекте
      */
     public static Employee parseEmployee(String line) {
+            try {
+                Scanner sc = new Scanner(line);
 
-        Scanner sc = new Scanner(line);
-        sc.useDelimiter(",");
-        int index;
-        Employee employee;
-        String className = sc.next();
+                sc.useDelimiter(",");
+                int index;
+                Employee employee;
+                String className = sc.next();
 
-        switch (className) {
-            case "FactoryWorker": {
-                FactoryWorker fw = new FactoryWorker();
-                index = fw.stringToEmployee(sc);
-                if (index < 6) {
-                    System.out.println("Заданы не все параметры в строке " + App.getLineNumber());
-                    return null;
+                switch (className) {
+                    case "FactoryWorker": {
+                        FactoryWorker fw = new FactoryWorker();
+                        index = fw.stringToEmployee(sc);
+                        if (index < 6) {
+                            System.out.println("Заданы не все параметры в строке " + App.getLineNumber());
+                            return null;
+                        }
+                        fw.parseFactoryWorker(sc);
+                        employee = fw;
+                        break;
+                    }
+                    case "ShopAssistant": {
+                        ShopAssistant shAs = new ShopAssistant();
+                        index = shAs.stringToEmployee(sc);
+                        if (index < 6 || sc.hasNext()) {
+                            System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
+                            return null;
+                        }
+                        employee = shAs;
+                        break;
+                    }
+                    case "Employee": {
+                        Employee emp = new Employee();
+                        index = emp.stringToEmployee(sc);
+                        if (index < 6 || sc.hasNext()) {
+                            System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
+                            return null;
+                        }
+                        employee = emp;
+                        break;
+                    }
+                    default: {
+                        System.out.println("Приложение не обрабатывает указанный в строке " + App.getLineNumber() + " класс.");
+                        return null;
+                    }
                 }
-                fw.parseFactoryWorker(sc);
-                employee = fw;
-                break;
-            }
-            case "ShopAssistant": {
-                ShopAssistant shAs = new ShopAssistant();
-                index = shAs.stringToEmployee(sc);
-                if (index < 6 || sc.hasNext()) {
-                    System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
-                    return null;
-                }
-                employee = shAs;
-                break;
-            }
-            case "Employee": {
-                Employee emp = new Employee();
-                index = emp.stringToEmployee(sc);
-                if (index < 6 || sc.hasNext()) {
-                    System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
-                    return null;
-                }
-                employee = emp;
-                break;
-            }
-            default: {
-                System.out.println("Приложение не обрабатывает указанный в строке " + App.getLineNumber() + " класс.");
+                return employee;
+            }catch (NoSuchElementException e){
+                System.out.println("Ничего не было считано, т.к. файл пуст.");
                 return null;
             }
-        }
-
-        return employee;
     }
 
     /**
