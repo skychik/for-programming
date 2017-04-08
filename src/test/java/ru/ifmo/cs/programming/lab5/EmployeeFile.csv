@@ -1,0 +1,3 @@
+Employee,name,profession,1000,LOW,45
+ShopAssistant,Katya,shopAssistant,10,LOW,47
+FactoryWorker,Katya,worker,10,LOW,47,[Sausage : 12,  Rise : 10,  Rise : 10]

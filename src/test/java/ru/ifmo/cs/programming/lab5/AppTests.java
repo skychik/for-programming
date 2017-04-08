@@ -4,9 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class AppTests extends App{
 
@@ -37,8 +35,14 @@ public class AppTests extends App{
         //System.out.println(new Scanner(new FileReader(testingDir + "\\input.txt")).next());
         App.main(new String[0]);
 
-        assert new File(testingDir, "EmployeeFile.csv") ==
-                new File(testingDir, "Test" + testNumber + "EmployeeFileOutput.csv");
+        InputStream fileReader1 = new FileInputStream(new File(testingDir, "EmployeeFile.csv"));
+        InputStream fileReader2 = new FileInputStream(new File(testingDir, "Test" + testNumber + "EmployeeFileOutput.csv"));
+
+        //char[] c1 = fileReader1.
+        //int lenght1 = fileReader1.read(c1);
+
+        assert new FileReader(new File(testingDir, "EmployeeFile.csv")).equals(//TODO поправить
+                new FileReader(new File(testingDir, "Test" + testNumber + "EmployeeFileOutput.csv")));
     }
 
     @After

@@ -153,56 +153,59 @@ public class Employee extends Character implements Comparable {
      * @param line - строка, в которой хранятся данные об объекте
      */
     public static Employee parseEmployee(String line) {
-            try {
-                Scanner sc = new Scanner(line);
+        Scanner sc;
+        int index;
+        Employee employee;
+        String className;
 
-                sc.useDelimiter(",");
-                int index;
-                Employee employee;
-                String className = sc.next();
+        try {
+            sc = new Scanner(line);
 
-                switch (className) {
-                    case "FactoryWorker": {
-                        FactoryWorker fw = new FactoryWorker();
-                        index = fw.stringToEmployee(sc);
-                        if (index < 6) {
-                            System.out.println("Заданы не все параметры в строке " + App.getLineNumber());
-                            return null;
-                        }
-                        fw.parseFactoryWorker(sc);
-                        employee = fw;
-                        break;
-                    }
-                    case "ShopAssistant": {
-                        ShopAssistant shAs = new ShopAssistant();
-                        index = shAs.stringToEmployee(sc);
-                        if (index < 6 || sc.hasNext()) {
-                            System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
-                            return null;
-                        }
-                        employee = shAs;
-                        break;
-                    }
-                    case "Employee": {
-                        Employee emp = new Employee();
-                        index = emp.stringToEmployee(sc);
-                        if (index < 6 || sc.hasNext()) {
-                            System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
-                            return null;
-                        }
-                        employee = emp;
-                        break;
-                    }
-                    default: {
-                        System.out.println("Приложение не обрабатывает указанный в строке " + App.getLineNumber() + " класс.");
-                        return null;
-                    }
+            sc.useDelimiter(",");
+            className = sc.next();
+        } catch (NoSuchElementException e){
+            System.out.println("Ничего не было считано, т.к. файл пуст.");
+            return null;
+        }
+
+        switch (className) {
+            case "FactoryWorker": {
+                FactoryWorker fw = new FactoryWorker();
+                index = fw.stringToEmployee(sc);
+                if (index < 6) {
+                    System.out.println("Заданы не все параметры в строке " + App.getLineNumber());
+                    return null;
                 }
-                return employee;
-            }catch (NoSuchElementException e){
-                System.out.println("Ничего не было считано, т.к. файл пуст.");
+                fw.parseFactoryWorker(sc);
+                employee = fw;
+                break;
+            }
+            case "ShopAssistant": {
+                ShopAssistant shAs = new ShopAssistant();
+                index = shAs.stringToEmployee(sc);
+                if (index < 6 || sc.hasNext()) {
+                    System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
+                    return null;
+                }
+                employee = shAs;
+                break;
+            }
+            case "Employee": {
+                Employee emp = new Employee();
+                index = emp.stringToEmployee(sc);
+                if (index < 6 || sc.hasNext()) {
+                    System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
+                    return null;
+                }
+                employee = emp;
+                break;
+            }
+            default: {
+                System.out.println("Приложение не обрабатывает указанный в строке " + App.getLineNumber() + " класс.");
                 return null;
             }
+        }
+        return employee;
     }
 
     /**

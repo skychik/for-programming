@@ -141,14 +141,12 @@ public class InteractiveModeFunctions {
         String line;
 
         try {
-
             reader = new BufferedReader(new FileReader(getFilePath()));
-
         } catch (FileNotFoundException e) {
             System.out.println("Невозможно считать данные из файла по пути: " + getFilePath());
             System.exit(1);
         } catch (NullPointerException e) {
-            System.out.println("Не существует переменной окружения EmployeeFile."); //ToDo??
+            System.out.println("Не существует переменной окружения EmployeeFile.");
             System.exit(1);
         }
 
@@ -177,19 +175,12 @@ public class InteractiveModeFunctions {
      * @author Zhurbova A.E.
      */
     protected static void save(ArrayDeque<Employee> deque){
-
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(getFilePath());
-
+        try (PrintWriter writer = new PrintWriter(getFilePath())) {
             for (Employee employee : deque) {
-                //Запись имени класса + объект
                 writer.println(employee);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Невозможно произвести запись в файл по пути: " + getFilePath());
-        }finally {
-            writer.close();
         }
     }
 

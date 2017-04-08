@@ -27,8 +27,13 @@ public class App extends InteractiveModeFunctions {
 
         //i'm not sure, that the Pattern has to be that big, but it works
         setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile("[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
-        if (getFilePath() == null)
-            setFilePath(new File(System.getenv("EmployeeFile")));
+        try {
+            if (getFilePath() == null)
+                setFilePath(new File(System.getenv("EmployeeFile")));
+        } catch (NullPointerException e) {
+            System.out.println("Не существует переменной окружения EmployeeFile.");
+            System.exit(1);
+        }
 
         //First loading of the deque from our File
         load(deque);
