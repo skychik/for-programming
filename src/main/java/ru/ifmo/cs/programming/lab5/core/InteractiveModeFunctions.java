@@ -166,6 +166,13 @@ public class InteractiveModeFunctions {
         }
 
         show(deque);
+
+        try {
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("Can't close input thread");
+            System.exit(1);
+        }
     }
 
     /**
@@ -175,13 +182,20 @@ public class InteractiveModeFunctions {
      * @author Zhurbova A.E.
      */
     protected static void save(ArrayDeque<Employee> deque){
-        try (PrintWriter writer = new PrintWriter(getFilePath())) {
+        PrintWriter writer = null;
+
+        try {
+            writer = new PrintWriter(getFilePath());
+
             for (Employee employee : deque) {
                 writer.println(employee);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Невозможно произвести запись в файл по пути: " + getFilePath());
+            System.exit(1);
         }
+
+        writer.close();
     }
 
     /**

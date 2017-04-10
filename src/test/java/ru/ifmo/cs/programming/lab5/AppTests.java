@@ -3,12 +3,16 @@ package ru.ifmo.cs.programming.lab5;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.notification.StoppedByUserException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
+
+import static java.lang.Thread.currentThread;
 
 public class AppTests extends App{
 
@@ -35,16 +39,22 @@ public class AppTests extends App{
                 new File(testingDir, "EmployeeFile.csv"));
         App.setFilePath(new File(testingDir, "EmployeeFile.csv"));
 
-        App.main(new String[0]);
 
-        assert compareFilesContent(testingDir + "/EmployeeFile.csv", 
-                testingDir + "/Test" + testNumber + "EmployeeFileOutput.csv");
+        try {
+            App.main(new String[0]);
+            System.out.println("\n!!!Main ended!!!");
+            throw new StoppedByUserException();
+        } catch (StoppedByUserException e) {
+            assert compareFilesContent(testingDir + "/EmployeeFile.csv",
+                    testingDir + "/Test" + testNumber + "EmployeeFileOutput.csv");
+        }
+
     }
 
     @After
-    public void after() {
-        //Files.delete(new File(testingDir, "input.txt").toPath());
-        //Files.delete(new File(testingDir, "EmployeeFile.csv").toPath());
+    public void after() throws IOException {
+        Files.delete(new File(testingDir, "input.txt").toPath());
+        Files.delete(new File(testingDir, "EmployeeFile.csv").toPath());
     }
 
     private boolean compareFilesContent(String  f1, String f2) throws IOException{

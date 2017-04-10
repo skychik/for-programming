@@ -11,6 +11,8 @@ import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Scanner;
@@ -43,6 +45,14 @@ public class App extends InteractiveModeFunctions {
 
         /*This is an interactive mode:*/
         interactiveMode();
+
+        try {
+            inputStreamReader.close();
+
+        } catch (IOException e) {
+            System.out.println("Can't close input stream");
+            System.exit(1);
+        }
     }
 
     private static void interactiveMode() {
