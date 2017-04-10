@@ -184,7 +184,7 @@ public class InteractiveModeFunctions {
      * @author Zhurbova A.E.
      */
     protected static void save(ArrayDeque<Employee> deque){
-        PrintWriter writer = null;
+        PrintWriter writer;
 
         try {
             writer = new PrintWriter(getFilePath());
@@ -192,12 +192,12 @@ public class InteractiveModeFunctions {
             for (Employee employee : deque) {
                 writer.println(employee);
             }
+
+            writer.close();
         } catch (FileNotFoundException e) {
             System.out.println("Невозможно произвести запись в файл по пути: " + getFilePath());
             System.exit(1);
         }
-
-        //writer.close();
     }
 
     /**
