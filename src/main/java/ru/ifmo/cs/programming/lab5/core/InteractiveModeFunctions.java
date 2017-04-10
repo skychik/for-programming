@@ -196,7 +196,6 @@ public class InteractiveModeFunctions {
             writer.close();
         } catch (FileNotFoundException e) {
             System.out.println("Невозможно произвести запись в файл по пути: " + getFilePath());
-            System.exit(1);
         }
     }
 

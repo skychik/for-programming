@@ -41,10 +41,7 @@ public class App extends InteractiveModeFunctions {
         load(deque);
 
         //save deque after every shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Trying to save...");
-            save(deque);
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> save(deque)));
 
         /*This is an interactive mode:*/
         interactiveMode();
