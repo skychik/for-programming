@@ -88,7 +88,18 @@ public class Employee extends Character implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        return this.toString().compareTo(o.toString());
+        Employee employee = (Employee) o;
+        if (!Objects.equals(this.getName(), employee.getName())) {
+            return this.getName().compareTo(employee.getName());
+        } else if (!Objects.equals(this.getProfession(), employee.getProfession())) {
+            return this.getProfession().compareTo(employee.getProfession());
+        } else if (!Objects.equals(this.getSalary(), employee.getSalary())) {
+            return this.getSalary() - employee.getSalary();
+        } else if (!Objects.equals(this.getAttitudeToBoss(), employee.getAttitudeToBoss())) {
+            return this.getAttitudeToBoss().compareTo(employee.getAttitudeToBoss());
+        } else if (!Objects.equals(this.getWorkQuality(), employee.getWorkQuality())) {
+            return this.getWorkQuality() - employee.getWorkQuality();
+        } else return 0;
     }
 
     public int getSalary() {
