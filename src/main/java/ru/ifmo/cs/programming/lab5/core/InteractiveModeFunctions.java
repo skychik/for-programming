@@ -197,7 +197,7 @@ public class InteractiveModeFunctions {
             System.exit(1);
         }
 
-        writer.close();
+        //writer.close();
     }
 
     /**
