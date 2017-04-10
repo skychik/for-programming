@@ -89,13 +89,13 @@ public class App extends InteractiveModeFunctions {
                 case "save":
                     new Thread(()->save(deque)).run();
                     try {
-                        Thread.currentThread().join(500);
+                        Thread.currentThread().sleep(500);//TODO what for
                     } catch (InterruptedException ignored) {}
                     break;
                 case "load":
                     new Thread(()->load(deque)).run();
                     try {
-                        Thread.currentThread().join(500);
+                        Thread.currentThread().sleep(500);
                     } catch (InterruptedException ignored) {}
                     break;
                 case "show":
