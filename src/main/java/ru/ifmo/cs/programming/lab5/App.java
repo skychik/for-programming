@@ -87,16 +87,18 @@ public class App extends InteractiveModeFunctions {
                     remove_all(deque);
                     break;
                 case "save":
-                    new Thread(()->save(deque)).run();
+                    /*new Thread(()->save(deque)).run();
                     try {
                         Thread.currentThread().sleep(500);//TODO what for
-                    } catch (InterruptedException ignored) {}
+                    } catch (InterruptedException ignored) {}*/
+                    save(deque);
                     break;
                 case "load":
-                    new Thread(()->load(deque)).run();
+                    /*new Thread(()->load(deque)).run();
                     try {
                         Thread.currentThread().sleep(500);
-                    } catch (InterruptedException ignored) {}
+                    } catch (InterruptedException ignored) {}*/
+                    load(deque);
                     break;
                 case "show":
                     show(deque);
