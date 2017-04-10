@@ -56,6 +56,8 @@ public class InteractiveModeFunctions {
         }
 
         deque.add(employee);
+
+        System.out.println("добавлено");
     }
 
     /**
