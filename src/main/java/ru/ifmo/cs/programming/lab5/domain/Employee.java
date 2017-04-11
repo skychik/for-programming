@@ -15,9 +15,7 @@ import java.util.Scanner;
 public class Employee extends Character implements Comparable {
 
     private int salary = 0;
-
     private AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
-
     private byte workQuality = 0;
 
     public Employee(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {

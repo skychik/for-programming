@@ -14,8 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class App extends InteractiveModeFunctions {
@@ -24,6 +24,18 @@ public class App extends InteractiveModeFunctions {
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
+    //comparators for Employee collection
+    private static Comparator<Employee> NAME_ORDER = (o1, o2) ->
+            !Objects.equals(o1.getName(), o2.getName()) ? o1.getName().compareTo(o2.getName()) : 0;
+    private static Comparator<Employee> PROFESSION_ORDER = (o1, o2) ->
+            !Objects.equals(o1.getProfession(), o2.getProfession()) ? o1.getProfession().compareTo(o2.getProfession()) : 0;
+    private static Comparator<Employee> SALARY_ORDER = (o1, o2) ->
+            !Objects.equals(o1.getSalary(), o2.getSalary()) ? o1.getSalary() - o2.getSalary() : 0;
+    private static Comparator<Employee> ATTITUDE_TO_BOSS_ORDER = (o1, o2) ->
+            !Objects.equals(o1.getAttitudeToBoss(), o2.getAttitudeToBoss()) ? o1.getAttitudeToBoss().compareTo(o2.getAttitudeToBoss()) : 0;
+    private static Comparator<Employee> WORK_QUALITY_ORDER = (o1, o2) ->
+            !Objects.equals(o1.getWorkQuality(), o2.getWorkQuality()) ? o1.getWorkQuality() - o2.getWorkQuality() : 0;
+
 
     public static void main(String[] args) {
 
@@ -114,5 +126,46 @@ public class App extends InteractiveModeFunctions {
     static void setInputStreamReader(InputStreamReader inputStreamReader) {
         App.inputStreamReader = inputStreamReader;
     }
+
+    /*static void sortDequeByName(ArrayDeque<Employee> deque) {
+        Collections.sort(deque, new EmployeeComparatorByName());
+    }
+
+    static class EmployeeComparatorByName implements Comparator<Employee> {
+        @Override
+        public int compare(Employee e1, Employee e2) {
+            if (!Objects.equals(e1.getName(), e2.getName())) {
+                return e1.getName().compareTo(e2.getName());
+            } else return 0;
+        }
+    }
+
+    class compareToByProfession(Object o) {
+        Employee employee = (Employee) o;
+        if (!Objects.equals(this.getProfession(), employee.getProfession())) {
+            return this.getProfession().compareTo(employee.getProfession());
+        } else return 0;
+    }
+
+    class compareToBySalary(Object o) {
+        Employee employee = (Employee) o;
+        if (!Objects.equals(this.getSalary(), employee.getSalary())) {
+            return this.getSalary() - employee.getSalary();
+        } else return 0;
+    }
+
+    class compareToByAttitudeToBoss(Object o) {
+        Employee employee = (Employee) o;
+        if (!Objects.equals(this.getAttitudeToBoss(), employee.getAttitudeToBoss())) {
+            return this.getAttitudeToBoss().compareTo(employee.getAttitudeToBoss());
+        } else return 0;
+    }
+
+    class compareToByWorkQuality(Object o) {
+        Employee employee = (Employee) o;
+        if (!Objects.equals(this.getWorkQuality(), employee.getWorkQuality())) {
+            return this.getWorkQuality() - employee.getWorkQuality();
+        } else return 0;
+    }*/
 }
 

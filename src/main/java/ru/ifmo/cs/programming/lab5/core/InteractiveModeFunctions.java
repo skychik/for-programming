@@ -3,9 +3,6 @@ package ru.ifmo.cs.programming.lab5.core;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 
@@ -16,7 +13,7 @@ import java.util.Scanner;
 
 import static ru.ifmo.cs.programming.lab5.domain.Employee.parseEmployee;
 
-public class InteractiveModeFunctions {
+public abstract class InteractiveModeFunctions {
 
     /*файл, который хранит deque*/
     private static File filePath = null;
@@ -102,7 +99,7 @@ public class InteractiveModeFunctions {
         obj = jsonObject(scanner);
         if (obj == null) return;//if incorrect input (more closing brackets than opening)
         //System.out.println(obj);
-        Employee emp = gson.fromJson(obj, FactoryWorker.class);
+        employee = gson.fromJson(obj, FactoryWorker.class);
         //ArrayDeque<Employee> arrayDeque = new ArrayDeque<>();
         //arrayDeque.add(new FactoryWorker("Pasha", "programmer", 18, NORMAL, (byte) 21));
 
@@ -183,7 +180,7 @@ public class InteractiveModeFunctions {
      * @param deque - коллекция, из которой считываются данные
      * @author Zhurbova A.E.
      */
-    protected static void save(ArrayDeque<Employee> deque){
+    protected static void save(ArrayDeque<Employee> deque) {
         PrintWriter writer;
 
         try {
