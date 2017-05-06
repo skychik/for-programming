@@ -1,15 +1,7 @@
 package ru.ifmo.cs.programming.lab6;
 
-import com.sun.awt.AWTUtilities;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class MainFrame extends JFrame{
 
@@ -25,10 +17,12 @@ public class MainFrame extends JFrame{
     private JComboBox professionComboBox;
     private String fontName = "Gill Sans MT EXT Condensed";
     private Background background;
+    private Dimension size;
 
     //private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
 
     MainFrame() {
+
         super("MainFrame");
 
         UIManager.put("TabbedPane.contentOpaque", Boolean.FALSE);
@@ -48,6 +42,10 @@ public class MainFrame extends JFrame{
 
     private void setMainPanel() {
         mainPanel = new JPanel();
+
+        size = new Dimension(1100, 700);//TODO: ?
+        setPreferredSize(size);
+
         mainPanel.setBackground(new Color(-9408400)); //ToDo нужен ли? Стоит же картинка
         LayoutManager overlay = new OverlayLayout(mainPanel);
         mainPanel.setLayout(overlay);
@@ -129,6 +127,11 @@ public class MainFrame extends JFrame{
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         this.setJMenuBar(menuBar);
+    }
+
+    @Override
+    public Dimension getSize() {
+        return size;
     }
 
     /**
