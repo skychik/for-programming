@@ -18,6 +18,7 @@ public class Background extends JPanel {
 //        setMinimumSize(size);//TODO: ?
 //        setMaximumSize(new Dimension(1200, 1200));//TODO: ?
 //        setSize(size);
+        setLayout(null);
     }
 
     /*public void setSize(JFrame frame){
@@ -28,7 +29,6 @@ public class Background extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         // Draw the background image.
         g.drawImage(img, 0, 0, null);
     }

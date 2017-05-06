@@ -1,6 +1,5 @@
 package ru.ifmo.cs.programming.lab6;
 
-import com.intellij.uiDesigner.core.GridConstraints;
 import com.sun.awt.AWTUtilities;
 
 import javax.imageio.ImageIO;
