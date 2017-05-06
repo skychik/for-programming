@@ -1,5 +1,6 @@
 package ru.ifmo.cs.programming.lab6;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,19 +13,24 @@ public class Background extends JPanel {
 
     public Background(Image img) {
         this.img = img;
-        Dimension size = new Dimension(950, 800);
+        Dimension size = new Dimension(950, 800);//TODO: ?
         setPreferredSize(size);
-        setMinimumSize(size);
-        setMaximumSize(new Dimension(1200, 1200));
+        setMinimumSize(size);//TODO: ?
+        setMaximumSize(new Dimension(1200, 1200));//TODO: ?
         setSize(size);
         setLayout(null);
     }
 
-    public void setSize(JFrame frame){
+    /*public void setSize(JFrame frame){
         setPreferredSize(new Dimension(frame.getWidth(), frame.getHeight()));
-    }
+    }*/
 
+    // TODO: сделать стандартную иконку, если нет изображения по указанному адресу
+    @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // Draw the background image.
         g.drawImage(img, 0, 0, null);
     }
 }

@@ -1,9 +1,13 @@
 package ru.ifmo.cs.programming.lab6;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class MainFrame extends JFrame{
 
@@ -17,12 +21,30 @@ public class MainFrame extends JFrame{
     private JTextArea textArea;
     private JTextField nameTextField;
     private JComboBox professionComboBox;
+    //private Background background;
+
+    private static String currentDir = System.getProperty("user.dir") + "/src/test/java/ru/ifmo/cs/programming/lab6";
 
     MainFrame() {
         super("MainFrame");
 
+        UIManager.put("TabbedPane.contentOpaque", Boolean.FALSE);
+        UIManager.put("TabbedPane.tabsOpaque", Boolean.FALSE);
+
         setMainPanel();
         setContentPane(getMainPanel());
+
+        setMainPanel();
+
+        //background = new Background("background.jpg");
+        JLabel background = new JLabel();
+        try {
+            BufferedImage myPicture = ImageIO.read(getClass().getResource("/resources/images/background.png"));
+            background = new JLabel(new ImageIcon(myPicture));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        getContentPane().add(background/*, new GridConstraints()*/);
 
         //setIconImage();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -31,11 +53,45 @@ public class MainFrame extends JFrame{
 
     private void setMainPanel() {
         mainPanel = new JPanel();
-        mainPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(15, 15, 15, 15), -1, -1));
         mainPanel.setBackground(new Color(-9408400));
-        tabbedPane = new JTabbedPane();
-        mainPanel.add(tabbedPane, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
+        LayoutManager overlay = new OverlayLayout(mainPanel);
+        mainPanel.setLayout(overlay);
+        setTabbedPane();
+    }
 
+    private void setTabbedPane() {
+        tabbedPane = new JTabbedPane();
+
+        final JPanel tab1 = new JPanel();
+        setTab1();
+        final JPanel tab2 = new JPanel();
+        setTab2();
+        tabbedPane.addTab("Show", tab1);
+        tabbedPane.addTab("Commands", tab2);
+
+        mainPanel.add(
+                tabbedPane,
+                new com.intellij.uiDesigner.core.GridConstraints(
+                        0, 0, 1, 1,
+                        com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER,
+                        com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH,
+                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
+                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
+                        null,
+                        new Dimension(200, 200),
+                        null,
+                        0,
+                        false
+                )
+        );
+    }
+
+    private void setTab1() {
+    }
+
+    private void setTab2() {
     }
 
     private void setMenu() {
@@ -79,11 +135,7 @@ public class MainFrame extends JFrame{
         exitItem.setFont(font);
         fileMenu.add(exitItem);
 
-        exitItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        exitItem.addActionListener(e -> System.exit(0));
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
