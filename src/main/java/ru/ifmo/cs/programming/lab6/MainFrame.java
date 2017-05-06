@@ -1,5 +1,6 @@
 package ru.ifmo.cs.programming.lab6;
 
+import com.intellij.uiDesigner.core.GridConstraints;
 import com.sun.awt.AWTUtilities;
 
 import javax.imageio.ImageIO;
@@ -23,10 +24,10 @@ public class MainFrame extends JFrame{
     private JTextArea textArea;
     private JTextField nameTextField;
     private JComboBox professionComboBox;
-    private String fontName = "Gill Sans MT Condensed";
-    //private Background background;
+    private String fontName = "Gill Sans MT EXT Condensed";
+    private Background background;
 
-    private static String currentDir = System.getProperty("user.dir") + "\\src\\resources\\images\\background.png";
+    //private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
 
     MainFrame() {
         super("MainFrame");
@@ -39,9 +40,8 @@ public class MainFrame extends JFrame{
 
         setMainPanel();
 
-        Background background = new Background(new ImageIcon(currentDir).getImage());
-//        JLabel background = new JLabel(new ImageIcon(currentDir));
-        getContentPane().add(background/*, new GridConstraints()*/); //What??
+        background = new Background(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\background.png").getImage());
+        getContentPane().add(background); //What??
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMenu();
@@ -71,7 +71,7 @@ public class MainFrame extends JFrame{
         tab2.setOpaque(false);
 
         //Шрифт
-        tabbedPane.setFont(new Font("Gill Sans MT Condensed", Font.PLAIN, 20));
+        tabbedPane.setFont(new Font(fontName, Font.PLAIN, 20));
         tabbedPane.setForeground(new Color(152, 156, 153));
 
         mainPanel.add(
