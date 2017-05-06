@@ -2,11 +2,14 @@ package ru.ifmo.cs.programming.lab6;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class MainFrame extends JFrame{
 
     private JPanel mainPanel;
     private JTabbedPane tabbedPane;
+    private JPanel tab1;
+    private JPanel tab2;
     private JTree tree;
     private JTable table;
     private JTextField searchField;
@@ -22,50 +25,43 @@ public class MainFrame extends JFrame{
     //private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
 
     MainFrame() {
-
         super("MainFrame");
 
         UIManager.put("TabbedPane.contentOpaque", Boolean.FALSE);
         UIManager.put("TabbedPane.tabsOpaque", Boolean.FALSE);
 
         setMainPanel();
-        setContentPane(getMainPanel());
+        setContentPane(mainPanel);
 
-        setMainPanel();
-
-        background = new Background(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\background.png").getImage());
-        getContentPane().add(background); //What??
+        setBackground();
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
         setMenu();
     }
 
     private void setMainPanel() {
         mainPanel = new JPanel();
 
-        size = new Dimension(1100, 700);//TODO: ?
+        size = new Dimension(1100, 700);
         setPreferredSize(size);
 
         mainPanel.setBackground(new Color(-9408400)); //ToDo нужен ли? Стоит же картинка
+
         LayoutManager overlay = new OverlayLayout(mainPanel);
         mainPanel.setLayout(overlay);
+
         setTabbedPane();
     }
 
     private void setTabbedPane() {
         tabbedPane = new JTabbedPane();
 
-        final JPanel tab1 = new JPanel();
         setTab1();
-        final JPanel tab2 = new JPanel();
         setTab2();
-        tabbedPane.addTab("Show", tab1);
-        tabbedPane.addTab("Commands", tab2);
 
         //Прозрачность фона вкладок
         tabbedPane.setOpaque(false);
-        tab1.setOpaque(false);
-        tab2.setOpaque(false);
 
         //Шрифт
         tabbedPane.setFont(new Font(fontName, Font.PLAIN, 20));
@@ -89,12 +85,30 @@ public class MainFrame extends JFrame{
                 )
 
         );
+
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);//при маленьком окне табы в линию, а не друг под другом
     }
 
     private void setTab1() {
+        tab1 = new JPanel();
+
+        tabbedPane.addTab("Show", tab1);
+        tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+        tab1.setOpaque(false);
     }
 
     private void setTab2() {
+        tab2 = new JPanel();
+
+        tabbedPane.addTab("Commands", tab2);
+        tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
+        tab2.setOpaque(false);
+    }
+
+    private void setBackground() {
+        background = new Background(new ImageIcon(
+                System.getProperty("user.dir") + "\\src\\resources\\images\\background.png").getImage());
+        getContentPane().add(background);
     }
 
     private void setMenu() {
@@ -210,10 +224,6 @@ public class MainFrame extends JFrame{
      * @noinspection ALL
      */
     public JComponent $$$getRootComponent$$$() {
-        return mainPanel;
-    }
-
-    public JPanel getMainPanel() {
         return mainPanel;
     }
 }
