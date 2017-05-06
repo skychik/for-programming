@@ -25,7 +25,6 @@ public class Background extends JPanel {
         setPreferredSize(new Dimension(frame.getWidth(), frame.getHeight()));
     }*/
 
-    // TODO: сделать стандартную иконку, если нет изображения по указанному адресу
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

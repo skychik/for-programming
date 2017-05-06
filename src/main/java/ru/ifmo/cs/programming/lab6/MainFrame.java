@@ -1,5 +1,7 @@
 package ru.ifmo.cs.programming.lab6;
 
+import com.sun.awt.AWTUtilities;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +23,10 @@ public class MainFrame extends JFrame{
     private JTextArea textArea;
     private JTextField nameTextField;
     private JComboBox professionComboBox;
+    private String fontName = "Gill Sans MT Condensed";
     //private Background background;
 
-    private static String currentDir = System.getProperty("user.dir") + "/src/test/java/ru/ifmo/cs/programming/lab6";
+    private static String currentDir = System.getProperty("user.dir") + "\\src\\resources\\images\\background.png";
 
     MainFrame() {
         super("MainFrame");
@@ -36,24 +39,16 @@ public class MainFrame extends JFrame{
 
         setMainPanel();
 
-        //background = new Background("background.jpg");
-        JLabel background = new JLabel();
-        try {
-            BufferedImage myPicture = ImageIO.read(getClass().getResource("/resources/images/background.png"));
-            background = new JLabel(new ImageIcon(myPicture));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        getContentPane().add(background/*, new GridConstraints()*/);
+        JLabel background = new JLabel(new ImageIcon(currentDir));
+        getContentPane().add(background/*, new GridConstraints()*/); //What??
 
-        //setIconImage();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMenu();
     }
 
     private void setMainPanel() {
         mainPanel = new JPanel();
-        mainPanel.setBackground(new Color(-9408400));
+        mainPanel.setBackground(new Color(-9408400)); //ToDo нужен ли? Стоит же картинка
         LayoutManager overlay = new OverlayLayout(mainPanel);
         mainPanel.setLayout(overlay);
         setTabbedPane();
@@ -68,6 +63,15 @@ public class MainFrame extends JFrame{
         setTab2();
         tabbedPane.addTab("Show", tab1);
         tabbedPane.addTab("Commands", tab2);
+
+        //Прозрачность фона вкладок
+        tabbedPane.setOpaque(false);
+        tab1.setOpaque(false);
+        tab2.setOpaque(false);
+
+        //Шрифт
+        tabbedPane.setFont(new Font("Gill Sans MT Condensed", Font.PLAIN, 20));
+        tabbedPane.setForeground(new Color(152, 156, 153));
 
         mainPanel.add(
                 tabbedPane,
@@ -85,6 +89,7 @@ public class MainFrame extends JFrame{
                         0,
                         false
                 )
+
         );
     }
 
@@ -97,45 +102,29 @@ public class MainFrame extends JFrame{
     private void setMenu() {
         JMenu fileMenu = new JMenu("File");
 
-        Font font = new Font("Verdana", Font.PLAIN, 11);
+        Font font = new Font(fontName, Font.PLAIN, 18);
 
         fileMenu.setFont(font);
 
-        JMenu newMenu = new JMenu("New");
+        JMenu newMenu = new JMenu("Settings");
         newMenu.setFont(font);
         fileMenu.add(newMenu);
 
-        JMenuItem txtFileItem = new JMenuItem("Text file");
+        JMenuItem txtFileItem = new JMenuItem("Button color");
         txtFileItem.setFont(font);
         newMenu.add(txtFileItem);
 
-        JMenuItem imgFileItem = new JMenuItem("Image file");
+        JMenuItem imgFileItem = new JMenuItem("Font color");
         imgFileItem.setFont(font);
         newMenu.add(imgFileItem);
 
-        JMenuItem folderItem = new JMenuItem("Folder");
-        folderItem.setFont(font);
-        newMenu.add(folderItem);
-
-        JMenuItem openItem = new JMenuItem("Open");
-        openItem.setFont(font);
-        fileMenu.add(openItem);
-
-        JMenuItem closeItem = new JMenuItem("Close");
-        closeItem.setFont(font);
-        fileMenu.add(closeItem);
-
-        JMenuItem closeAllItem = new JMenuItem("Close all");
-        closeAllItem.setFont(font);
-        fileMenu.add(closeAllItem);
-
         fileMenu.addSeparator();
 
-        JMenuItem exitItem = new JMenuItem("Exit");
-        exitItem.setFont(font);
-        fileMenu.add(exitItem);
+        JMenuItem saveItem = new JMenuItem("Save");
+        saveItem.setFont(font);
+        fileMenu.add(saveItem);
 
-        exitItem.addActionListener(e -> System.exit(0));
+//        saveItem.addActionListener ToDO: сделать сохранение по кнопке save и для остальных
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
