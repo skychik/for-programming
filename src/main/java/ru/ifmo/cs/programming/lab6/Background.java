@@ -13,12 +13,11 @@ public class Background extends JPanel {
 
     public Background(Image img) {
         this.img = img;
-        Dimension size = new Dimension(950, 800);//TODO: ?
+        Dimension size = new Dimension(1100, 700);//TODO: ?
         setPreferredSize(size);
-        setMinimumSize(size);//TODO: ?
-        setMaximumSize(new Dimension(1200, 1200));//TODO: ?
-        setSize(size);
-        setLayout(null);
+//        setMinimumSize(size);//TODO: ?
+//        setMaximumSize(new Dimension(1200, 1200));//TODO: ?
+//        setSize(size);
     }
 
     /*public void setSize(JFrame frame){

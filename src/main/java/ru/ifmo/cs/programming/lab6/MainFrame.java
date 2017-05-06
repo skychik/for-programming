@@ -39,7 +39,8 @@ public class MainFrame extends JFrame{
 
         setMainPanel();
 
-        JLabel background = new JLabel(new ImageIcon(currentDir));
+        Background background = new Background(new ImageIcon(currentDir).getImage());
+//        JLabel background = new JLabel(new ImageIcon(currentDir));
         getContentPane().add(background/*, new GridConstraints()*/); //What??
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
