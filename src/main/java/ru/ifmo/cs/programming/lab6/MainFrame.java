@@ -23,7 +23,7 @@ public class MainFrame extends JFrame{
     private JTextArea textArea;
     private JTextField nameTextField;
     private JComboBox professionComboBox;
-    private String fontName = "Gill Sans MT Condensed";
+    private String fontName = "Gill Sans MTe";
     //private Background background;
 
     private static String currentDir = System.getProperty("user.dir") + "\\src\\resources\\images\\background.png";
@@ -49,7 +49,7 @@ public class MainFrame extends JFrame{
 
     private void setMainPanel() {
         mainPanel = new JPanel();
-        mainPanel.setBackground(new Color(-9408400)); //ToDo нужен ли? Стоит же картинка
+        mainPanel.setBackground(new Color(-9408400));
         LayoutManager overlay = new OverlayLayout(mainPanel);
         mainPanel.setLayout(overlay);
         setTabbedPane();
