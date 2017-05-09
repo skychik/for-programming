@@ -39,7 +39,7 @@ public class App extends InteractiveModeFunctions {
 
     public static void main(String[] args) {
 
-        //i'm not sure, that the Pattern has to be that big, but it works
+        //i'm not sure, that Pattern has to be that big, but it works
         setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile("[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
         try {
             if (getFilePath() == null)

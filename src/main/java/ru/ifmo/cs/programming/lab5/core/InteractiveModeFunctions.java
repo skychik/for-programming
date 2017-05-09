@@ -134,7 +134,11 @@ public abstract class InteractiveModeFunctions {
      * @param deque - коллекция, в которую происходит запись
      * @author Zhurbova A.E.
      */
-    protected static void load(ArrayDeque<Employee> deque) {
+
+    public static void delete_all(ArrayDeque<Employee> deque) {
+        deque = new ArrayDeque<Employee>();
+    }
+    public static void load(ArrayDeque<Employee> deque) {
 
         BufferedReader reader = null;
         String line;
@@ -180,7 +184,7 @@ public abstract class InteractiveModeFunctions {
      * @param deque - коллекция, из которой считываются данные
      * @author Zhurbova A.E.
      */
-    protected static void save(ArrayDeque<Employee> deque) {
+    public static void save(ArrayDeque<Employee> deque) {
         PrintWriter writer;
 
         try {
@@ -202,7 +206,7 @@ public abstract class InteractiveModeFunctions {
      * @param deque Current deque
      */
     protected static void show(ArrayDeque<Employee> deque) {
-        System.out.println("Current employees now are the same with the file:\n");
+        System.out.println("Current employees now are(might be not saved):\n");
         if (!deque.isEmpty()) {
             for (Employee employee : deque) {
                 System.out.println(employee);
@@ -273,9 +277,9 @@ public abstract class InteractiveModeFunctions {
         }
     }
 
-    protected static void setFilePath(File filePath) {InteractiveModeFunctions.filePath = filePath;}
+    public static void setFilePath(File filePath) {InteractiveModeFunctions.filePath = filePath;}
 
-    protected static File getFilePath() { return filePath; }
+    public static File getFilePath() { return filePath; }
 
     /**
      * Метод, осуществляющий увеличение на единицу номера считываемой строки
@@ -299,7 +303,7 @@ public abstract class InteractiveModeFunctions {
         return scanner;
     }
 
-    protected static void setScanner(Scanner scanner) {
+    public static void setScanner(Scanner scanner) {
         InteractiveModeFunctions.scanner = scanner;
     }
 }
