@@ -138,6 +138,7 @@ public abstract class InteractiveModeFunctions {
     public static void delete_all(ArrayDeque<Employee> deque) {
         deque = new ArrayDeque<Employee>();
     }
+
     public static void load(ArrayDeque<Employee> deque) {
 
         BufferedReader reader = null;

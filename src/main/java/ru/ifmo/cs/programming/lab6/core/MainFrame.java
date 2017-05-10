@@ -7,6 +7,8 @@ import ru.ifmo.cs.programming.lab6.App;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayDeque;
@@ -33,6 +35,7 @@ public class MainFrame extends JFrame{
     private Background background;
     private Dimension size;
     private ArrayDeque<Employee> deque;
+    private Color defColor = new Color(152, 156, 153, 32);
 
     private static String fontName = "Gill Sans MT Bold Condensed";
     private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
@@ -200,7 +203,12 @@ public class MainFrame extends JFrame{
     private void makeTree(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
         tree = new JTree();
 
-        tree.setOpaque(false);
+        //tree.putClientProperty();
+        //UIManager.put("Tree.textForeground", Color.WHITE);
+        //UIManager.put("Tree.textBackground", Color.WHITE);
+
+        //tree.setOpaque(false);
+        tree.setBackground(defColor);
 
         //
 
@@ -208,11 +216,13 @@ public class MainFrame extends JFrame{
     }
 
     private void makeScrollTable(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
-        table = new JTable(new MyTableModel(deque));
-        //table.setBackground(new Color(0, 0, 0, 0));
+        table = new MyTable(new MyTableModel(deque));
+        table.setBackground(defColor);
 
         JScrollPane scrollPane = new JScrollPane(table);
         //scrollPane.setOpaque(false);
+
+        table.getModel().addTableModelListener(table);
 
         tableTab.add(scrollPane, constraints);
     }
@@ -264,7 +274,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeRemoveAllButton(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
-        removeAllButton = new JButton("Remove all");
+        removeAllButton = new StandartButton("Remove all");
 
         //removeAllButton.setBorderPainted(false);
         removeAllButton.setBackground(new Color(152, 156, 153, 32));
@@ -280,7 +290,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeSaveButton(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
-        saveButton = new JButton("Save");
+        saveButton = new StandartButton("Save");
 
         //saveButton.setForeground(Color.BLACK);
         saveButton.setBackground(new Color(152, 156, 153, 32));

@@ -8,14 +8,12 @@ import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by admin on 09.05.2017.
- */
 public class MyTableModel implements TableModel {
     private Set<TableModelListener> listeners = new HashSet<>();
     private ArrayDeque<Employee> deque;
 
     public MyTableModel(ArrayDeque<Employee> deque) {
+        super();
         this.deque = deque;
     }
 

@@ -27,6 +27,6 @@ public class Background extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         // Draw the background image.
-        g.drawImage(img, 0, 0, null);
+        g.drawImage(img/*.getScaledInstance(1000, 1000, Image.SCALE_DEFAULT)*/, 0, 0, null);
     }
 }
