@@ -210,7 +210,7 @@ public class MainFrame extends JFrame{
 
     private void makeScrollTable(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
         table = new JTable(new MyTableModel(deque));
-        //table.setOpaque(false);
+        //table.setBackground(new Color(0, 0, 0, 0));
 
         JScrollPane scrollPane = new JScrollPane(table);
         //scrollPane.setOpaque(false);
