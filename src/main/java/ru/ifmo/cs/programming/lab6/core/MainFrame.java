@@ -4,7 +4,6 @@ import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.*;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab6.App;
-import ru.ifmo.cs.programming.lab6.MyTableModel;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -320,7 +319,6 @@ public class MainFrame extends JFrame{
         String avatarPath = System.getProperty("user.dir") + "\\src\\resources\\images\\standartAvatar.jpg";
         JButton avatar = new JButton(new ImageIcon(avatarPath));
         avatar.setBorder(null);
-//            tab1.add(avatar);
 
         //Многострочная область ввода
         JTextArea notes = new JTextArea("Здесь можно вводить заметки", 15,50);
@@ -339,13 +337,9 @@ public class MainFrame extends JFrame{
         //Прозрачность
         scrollNotes.setOpaque(false);
         scrollNotes.getViewport().setOpaque(false);
-        //Добавление элемента
-//            tab1.add(scrollNotes);
 
         //Кнопка Remove
-        //StandartButton remove = new StandartButton("Remove");
-        Button remove = new Button("Remove");
-//            tab1.add(remove);
+        StandartButton remove = new StandartButton("Remove");
 
         //Кнопка ok
         JButton ok = new JButton(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\button_ok.png"));
@@ -356,8 +350,6 @@ public class MainFrame extends JFrame{
         ok.setSelectedIcon(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\button_ok_1.png"));
         //Прозрачность фона
         ok.setBackground(opaqueColor);
-        //Добавление элемента
-//            tab1.add(ok);
 
         //Поле ввода имени
         JTextField nameField = new JTextField("Name");
@@ -370,8 +362,6 @@ public class MainFrame extends JFrame{
         //Шрифт
         nameField.setFont(font);
         nameField.setForeground(foregroundColor);
-        //Добавление элемента
-//            tab1.add(nameField);
 
         //Выбор класса
         String[] classType = {"Employee", "FactoryWorker", "ShopAssistant"};
@@ -382,12 +372,10 @@ public class MainFrame extends JFrame{
         classList.setFont(new Font(fontName, Font.PLAIN, 19));
         classList.setForeground(foregroundColor);
         //Цвета
-        classList.setBackground(Color.BLACK);
+        classList.setBackground(Color.WHITE);
         classList.setSelectionBackground(new Color(54, 151, 175));
         //Границы
         classList.setBorder(lineBorder);
-        //Добавление элемента
-//            tab1.add(classList);
 
         //Выбор профессии
         String[] prof = {"ShopAssistant", "Economist", "Worker"};
@@ -395,7 +383,7 @@ public class MainFrame extends JFrame{
 //            profession.setBackground(opaqueColor);
         profession.setForeground(foregroundColor);
         profession.setFont(font);
-//            tab1.add(profession);
+        profession.setPreferredSize(new Dimension(500, 30));
 
         //Зарплата
         JSlider salary = new JSlider(JSlider.HORIZONTAL, 10000, 50000, 20000);
@@ -413,12 +401,10 @@ public class MainFrame extends JFrame{
         //Шрифт
         salary.setFont(font);
         salary.setForeground(foregroundColor);
-        //Добавление элемента
-//            tab1.add(salary);
 
         //Отношение к боссу
         JPanel panelRadio = new JPanel(new GridLayout(0, 5, 0, 0));
-        panelRadio.setBorder(BorderFactory.createTitledBorder(new LineBorder(Color.BLACK),"Attitude to Boss",1,1,new Font(fontName, Font.PLAIN, 12),foregroundColor));
+        //panelRadio.setBorder(BorderFactory.createTitledBorder(new LineBorder(Color.BLACK),"Attitude to Boss",1,1,new Font(fontName, Font.PLAIN, 12),foregroundColor));
         panelRadio.setPreferredSize(new Dimension(400,50));
         String[] names1 = { "HATE", "LOW", "DEFAULT", "NORMAL", "HIGH"};
         ButtonGroup bg = new ButtonGroup();
@@ -435,13 +421,12 @@ public class MainFrame extends JFrame{
             bg.add(radio);
         }
         panelRadio.setOpaque(false);
-//            tab1.add(panelRadio);
+        panelRadio.setPreferredSize(new Dimension(500, 50));
 
         //Работоспособность
         SpinnerNumberModel numberModel = new SpinnerNumberModel(0,-127,128,5);
         JSpinner workQuality = new JSpinner(numberModel);
-        workQuality.setPreferredSize(new Dimension(300,30));
-//            tab1.add(workQuality);
+        workQuality.setPreferredSize(new Dimension(500,30));
 
         JPanel panel1 = new JPanel();
         panel1.add(avatar);
@@ -456,14 +441,28 @@ public class MainFrame extends JFrame{
         tab1.add(panel2);
 
         JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayout(8,0,10,10));
+        GridBagLayout gridBag = new GridBagLayout();
+        panel3.setLayout(gridBag);
+        GridBagConstraints constraints = new GridBagConstraints();
         panel3.setOpaque(false);
-        panel3.add(nameField);
-        panel3.add(classList);
-        panel3.add(profession);
-        panel3.add(salary);
-        panel3.add(workQuality);
-        panel3.add(panelRadio);
+        constraints.gridy = 0;
+        constraints.gridx = 2;
+        panel3.add(nameField, constraints);
+        constraints.gridy = 1;
+        constraints.gridx = 2;
+        panel3.add(classList, constraints);
+        constraints.gridy = 2;
+        constraints.gridx = 2;
+        panel3.add(panelRadio, constraints);
+        constraints.gridy = 3;
+        constraints.gridx = 2;
+        panel3.add(workQuality, constraints);
+        constraints.gridy = 4;
+        constraints.gridx = 2;
+        panel3.add(profession, constraints);
+        constraints.gridy = 5;
+        constraints.gridx = 2;
+        panel3.add(salary, constraints);
         tab1.add(panel3);
 
         JPanel panel4 = new JPanel();
@@ -477,12 +476,12 @@ public class MainFrame extends JFrame{
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridx = 2;
         panel4.add(remove, gridBagConstraints);
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridx = 2;
         panel4.add(ok, gridBagConstraints);
         tab1.add(panel4);
 
-//        tab1.setLayout(gridLayout);
+        tab1.setLayout(gridLayout);
         tabbedPane.addTab("Commands", tab1);
 
         tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);

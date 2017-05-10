@@ -1,4 +1,4 @@
-package ru.ifmo.cs.programming.lab6;
+package ru.ifmo.cs.programming.lab6.core;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 
