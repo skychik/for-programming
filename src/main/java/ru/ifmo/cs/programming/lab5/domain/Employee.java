@@ -169,8 +169,8 @@ public class Employee extends Character implements Comparable {
 
         try {
             sc = new Scanner(line);
-
             sc.useDelimiter(",");
+
             className = sc.next();
         } catch (NoSuchElementException e){
             System.out.println("Ничего не было считано, т.к. файл пуст.");
@@ -223,61 +223,61 @@ public class Employee extends Character implements Comparable {
      * @param sc - строка, в которой хранятся данные объекта
      */
     protected int stringToEmployee(Scanner sc) {
-                int index = 1;
-                try {
-                    for (; sc.hasNext() && index < 6; index++)
-                    switch (index){
-                        case 1 : {
-                            this.setName(sc.next());
+        int index = 1;
+        try {
+            for (; sc.hasNext() && index < 6; index++)
+            switch (index){
+                case 1 : {
+                    this.setName(sc.next());
+                    break;
+                }
+                case 2 : {
+                    this.setProfession(sc.next());
+                    break;
+                }
+                case 3 : {
+                    this.salary = Integer.parseInt(sc.next());
+                    break;
+                }
+                case 4 : {
+                    switch (sc.next().toUpperCase()) {
+                        case "HATE": {
+                            this.attitudeToBoss = AttitudeToBoss.HATE;
                             break;
                         }
-                        case 2 : {
-                            this.setProfession(sc.next());
+                        case "LOW": {
+                            attitudeToBoss = AttitudeToBoss.LOW;
                             break;
                         }
-                        case 3 : {
-                            this.salary = Integer.parseInt(sc.next());
+                        case "NORMAL": {
+                            attitudeToBoss = AttitudeToBoss.NORMAL;
                             break;
                         }
-                        case 4 : {
-                            switch (sc.next().toUpperCase()) {
-                                case "HATE": {
-                                    this.attitudeToBoss = AttitudeToBoss.HATE;
-                                    break;
-                                }
-                                case "LOW": {
-                                    attitudeToBoss = AttitudeToBoss.LOW;
-                                    break;
-                                }
-                                case "NORMAL": {
-                                    attitudeToBoss = AttitudeToBoss.NORMAL;
-                                    break;
-                                }
-                                case "HIGH": {
-                                    attitudeToBoss = AttitudeToBoss.HIGH;
-                                    break;
-                                }
-                                case "DEFAULT": {
-                                    attitudeToBoss = AttitudeToBoss.DEFAULT;
-                                    break;
-                                }
-                                default: {
-                                    System.out.println("Неверно указано значение в ячейке E" + App.getLineNumber() + ".");
-                                    return 0;
-                                }
-                            }
+                        case "HIGH": {
+                            attitudeToBoss = AttitudeToBoss.HIGH;
                             break;
-                            }
-                        case 5 : {
-                            this.workQuality = Byte.parseByte(sc.next());
+                        }
+                        case "DEFAULT": {
+                            attitudeToBoss = AttitudeToBoss.DEFAULT;
                             break;
+                        }
+                        default: {
+                            System.out.println("Неверно указано значение в ячейке E" + App.getLineNumber() + ".");
+                            return 0;
                         }
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("Исправьте значения в строке " + App.getLineNumber() + ". Столбцы D и F должны содержать числа.");
-                    System.exit(1);
+                    break;
+                    }
+                case 5 : {
+                    this.workQuality = Byte.parseByte(sc.next());
+                    break;
                 }
-                return (index);
             }
+        } catch (NumberFormatException e) {
+            System.out.println("Исправьте значения в строке " + App.getLineNumber() + ". Столбцы D и F должны содержать числа.");
+            System.exit(1);
+        }
+        return index;
+    }
 }
 

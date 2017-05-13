@@ -1,3 +1,5 @@
+//TODO: переместить EmployeeFile.csv в resources/text_files
+
 package ru.ifmo.cs.programming.lab6;
 
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
@@ -21,6 +23,7 @@ public class App {
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
+    public static Color defColor = new Color(152, 156, 153, 32);
 
     public static void main(String... args) {
         //i'm not sure, that Pattern has to be that big, but it works

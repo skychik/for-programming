@@ -35,7 +35,6 @@ public class MainFrame extends JFrame{
     private Background background;
     private Dimension size;
     private ArrayDeque<Employee> deque;
-    private Color defColor = new Color(152, 156, 153, 32);
 
     private static String fontName = "Gill Sans MT Bold Condensed";
     private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
@@ -208,7 +207,7 @@ public class MainFrame extends JFrame{
         //UIManager.put("Tree.textBackground", Color.WHITE);
 
         //tree.setOpaque(false);
-        tree.setBackground(defColor);
+        tree.setBackground(App.defColor);
 
         //
 
@@ -217,7 +216,7 @@ public class MainFrame extends JFrame{
 
     private void makeScrollTable(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
         table = new MyTable(new MyTableModel(deque));
-        table.setBackground(defColor);
+        //table.setBackground(defColor);
 
         JScrollPane scrollPane = new JScrollPane(table);
         //scrollPane.setOpaque(false);
@@ -228,10 +227,11 @@ public class MainFrame extends JFrame{
     }
 
     private void makeSearchField(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
-        searchField = new JTextField("Type something...");
-        searchField.setDisabledTextColor(Color.WHITE);
-        searchField.setSelectedTextColor(Color.WHITE);
-        searchField.setBackground(new Color(152, 156, 153, 32));
+        searchField = new JTextField("Type something...", 1);
+
+        searchField.setForeground(Color.WHITE);
+        searchField.setBackground(App.defColor);
+
         searchField.addFocusListener(new FocusListener() {
             boolean empty = true;
 
@@ -256,8 +256,6 @@ public class MainFrame extends JFrame{
                 }
             }
         });
-
-        //
 
         tableTab.add(searchField, constraints);
     }

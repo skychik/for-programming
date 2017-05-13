@@ -1,6 +1,8 @@
 package ru.ifmo.cs.programming.lab6.core;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab5.utils.Product;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -18,12 +20,20 @@ public class MyTableModel implements TableModel {
     }
 
     public Class<?> getColumnClass(int columnIndex) {
-        return String.class;
-    }
-
-    @Override
-    public int getRowCount() {
-        return 0;
+        switch (columnIndex) {
+            case 0:
+                return String.class;
+            case 1:
+                return String.class;
+            case 2:
+                return Integer.class;
+            case 3:
+                return AttitudeToBoss.class;
+            case 4:
+                return Byte.class;
+            default:
+                return Product.class;
+        }
     }
 
     public int getColumnCount() {
@@ -46,7 +56,7 @@ public class MyTableModel implements TableModel {
         return "";
     }
 
-    public int getRowCount(ArrayDeque<Employee> deque) {
+    public int getRowCount() {
         return deque.size();
     }
 
