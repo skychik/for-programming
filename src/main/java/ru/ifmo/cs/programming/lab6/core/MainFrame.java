@@ -21,7 +21,7 @@ public class MainFrame extends JFrame{
     private JPanel mainPanel;
     private JTabbedPane tabbedPane;
     private JPanel tableTab;
-    private JPanel tab2;
+    private JPanel commandTab;
     private JTree tree;
     private MyTable table;
     private JTextField searchField;
@@ -38,6 +38,12 @@ public class MainFrame extends JFrame{
 
     private static String fontName = "Gill Sans MT Bold Condensed";
     //private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
+
+    private Color foregroundColor = new Color(152, 156, 153);
+    private Color opaqueColor = new Color(0,0,0,0);
+    private Font font = new Font(fontName, Font.ITALIC, 12);
+    private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
+
 
     public MainFrame(ArrayDeque<Employee> deque) {
         super("MainFrame");
@@ -80,7 +86,7 @@ public class MainFrame extends JFrame{
     private void setMainPanel() {
         mainPanel = new JPanel();
 
-        size = new Dimension(1100, 700);
+        size = new Dimension(1100, 710);
         setPreferredSize(size);
 
         LayoutManager overlay = new OverlayLayout(mainPanel);
@@ -96,7 +102,7 @@ public class MainFrame extends JFrame{
         });*/
 
         setTableTab();
-        setTab1();
+        setCommandTab();
 
         //Прозрачность фона вкладок
         //tabbedPane.setOpaque(false);
@@ -319,31 +325,89 @@ public class MainFrame extends JFrame{
         tableTab.add(saveButton, constraints);
     }
 
-    //TODO: слишком много кода в одном месте. Разбить на односложные составляющие
-    //TODO: придумать другое название вкладки
-    //TODO: сделать tab приватным полем в классе
-    private void setTab1() {
-        //Цвета
-        Color foregroundColor = new Color(152, 156, 153);
-        Color opaqueColor = new Color(0,0,0,0);
+    private void setCommandTab() {
 
-        //Шрифты
-        Font font = new Font(fontName, Font.ITALIC, 12);
+        commandTab = new JPanel();
+        commandTab.setOpaque(false);
 
-        //Граница
-        LineBorder lineBorder = new LineBorder(Color.BLACK,2);
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        GridBagConstraints constraints = new GridBagConstraints();
+        commandTab.setLayout(gridBagLayout);
 
-        final JPanel tab1 = new JPanel();
-        tab1.setOpaque(false);
-
-        GridLayout gridLayout = new GridLayout(2, 0);
-
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.insets = new Insets(0, 0,20,0);
         //Кнопка добавления аватара
+        makeAvatarButton(constraints);
+
+        constraints.gridx = GridBagConstraints.RELATIVE;
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        //Прокрутка многострочной области ввода
+        makeScrollTextArea(constraints);
+
+        constraints.insets = new Insets(0, 0,0,0);
+        constraints.weightx = 0;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        //Поле ввода имени
+        makeNameField(constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = GridBagConstraints.RELATIVE;
+        //Выбор класса
+        makeClassTypeChooser(constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = GridBagConstraints.RELATIVE;
+        //Выбор профессии
+        makeProfessionComboBox(constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = GridBagConstraints.RELATIVE;
+        //Зарплата
+        makeSalarySlider(constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = GridBagConstraints.RELATIVE;
+        //Отношение к боссу
+        makeBossAttitudePanel(constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = GridBagConstraints.RELATIVE;
+        constraints.anchor = GridBagConstraints.NORTH;
+        constraints.weighty = 1;
+        //Работоспособность
+        makeQualityStepper(constraints);
+
+        constraints.weighty = 0;
+        constraints.weightx = 1;
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        //Кнопка Remove
+        makeRemoveButton(constraints);
+
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        //Кнопка ok
+        makeOkButton(constraints);
+
+        tabbedPane.addTab("Commands", commandTab);
+
+        tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
+        //tab2.setOpaque(false);
+    }
+
+    private void makeAvatarButton(GridBagConstraints constraints){
         String avatarPath = System.getProperty("user.dir") + "\\src\\resources\\images\\standartAvatar.jpg";
         JButton avatar = new JButton(new ImageIcon(avatarPath));
-        avatar.setBorder(null);
+        avatar.setBorder(lineBorder);
 
-        //Многострочная область ввода
+        commandTab.add(avatar, constraints);
+    }
+
+    private void makeScrollTextArea(GridBagConstraints constraints){
         JTextArea notes = new JTextArea("Здесь можно вводить заметки", 15,50);
         notes.setLineWrap(true);
         notes.setWrapStyleWord(true);
@@ -355,16 +419,26 @@ public class MainFrame extends JFrame{
         //границы
         notes.setBorder(new LineBorder(foregroundColor));
 
-        //Прокрутка многострочной области ввода
         JScrollPane scrollNotes = new JScrollPane(notes);
         //Прозрачность
         scrollNotes.setOpaque(false);
         scrollNotes.getViewport().setOpaque(false);
 
-        //Кнопка Remove
+        commandTab.add(scrollNotes, constraints);
+    }
+
+    private  void makeRemoveButton(GridBagConstraints constraints){
         StandartButton remove = new StandartButton("Remove");
 
-        //Кнопка ok
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        panel.setPreferredSize(new Dimension(500,50));
+        panel.add(remove, new BorderLayout().CENTER);
+
+        commandTab.add(panel, constraints);
+    }
+
+    private void makeOkButton(GridBagConstraints constraints){
         JButton ok = new JButton(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\button_ok.png"));
         ok.setBorder(null);
         //Нажатая кнопка
@@ -373,8 +447,16 @@ public class MainFrame extends JFrame{
         ok.setSelectedIcon(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\button_ok_1.png"));
         //Прозрачность фона
         ok.setBackground(opaqueColor);
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
 
-        //Поле ввода имени
+        panel.setPreferredSize(new Dimension(500,80));
+        panel.add(ok, new BorderLayout().CENTER);
+
+        commandTab.add(panel, constraints);
+    }
+
+    private void makeNameField(GridBagConstraints constraints){
         JTextField nameField = new JTextField("Name");
         //Фон
         nameField.setBackground(opaqueColor);
@@ -386,7 +468,10 @@ public class MainFrame extends JFrame{
         nameField.setFont(font);
         nameField.setForeground(foregroundColor);
 
-        //Выбор класса
+        commandTab.add(nameField, constraints);
+    }
+
+    private void makeClassTypeChooser(GridBagConstraints constraints){
         String[] classType = {"Employee", "FactoryWorker", "ShopAssistant"};
         JList<String> classList = new JList<String>(classType);
         classList.setSelectionMode(0);
@@ -400,15 +485,20 @@ public class MainFrame extends JFrame{
         //Границы
         classList.setBorder(lineBorder);
 
-        //Выбор профессии
+        commandTab.add(classList, constraints);
+    }
+
+    private void makeProfessionComboBox(GridBagConstraints constraints){
         String[] prof = {"ShopAssistant", "Economist", "Worker"};
         JComboBox<String> profession = new JComboBox<String>(prof);
-//            profession.setBackground(opaqueColor);
         profession.setForeground(foregroundColor);
         profession.setFont(font);
         profession.setPreferredSize(new Dimension(500, 30));
 
-        //Зарплата
+        commandTab.add(profession, constraints);
+    }
+
+    private void makeSalarySlider(GridBagConstraints constraints){
         JSlider salary = new JSlider(JSlider.HORIZONTAL, 10000, 50000, 20000);
         salary.setPreferredSize(new Dimension(500, 50));
         salary.setOpaque(false);
@@ -425,7 +515,10 @@ public class MainFrame extends JFrame{
         salary.setFont(font);
         salary.setForeground(foregroundColor);
 
-        //Отношение к боссу
+        commandTab.add(salary, constraints);
+    }
+
+    private void makeBossAttitudePanel(GridBagConstraints constraints){
         JPanel panelRadio = new JPanel(new GridLayout(0, 5, 0, 0));
         //panelRadio.setBorder(BorderFactory.createTitledBorder(new LineBorder(Color.BLACK),"Attitude to Boss",1,1,new Font(fontName, Font.PLAIN, 12),foregroundColor));
         panelRadio.setPreferredSize(new Dimension(400,50));
@@ -446,69 +539,15 @@ public class MainFrame extends JFrame{
         panelRadio.setOpaque(false);
         panelRadio.setPreferredSize(new Dimension(500, 50));
 
-        //Работоспособность
+        commandTab.add(panelRadio, constraints);
+    }
+
+    private void makeQualityStepper(GridBagConstraints constraints){
         SpinnerNumberModel numberModel = new SpinnerNumberModel(0,-127,128,5);
         JSpinner workQuality = new JSpinner(numberModel);
         workQuality.setPreferredSize(new Dimension(500,30));
 
-        JPanel panel1 = new JPanel();
-        panel1.add(avatar);
-        panel1.setOpaque(false);
-        panel1.setSize(new Dimension(500,5));
-        tab1.add(panel1);
-
-
-        JPanel panel2 =  new JPanel();
-        panel2.add(scrollNotes);
-        panel2.setOpaque(false);
-        tab1.add(panel2);
-
-        JPanel panel3 = new JPanel();
-        GridBagLayout gridBag = new GridBagLayout();
-        panel3.setLayout(gridBag);
-        GridBagConstraints constraints = new GridBagConstraints();
-        panel3.setOpaque(false);
-        constraints.gridy = 0;
-        constraints.gridx = 2;
-        panel3.add(nameField, constraints);
-        constraints.gridy = 1;
-        constraints.gridx = 2;
-        panel3.add(classList, constraints);
-        constraints.gridy = 2;
-        constraints.gridx = 2;
-        panel3.add(panelRadio, constraints);
-        constraints.gridy = 3;
-        constraints.gridx = 2;
-        panel3.add(workQuality, constraints);
-        constraints.gridy = 4;
-        constraints.gridx = 2;
-        panel3.add(profession, constraints);
-        constraints.gridy = 5;
-        constraints.gridx = 2;
-        panel3.add(salary, constraints);
-        tab1.add(panel3);
-
-        JPanel panel4 = new JPanel();
-        GridBagLayout gridBagLayout = new GridBagLayout();
-        panel4.setLayout(gridBagLayout);
-        panel4.setOpaque(false);
-        remove.setPreferredSize(new Dimension(200,60));
-        ok.setPreferredSize(new Dimension(90,80));
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.fill = GridBagConstraints.BOTH;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridx = 2;
-        panel4.add(remove, gridBagConstraints);
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridx = 2;
-        panel4.add(ok, gridBagConstraints);
-        tab1.add(panel4);
-
-        tab1.setLayout(gridLayout);
-        tabbedPane.addTab("Commands", tab1);
-
-        tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
-        //tab2.setOpaque(false);
+        commandTab.add(workQuality, constraints);
     }
 
     private void setBackground() {
