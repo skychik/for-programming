@@ -2,12 +2,14 @@ package ru.ifmo.cs.programming.lab6.core;
 
 import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.*;
 
+import javafx.stage.FileChooser;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab6.App;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.*;
@@ -38,6 +40,11 @@ public class MainFrame extends JFrame{
     private Background background;
     private Dimension size;
     private ArrayDeque<Employee> deque;
+    private JButton avatar = null;
+    private FileFilterExt eff;
+    private JFileChooser fileChooser = null;
+    private final String[][] FILTERS = {{"png", "Изображения (*.png)"},
+            {"jpg" , "Изображения(*.jpg)"}};
 
     private static String fontName = "Gill Sans MT Bold Condensed";
     private static String imageDir = System.getProperty("user.dir") + "\\src\\resources\\images\\";
@@ -212,7 +219,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeTree(GridBagConstraints constraints) {
-        tree = new MyCheckBoxTree(makeRootNode());
+//        tree = new MyCheckBoxTree(makeRootNode());
 
         //tree.putClientProperty();
         //UIManager.put("Tree.textForeground", Color.WHITE);
@@ -404,7 +411,7 @@ public class MainFrame extends JFrame{
 
     private void makeAvatarButton(GridBagConstraints constraints){
         String avatarPath = imageDir + "standartAvatar.jpg";
-        JButton avatar = new JButton();
+        avatar = new JButton();
         try {
             Image avatarImage = ImageIO.read(new File(avatarPath));
             avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
@@ -412,7 +419,95 @@ public class MainFrame extends JFrame{
         }catch (IOException e){}
         avatar.setBorder(new LineBorder(new Color(60, 60, 60), 2));
 
+        avatar.addMouseListener(new java.awt.event.MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                avatar.setBorder(new LineBorder(Color.WHITE, 2));
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                avatar.setBorder(new LineBorder(Color.GRAY, 2));
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                avatar.setBorder(new LineBorder(Color.GRAY, 2));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                avatar.setBorder(new LineBorder(new Color(60, 60, 60), 2));
+            }
+
+        });
+        addFileChooserListeners();
         commandTab.add(avatar, constraints);
+    }
+
+    private void addFileChooserListeners()
+    {
+        avatar.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                fileChooser.setDialogTitle("Выберите файл");
+                // Определяем фильтры типов файлов
+                for (int i = 0; i < FILTERS[0].length; i++) {
+                    eff = new FileFilterExt(FILTERS[i][0],
+                            FILTERS[i][1]);
+                    fileChooser.addChoosableFileFilter(eff);
+                }
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        "Word & Excel", "docx", "xlsx");
+                fileChooser.setFileFilter(filter);
+
+                // Определение режима - только файл
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                int result = fileChooser.showOpenDialog(MainFrame.this);
+                // Если файл выбран, покажем его в сообщении
+                if (result == JFileChooser.APPROVE_OPTION )
+                    JOptionPane.showMessageDialog(MainFrame.this,
+                            "Выбран файл ( " +
+                                    fileChooser.getSelectedFile() + " )");
+            }
+        });
+    }
+
+    // Фильтр выбора файлов определенного типа
+    class FileFilterExt extends javax.swing.filechooser.FileFilter
+    {
+        String extension  ;  // расширение файла
+        String description;  // описание типа файлов
+
+        FileFilterExt(String extension, String descr)
+        {
+            this.extension = extension;
+            this.description = descr;
+        }
+        @Override
+        public boolean accept(java.io.File file)
+        {
+            if(file != null) {
+                if (file.isDirectory())
+                    return true;
+                if( extension == null )
+                    return (extension.length() == 0);
+                return file.getName().endsWith(extension);
+            }
+            return false;
+        }
+        // Функция описания типов файлов
+        @Override
+        public String getDescription() {
+            return description;
+        }
     }
 
     private void makeScrollTextArea(GridBagConstraints constraints){
