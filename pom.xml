@@ -152,6 +152,13 @@
             <version>6.0.5</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss -->
+        <dependency>
+            <groupId>com.jidesoft</groupId>
+            <artifactId>jide-oss</artifactId>
+            <version>2.4.8</version>
+        </dependency>
+
 
     </dependencies>
     

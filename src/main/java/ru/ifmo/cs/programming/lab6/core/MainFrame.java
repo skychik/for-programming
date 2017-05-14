@@ -7,8 +7,7 @@ import ru.ifmo.cs.programming.lab6.App;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.TableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayDeque;
@@ -24,8 +23,9 @@ public class MainFrame extends JFrame{
     private JPanel tableTab;
     private JPanel tab2;
     private JTree tree;
-    private JTable table;
+    private MyTable table;
     private JTextField searchField;
+    private boolean isSearchFieldEmpty = true;
     private JButton searchButton;
     private JButton saveButton;
     private JButton removeAllButton;
@@ -37,10 +37,13 @@ public class MainFrame extends JFrame{
     private ArrayDeque<Employee> deque;
 
     private static String fontName = "Gill Sans MT Bold Condensed";
-    private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
+    //private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
 
     public MainFrame(ArrayDeque<Employee> deque) {
         super("MainFrame");
+
+        setIconImage(new ImageIcon(
+                System.getProperty("user.dir") + "\\src\\resources\\images\\icon.png").getImage());
 
         this.deque = deque;
 
@@ -53,9 +56,10 @@ public class MainFrame extends JFrame{
 
         setBackground();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        //TODO: починить диалоговое окно закрытия
-        /*addWindowListener (new WindowAdapter() {
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
+        //Диалоговое окно для подтвеждения закрытия программы
+        addWindowListener (new WindowAdapter() {
                                  @Override
                                  public void windowClosing(WindowEvent e) {
                                      // Потверждение закрытия окна JFrame
@@ -68,7 +72,7 @@ public class MainFrame extends JFrame{
                                          System.exit(0);
                                      }
                                  }
-                             });*/
+                             });
 
         setMenu();
     }
@@ -78,8 +82,6 @@ public class MainFrame extends JFrame{
 
         size = new Dimension(1100, 700);
         setPreferredSize(size);
-
-        mainPanel.setBackground(new Color(-9408400)); //ToDo нужен ли? Стоит же картинка
 
         LayoutManager overlay = new OverlayLayout(mainPanel);
         mainPanel.setLayout(overlay);
@@ -97,7 +99,7 @@ public class MainFrame extends JFrame{
         setTab1();
 
         //Прозрачность фона вкладок
-        tabbedPane.setOpaque(false);
+        //tabbedPane.setOpaque(false);
         //tabbedPane.putClientProperty("TabbedPane.contentOpaque", Boolean.FALSE);
         //tabbedPane.putClientProperty("TabbedPane.tabsOpaque", Boolean.FALSE);
 
@@ -106,7 +108,7 @@ public class MainFrame extends JFrame{
 
         //Цвет
         tabbedPane.setForeground(new Color(152, 156, 153));
-        tabbedPane.setBackground(new Color(152, 156, 153, 32));
+        tabbedPane.setBackground(App.defEighthAlphaColor);
 
         mainPanel.add(
                 tabbedPane,
@@ -132,12 +134,13 @@ public class MainFrame extends JFrame{
 
     private void setTableTab() {
         tableTab = new JPanel();
-        tableTab.setBackground(new Color(152, 156, 153, 32));
-
-        GridBagLayout gridBagLayout = new GridBagLayout();
-        GridBagConstraints constraints = new GridBagConstraints();
 
         tableTab.setFont(new Font(fontName, Font.PLAIN, 16));
+        //tableTab.setBackground(App.defEighthAlphaColor);
+        tableTab.setOpaque(false);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        GridBagLayout gridBagLayout = new GridBagLayout();
         tableTab.setLayout(gridBagLayout);
 
         constraints.weightx = 0.1;
@@ -147,7 +150,7 @@ public class MainFrame extends JFrame{
         constraints.gridheight = 2;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        makeTree(gridBagLayout, constraints);
+        makeTree(constraints);
 
         constraints.weightx = 1.0;
         constraints.weighty = 0.0;
@@ -156,7 +159,7 @@ public class MainFrame extends JFrame{
         constraints.gridheight = 1;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        makeSearchField(gridBagLayout, constraints);
+        makeSearchField(constraints);
 
         constraints.weightx = 0.0;
         constraints.weighty = 0.0;
@@ -165,7 +168,7 @@ public class MainFrame extends JFrame{
         constraints.gridheight = 1;
         constraints.gridx = 2;
         constraints.gridy = 0;
-        makeSearchButton(gridBagLayout, constraints);
+        makeSearchButton(constraints);
 
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
@@ -174,7 +177,7 @@ public class MainFrame extends JFrame{
         constraints.gridheight = 3;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        makeScrollTable(gridBagLayout, constraints);
+        makeScrollTable(constraints);
 
         constraints.weightx = 0.0;
         constraints.weighty = 0.0;
@@ -183,7 +186,7 @@ public class MainFrame extends JFrame{
         constraints.gridheight = 1;
         constraints.gridx = 0;
         constraints.gridy = 2;
-        makeRemoveAllButton(gridBagLayout, constraints);
+        makeRemoveAllButton(constraints);
 
         constraints.weightx = 0.0;
         constraints.weighty = 0.0;
@@ -192,102 +195,118 @@ public class MainFrame extends JFrame{
         constraints.gridheight = 1;
         constraints.gridx = 0;
         constraints.gridy = 3;
-        makeSaveButton(gridBagLayout, constraints);
+        makeSaveButton(constraints);
 
         tabbedPane.addTab("Table", tableTab);
+
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-        tableTab.setOpaque(false);
     }
 
-    private void makeTree(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
-        tree = new JTree();
+    private void makeTree(GridBagConstraints constraints) {
+        tree = new MyCheckBoxTree(makeRootNode());
 
         //tree.putClientProperty();
         //UIManager.put("Tree.textForeground", Color.WHITE);
         //UIManager.put("Tree.textBackground", Color.WHITE);
 
-        //tree.setOpaque(false);
-        tree.setBackground(App.defColor);
-
-        //
+        tree.setOpaque(false);
+        //tree.setBackground(App.defEighthAlphaColor);
 
         tableTab.add(tree, constraints);
     }
 
-    private void makeScrollTable(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
-        table = new MyTable(new MyTableModel(deque));
-        //table.setBackground(defColor);
+    private DefaultMutableTreeNode makeRootNode() {
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Employee");
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        //scrollPane.setOpaque(false);
+        DefaultMutableTreeNode secondNode;
+
+        secondNode = new DefaultMutableTreeNode("Factory Worker");
+        rootNode.add(secondNode);
+
+        secondNode = new DefaultMutableTreeNode("Shop Assistant");
+        rootNode.add(secondNode);
+
+        return rootNode;
+    }
+
+    private void makeScrollTable(GridBagConstraints constraints) {
+        table = new MyTable(new MyTableModel(deque));
+        //table.setBackground(defEighthAlphaColor);
+
+        JScrollPane scrollTable = new JScrollPane(table);
+        //scrollTable.setOpaque(false);
 
         table.getModel().addTableModelListener(table);
 
-        tableTab.add(scrollPane, constraints);
+        tableTab.add(scrollTable, constraints);
     }
 
-    private void makeSearchField(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
+    private void makeSearchField(GridBagConstraints constraints) {
         searchField = new JTextField("Type something...", 1);
 
         searchField.setForeground(Color.WHITE);
-        searchField.setBackground(App.defColor);
+        searchField.setBackground(App.defEighthAlphaColor);
 
+        //if ENTER typed
+        searchField.addActionListener(e -> {
+            if (Objects.equals(searchField.getText(), "")) {
+                searchField.setText("Type something...");
+                isSearchFieldEmpty = true;
+            } else isSearchFieldEmpty = false;
+            doSearch();
+        });
+
+        //автоматически заполняет строчку дефолтной строкой
         searchField.addFocusListener(new FocusListener() {
-            boolean empty = true;
-
             @Override
             public void focusGained(FocusEvent e) {
-                if (empty) searchField.setText(null); // Empty the text field when it receives focus
+                if (isSearchFieldEmpty) searchField.setText(null); // Empty the text field when it receives focus
             }
 
             @Override
             public void focusLost(FocusEvent e) {
                 if (Objects.equals(searchField.getText(), "")) {
                     searchField.setText("Type something...");
-                    empty = true;
-                } else empty = false;
-            }
-        });
-        searchField.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ((!searchField.getText().isEmpty()) && (searchField.getText().charAt(searchField.getText().length() - 1) == '\n')) {
-                    doSearch(searchField.getText().trim());
-                }
+                    isSearchFieldEmpty = true;
+                } else isSearchFieldEmpty = false;
             }
         });
 
         tableTab.add(searchField, constraints);
     }
 
-    private void makeSearchButton(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
+    private void makeSearchButton(GridBagConstraints constraints) {
         searchButton = new JButton(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\loop.png"));
         //searchButton.setBackground(new Color(0, 0, 0, 0));
         searchButton.setMargin(new Insets(0, 0, 0, 0));
         searchButton.setBorder(null);
 
-        searchButton.addActionListener(e -> doSearch(searchField.getText().trim()));
+        searchButton.addActionListener(e -> doSearch());
 
         tableTab.add(searchButton, constraints);
     }
 
-    private void makeRemoveAllButton(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
+    private void doSearch() {
+        if (isSearchFieldEmpty) {
+            table.getSorter().setRowFilter(null);
+        } else {
+            //поиск по таблице без учета регистра
+            table.getSorter().setRowFilter(RowFilter.regexFilter("(?i)" + searchField.getText().trim()));
+        }
+    }
+
+    private void makeRemoveAllButton(GridBagConstraints constraints) {
         removeAllButton = new StandartButton("Remove all");
 
         //removeAllButton.setBorderPainted(false);
         removeAllButton.setBackground(new Color(152, 156, 153, 32));
 
-        removeAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                delete_all(App.getDeque());
-            }
-        });
+        removeAllButton.addActionListener(e -> deque.clear());
 
         tableTab.add(removeAllButton, constraints);
     }
 
-    private void makeSaveButton(GridBagLayout gridBagLayout, GridBagConstraints constraints) {
+    private void makeSaveButton(GridBagConstraints constraints) {
         saveButton = new StandartButton("Save");
 
         //saveButton.setForeground(Color.BLACK);
@@ -295,18 +314,14 @@ public class MainFrame extends JFrame{
         //saveButton.setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(5, 15, 5, 15)));
         //saveButton.setBorderPainted(false);
 
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                save(App.getDeque());
-            }
-        });
+        saveButton.addActionListener(e -> save(App.getDeque()));
 
         tableTab.add(saveButton, constraints);
     }
 
     //TODO: слишком много кода в одном месте. Разбить на односложные составляющие
     //TODO: придумать другое название вкладки
+    //TODO: сделать tab приватным полем в классе
     private void setTab1() {
         //Цвета
         Color foregroundColor = new Color(152, 156, 153);
@@ -552,13 +567,13 @@ public class MainFrame extends JFrame{
         this.setJMenuBar(menuBar);
     }
 
-    private void doSearch(String inp) {
-        //TODO: make search
-    }
-
     @Override
     public Dimension getSize() {
         return size;
+    }
+
+    static String getFontName() {
+        return fontName;
     }
 
     /**
@@ -588,7 +603,7 @@ public class MainFrame extends JFrame{
         final JLabel label1 = new JLabel();
         label1.setText("Label");
         panel1.add(label1, new com.intellij.uiDesigner.core.GridConstraints(0, 3, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        table = new JTable();
+        table = new MyTable(null);
         panel1.add(table, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 3, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(50, 50), null, 0, false));
         tree = new JTree();
         panel1.add(tree, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(50, 50), null, 0, false));
@@ -639,10 +654,4 @@ public class MainFrame extends JFrame{
     public JComponent $$$getRootComponent$$$() {
         return mainPanel;
     }
-
-    public static String getFontName() {
-        return fontName;
-    }
-
-
 }

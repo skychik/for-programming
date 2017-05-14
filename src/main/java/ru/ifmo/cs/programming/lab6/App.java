@@ -1,5 +1,3 @@
-//TODO: переместить EmployeeFile.csv в resources/text_files
-
 package ru.ifmo.cs.programming.lab6;
 
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
@@ -23,14 +21,16 @@ public class App {
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
-    public static Color defColor = new Color(152, 156, 153, 32);
+    public static Color defEighthAlphaColor = new Color(152, 156, 153, 32);
+    public static Color defHalfAlphaColor = new Color(152, 156, 153, 128);
+    public static Color defColor = new Color(152, 156, 153);
 
     public static void main(String... args) {
         //i'm not sure, that Pattern has to be that big, but it works
         InteractiveModeFunctions.setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile("[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
         try {
             if (getFilePath() == null)
-                setFilePath(new File(System.getenv("EmployeeFile")));
+                setFilePath(new File(System.getProperty("user.dir") + "/src/resources/text_files/EmployeeFile.csv"));
         } catch (NullPointerException e) {
             System.out.println("Не существует переменной окружения EmployeeFile.");
             System.exit(1);
@@ -54,11 +54,7 @@ public class App {
             // If Nimbus is not available, you can set the GUI to another look and feel.
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                gui();
-            }
-        });
+        SwingUtilities.invokeLater(App::gui);
 
         //Close input stream reader
         try {

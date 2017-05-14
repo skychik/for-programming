@@ -6,15 +6,8 @@ import java.awt.*;
 public class Background extends JPanel {
     private Image img;
 
-    public Background(String img) {
-        this(new ImageIcon(img).getImage());
-    }
-
-    public Background(Image img) {
+    Background(Image img) {
         this.img = img;
-//        setMinimumSize(size);//TODO: ?
-//        setMaximumSize(new Dimension(1200, 1200));//TODO: ?
-//        setSize(size);
         setLayout(null);
     }
 
@@ -22,7 +15,6 @@ public class Background extends JPanel {
         setPreferredSize(new Dimension(frame.getWidth(), frame.getHeight()));
     }*/
 
-    // TODO: сделать стандартную иконку, если нет изображения по указанному адресу
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

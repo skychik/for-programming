@@ -27,7 +27,6 @@ public abstract class InteractiveModeFunctions {
     /**
      * Show out all supported commands
      */
-    //TODO: make helping output
     protected static void help() {
         System.out.println("** You can use commands:\n" +
                 "add {}, remove {}, remove_lower {}, remove_all {}, save, load, show, end\n");
@@ -134,10 +133,6 @@ public abstract class InteractiveModeFunctions {
      * @param deque - коллекция, в которую происходит запись
      * @author Zhurbova A.E.
      */
-
-    public static void delete_all(ArrayDeque<Employee> deque) {
-        deque = new ArrayDeque<Employee>();
-    }
 
     public static void load(ArrayDeque<Employee> deque) {
 
