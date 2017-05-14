@@ -1,25 +1,32 @@
 package ru.ifmo.cs.programming.lab6.core;
 
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab6.App;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
 
 class MyTable extends JTable implements TableModelListener {
     private TableRowSorter<TableModel> sorter;
 
     MyTable(TableModel model) {
         super(model);
-        //this.setOpaque(false);
-        //this.setForeground(Color.WHITE);
-        //this.setBackground(defEighthAlphaColor);
-        this.setDefaultRenderer(Integer.class, new MyTableCellRenderer());
-        this.setDefaultRenderer(String.class, new MyTableCellRenderer());
-        this.setDefaultRenderer(Byte.class, new MyTableCellRenderer());
-        this.setDefaultRenderer(AttitudeToBoss.class, new MyTableCellRenderer());
-        this.getTableHeader().setReorderingAllowed(false);
+
+        this.setOpaque(false);
+        //this.setBackground(App.backgroundEighthAlphaColor);
+
+        setDefaultRenderer(Integer.class, new MyTableCellRenderer());
+        setDefaultRenderer(String.class, new MyTableCellRenderer());
+        setDefaultRenderer(Byte.class, new MyTableCellRenderer());
+        setDefaultRenderer(AttitudeToBoss.class, new MyTableCellRenderer());
+
+        getTableHeader().setReorderingAllowed(false);
+        //setShowVerticalLines(true);
+
 
         sorter = new TableRowSorter<>(model);
         this.setRowSorter(sorter);

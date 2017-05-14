@@ -32,6 +32,8 @@ public class MainFrame extends JFrame{
     private JTextField searchField;
     private boolean isSearchFieldEmpty = true;
     private JButton searchButton;
+    private JButton saveButton;
+    private JButton clearButton;
     private StandartButton saveButton;
     private StandartButton removeAllButton;
     private StandartButton remove;
@@ -130,7 +132,7 @@ public class MainFrame extends JFrame{
 
         //Цвет
         tabbedPane.setForeground(new Color(152, 156, 153));
-        tabbedPane.setBackground(App.defEighthAlphaColor);
+        tabbedPane.setBackground(App.backgroundEighthAlphaColor);
 
         mainPanel.add(
                 tabbedPane,
@@ -158,7 +160,7 @@ public class MainFrame extends JFrame{
         tableTab = new JPanel();
 
         tableTab.setFont(new Font(fontName, Font.PLAIN, 16));
-        //tableTab.setBackground(App.defEighthAlphaColor);
+        //tableTab.setBackground(App.backgroundEighthAlphaColor);
         tableTab.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -225,19 +227,19 @@ public class MainFrame extends JFrame{
     }
 
     private void makeTree(GridBagConstraints constraints) {
-        tree = new MyCheckBoxTree(makeRootNode());
+        tree = new MyCheckBoxTree(initRootNode());
 
         //tree.putClientProperty();
         //UIManager.put("Tree.textForeground", Color.WHITE);
         //UIManager.put("Tree.textBackground", Color.WHITE);
 
         tree.setOpaque(false);
-        //tree.setBackground(App.defEighthAlphaColor);
+        tree.setBackground(App.backgroundEighthAlphaColor);
 
         tableTab.add(tree, constraints);
     }
 
-    private DefaultMutableTreeNode makeRootNode() {
+    private DefaultMutableTreeNode initRootNode() {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Employee");
 
         DefaultMutableTreeNode secondNode;
@@ -253,26 +255,27 @@ public class MainFrame extends JFrame{
 
     private void makeScrollTable(GridBagConstraints constraints) {
         table = new MyTable(new MyTableModel(deque));
-        //table.setBackground(defEighthAlphaColor);
-
-        JScrollPane scrollTable = new JScrollPane(table);
-        //scrollTable.setOpaque(false);
 
         table.getModel().addTableModelListener(table);
 
-        tableTab.add(scrollTable, constraints);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setOpaque(false);
+        //scrollPane.setBackground(new Color(0, 0, 0, 0));
+        scrollPane.getViewport().setOpaque(false);
+
+        tableTab.add(scrollPane, constraints);
     }
 
     private void makeSearchField(GridBagConstraints constraints) {
-        searchField = new JTextField("Type something...", 1);
+        searchField = new JTextField("Type to search...", 1);
 
-        searchField.setForeground(Color.WHITE);
-        searchField.setBackground(App.defEighthAlphaColor);
+        searchField.setForeground(App.whiteTextColor);
+        searchField.setBackground(App.backgroundEighthAlphaColor);
 
         //if ENTER typed
         searchField.addActionListener(e -> {
             if (Objects.equals(searchField.getText(), "")) {
-                searchField.setText("Type something...");
+                searchField.setText("Type to search...");
                 isSearchFieldEmpty = true;
             } else isSearchFieldEmpty = false;
             doSearch();
@@ -318,14 +321,19 @@ public class MainFrame extends JFrame{
     }
 
     private void makeRemoveAllButton(GridBagConstraints constraints) {
-        removeAllButton = new StandartButton("Remove all");
+        clearButton = new StandartButton("Clear table");
 
-        //removeAllButton.setBorderPainted(false);
-//        removeAllButton.setBackground(new Color(152, 156, 153, 32));
+        //clearButton.setBorderPainted(false);
+        clearButton.setBackground(new Color(152, 156, 153, 32));
 
-        removeAllButton.addActionListener(e -> deque.clear());
+        clearButton.addActionListener(e -> {
+            // Потверждение очищения таблицы
+            int n = JOptionPane.showConfirmDialog(clearButton, "Очистить таблицу работников?",
+                    "Подтверждение", JOptionPane.YES_NO_OPTION);
+            if (n == 0) deque.clear();
+        });
 
-        tableTab.add(removeAllButton, constraints);
+        tableTab.add(clearButton, constraints);
     }
 
     private void makeSaveButton(GridBagConstraints constraints) {
@@ -801,6 +809,9 @@ public class MainFrame extends JFrame{
         panel1.add(searchField, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 2, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         saveButton = new StandartButton("Save");
         panel1.add(saveButton, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
+        clearButton = new JButton();
+        clearButton.setText("Remove All");
+        panel1.add(clearButton, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
         removeAllButton = new StandartButton("Remove All");
         panel1.add(removeAllButton);
         final JLabel label1 = new JLabel();

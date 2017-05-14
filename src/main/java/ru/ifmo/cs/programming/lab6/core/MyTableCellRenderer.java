@@ -33,20 +33,23 @@ public class MyTableCellRenderer extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
+        /*Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if (comp instanceof JComponent)
+            ((JComponent)comp).setBorder(BorderFactory.createEmptyBorder());*/
+
         //c.setOpaque(true);
         //c.setForeground(Color.WHITE);
         //c.setBorder(BorderFactory.createEmptyBorder(BT, BT, BT, BT));
         c.setOpaque(true);
-        //c.setBackground(App.defEighthAlphaColor);
 
         c.setForeground(isSelected ?
-                UIManager.getColor("Table.selectionForeground") :
-                UIManager.getColor("Table.foreground"));
+                App.whiteTextColor :
+                App.whiteTextColor.brighter());
         c.setBackground(isSelected ?
-                App.defColor :
-                App.defHalfAlphaColor);
+                App.backgroundColor :
+                App.backgroundEighthAlphaColor);
         c.setBorder(hasFocus ?
-                BorderFactory.createLineBorder(UIManager.getColor("Table.selectionForeground"), SBT) :
+                BorderFactory.createLineBorder(App.whiteTextColor, SBT) :
                 BorderFactory.createEmptyBorder(BT, BT, BT, BT));
 
 //        return c;

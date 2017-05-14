@@ -5,6 +5,7 @@ import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab6.core.MainFrame;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +22,10 @@ public class App {
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
-    public static Color defEighthAlphaColor = new Color(152, 156, 153, 32);
-    public static Color defHalfAlphaColor = new Color(152, 156, 153, 128);
-    public static Color defColor = new Color(152, 156, 153);
+    public static final Color backgroundEighthAlphaColor = new Color(112, 122, 130, 32);
+    public static final Color backgroundHalfAlphaColor = new Color(112, 122, 130, 128);
+    public static final Color backgroundColor = new Color(112, 122, 130);
+    public static final Color whiteTextColor = new Color(241, 242, 243);
 
     public static void main(String... args) {
         //i'm not sure, that Pattern has to be that big, but it works
@@ -47,6 +49,22 @@ public class App {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
+                    /*UIManager.getLookAndFeelDefaults().put("Table:\"Table.cellRenderer\".background", Color.DARK_GRAY);
+                    UIManager.getLookAndFeelDefaults().put("Table.background",new ColorUIResource(Color.DARK_GRAY));
+                    UIManager.getLookAndFeelDefaults().put("Table.alternateRowColor", Color.DARK_GRAY.brighter());*/
+                    //UIManager.getLookAndFeelDefaults().put("Table.disabled", new Color(0, 0, 0, 0));
+                    //UIManager.getLookAndFeelDefaults().put("ScrollPane", null);
+                    UIManager.getLookAndFeelDefaults().put(
+                            "ScrollPane.contentMargins",
+                            new Insets (0,0,0,0));
+                    UIManager.getLookAndFeelDefaults().put(
+                            "TableHeader:\"TableHeader.renderer\".contentMargins",
+                            new Insets (0,0,0,0));
+                    UIManager.getLookAndFeelDefaults().put(
+                            "ScrollPane[Enabled].borderPainter", null);
+                    UIManager.getLookAndFeelDefaults().put(
+                            "ScrollPane[Enabled+Focused].borderPainter", null);
+
                     break;
                 }
             }
