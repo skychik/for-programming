@@ -2,7 +2,6 @@ package ru.ifmo.cs.programming.lab6.core;
 
 import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.*;
 
-import javafx.stage.FileChooser;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
@@ -12,7 +11,6 @@ import ru.ifmo.cs.programming.lab6.App;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.*;
@@ -45,6 +43,7 @@ public class MainFrame extends JFrame{
     private JComboBox<String> professionComboBox;
     private JSlider salarySlider;
     private JPanel bossAttitudeRadioPanel;
+    private JRadioButton defaultButton;
     private String selectedRadio;
     private JSpinner workQualityStepper;
     private Background background;
@@ -584,6 +583,7 @@ public class MainFrame extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 addEmployee();
                 table.updateUI();
+                setDefaultCommandTab();
             }
         });
         JPanel panel = new JPanel();
@@ -623,7 +623,7 @@ public class MainFrame extends JFrame{
         classList.setSelectionBackground(new Color(54, 151, 175));
         //Границы
         classList.setBorder(lineBorder);
-
+        classList.setSelectedIndex(0);
         commandTab.add(classList, constraints);
     }
 
@@ -660,26 +660,36 @@ public class MainFrame extends JFrame{
     private void makeBossAttitudePanel(GridBagConstraints constraints){
         bossAttitudeRadioPanel = new JPanel(new GridLayout(0, 5, 0, 0));
         bossAttitudeRadioPanel.setPreferredSize(new Dimension(400,50));
-        String[] names1 = { "HATE", "LOW", "DEFAULT", "NORMAL", "HIGH"};
+        String[] names1 = { "HATE", "LOW", "NORMAL", "HIGH"};
         ButtonGroup bg = new ButtonGroup();
+        defaultButton = new JRadioButton("DEFAULT");
+        selectedRadio = "DEFAULT";
         for (int i = 0; i < names1.length; i++) {
             JRadioButton radio = new JRadioButton(names1[i]);
-            if (i == 2) radio.setSelected(true);
-            selectedRadio = "DEFAULT";
+            if (i == 2) {
+                defaultButton.setSelected(true);
+                bg.add(defaultButton);
+                bossAttitudeRadioPanel.add(defaultButton);
+            }
+
             //Шрифт
             radio.setForeground(foregroundColor);
+            defaultButton.setForeground(foregroundColor);
             radio.setFont(font);
-            //
+            defaultButton.setFont(font);
             radio.setFocusPainted(false);
+            defaultButton.setFocusPainted(false);
             radio.setOpaque(false);
+            defaultButton.setOpaque(false);
             radio.addActionListener(new java.awt.event.ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     selectedRadio = radio.getText();
                 }
             });
-            bossAttitudeRadioPanel.add(radio);
             bg.add(radio);
+            bossAttitudeRadioPanel.add(radio);
+
         }
         bossAttitudeRadioPanel.setOpaque(false);
         bossAttitudeRadioPanel.setPreferredSize(new Dimension(500, 50));
@@ -837,6 +847,16 @@ public class MainFrame extends JFrame{
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(menu);
         this.setJMenuBar(menuBar);
+    }
+
+    private void setDefaultCommandTab(){
+        avatar.setIcon(new ImageIcon(imageDir + "standartAvatar.jpg"));
+        notes.setText("Здесь можно вводить заметки");
+        nameField.setText("Name");
+        classList.setSelectedIndex(0);
+        salarySlider.setValue(20000);
+        defaultButton.setSelected(true);
+        workQualityStepper.setValue(0);
     }
 
     @Override
