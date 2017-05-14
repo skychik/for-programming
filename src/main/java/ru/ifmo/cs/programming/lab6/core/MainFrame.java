@@ -5,11 +5,14 @@ import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.*;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab6.App;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Objects;
 
@@ -37,7 +40,7 @@ public class MainFrame extends JFrame{
     private ArrayDeque<Employee> deque;
 
     private static String fontName = "Gill Sans MT Bold Condensed";
-    //private static String currentDir = System.getProperty("user.dir") + "\\src\\java\\ru\\ifmo\\cs\\programming\\lab6";
+    private static String imageDir = System.getProperty("user.dir") + "\\src\\resources\\images\\";
 
     private Color foregroundColor = new Color(152, 156, 153);
     private Color opaqueColor = new Color(0,0,0,0);
@@ -400,9 +403,14 @@ public class MainFrame extends JFrame{
     }
 
     private void makeAvatarButton(GridBagConstraints constraints){
-        String avatarPath = System.getProperty("user.dir") + "\\src\\resources\\images\\standartAvatar.jpg";
-        JButton avatar = new JButton(new ImageIcon(avatarPath));
-        avatar.setBorder(lineBorder);
+        String avatarPath = imageDir + "standartAvatar.jpg";
+        JButton avatar = new JButton();
+        try {
+            Image avatarImage = ImageIO.read(new File(avatarPath));
+            avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
+            avatar.setBackground(new Color(0,0,0,0));
+        }catch (IOException e){}
+        avatar.setBorder(new LineBorder(new Color(60, 60, 60), 2));
 
         commandTab.add(avatar, constraints);
     }
@@ -427,7 +435,7 @@ public class MainFrame extends JFrame{
         commandTab.add(scrollNotes, constraints);
     }
 
-    private  void makeRemoveButton(GridBagConstraints constraints){
+    private void makeRemoveButton(GridBagConstraints constraints){
         StandartButton remove = new StandartButton("Remove");
 
         JPanel panel = new JPanel();
@@ -439,12 +447,12 @@ public class MainFrame extends JFrame{
     }
 
     private void makeOkButton(GridBagConstraints constraints){
-        JButton ok = new JButton(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\button_ok.png"));
+        JButton ok = new JButton(new ImageIcon(imageDir + "button_ok.png"));
         ok.setBorder(null);
         //Нажатая кнопка
-        ok.setPressedIcon(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\button_ok_2.png"));
+        ok.setPressedIcon(new ImageIcon(imageDir + "button_ok_2.png"));
         //Кнопка при наведении
-        ok.setSelectedIcon(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\button_ok_1.png"));
+        ok.setSelectedIcon(new ImageIcon(imageDir + "button_ok_1.png"));
         //Прозрачность фона
         ok.setBackground(opaqueColor);
         JPanel panel = new JPanel();
