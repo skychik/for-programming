@@ -32,17 +32,23 @@ public class MainFrame extends JFrame{
     private JTextField searchField;
     private boolean isSearchFieldEmpty = true;
     private JButton searchButton;
-    private JButton saveButton;
-    private JButton removeAllButton;
+    private StandartButton saveButton;
+    private StandartButton removeAllButton;
+    private StandartButton remove;
     private JTextArea textArea;
-    private JTextField nameTextField;
-    private JComboBox professionComboBox;
+    private JTextField nameField;
+    private JComboBox<String> professionComboBox;
+    private JSlider salary;
+    private JPanel panelRadio;
+    private JSpinner workQuality;
     private Background background;
     private Dimension size;
     private ArrayDeque<Employee> deque;
-    private JButton avatar = null;
+    private JButton avatar;
     private FileFilterExt eff;
-    private JFileChooser fileChooser = null;
+    private JFileChooser fileChooser;
+    private JColorChooser colorChooser;
+    private JList<String> classList;
     private final String[][] FILTERS = {{"png", "Изображения (*.png)"},
             {"jpg" , "Изображения(*.jpg)"}};
 
@@ -219,7 +225,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeTree(GridBagConstraints constraints) {
-//        tree = new MyCheckBoxTree(makeRootNode());
+        tree = new MyCheckBoxTree(makeRootNode());
 
         //tree.putClientProperty();
         //UIManager.put("Tree.textForeground", Color.WHITE);
@@ -315,7 +321,7 @@ public class MainFrame extends JFrame{
         removeAllButton = new StandartButton("Remove all");
 
         //removeAllButton.setBorderPainted(false);
-        removeAllButton.setBackground(new Color(152, 156, 153, 32));
+//        removeAllButton.setBackground(new Color(152, 156, 153, 32));
 
         removeAllButton.addActionListener(e -> deque.clear());
 
@@ -326,7 +332,7 @@ public class MainFrame extends JFrame{
         saveButton = new StandartButton("Save");
 
         //saveButton.setForeground(Color.BLACK);
-        saveButton.setBackground(new Color(152, 156, 153, 32));
+//        saveButton.setBackground(new Color(152, 156, 153, 32));
         //saveButton.setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(5, 15, 5, 15)));
         //saveButton.setBorderPainted(false);
 
@@ -447,6 +453,7 @@ public class MainFrame extends JFrame{
             }
 
         });
+        fileChooser = new JFileChooser();
         addFileChooserListeners();
         commandTab.add(avatar, constraints);
     }
@@ -464,23 +471,18 @@ public class MainFrame extends JFrame{
                             FILTERS[i][1]);
                     fileChooser.addChoosableFileFilter(eff);
                 }
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                        "Word & Excel", "docx", "xlsx");
-                fileChooser.setFileFilter(filter);
 
                 // Определение режима - только файл
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 int result = fileChooser.showOpenDialog(MainFrame.this);
                 // Если файл выбран, покажем его в сообщении
-                if (result == JFileChooser.APPROVE_OPTION )
-                    JOptionPane.showMessageDialog(MainFrame.this,
-                            "Выбран файл ( " +
-                                    fileChooser.getSelectedFile() + " )");
+                if (result == JFileChooser.APPROVE_OPTION ){
+                setAvatarIcon(fileChooser.getSelectedFile());
+                }
             }
         });
     }
 
-    // Фильтр выбора файлов определенного типа
     class FileFilterExt extends javax.swing.filechooser.FileFilter
     {
         String extension  ;  // расширение файла
@@ -510,6 +512,18 @@ public class MainFrame extends JFrame{
         }
     }
 
+    private void setAvatarIcon(File avatarFile){
+        try {
+            Image avatarImage = ImageIO.read(avatarFile);
+            avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
+            avatar.setBackground(new Color(0,0,0,0));
+        }catch (IOException e){}catch (NullPointerException e){
+            JOptionPane.showMessageDialog(MainFrame.this,
+                    "Выбранный файл ( " +
+                            fileChooser.getSelectedFile() + " ) не может быть выбран в качестве аватара");
+        }
+    }
+
     private void makeScrollTextArea(GridBagConstraints constraints){
         JTextArea notes = new JTextArea("Здесь можно вводить заметки", 15,50);
         notes.setLineWrap(true);
@@ -531,11 +545,11 @@ public class MainFrame extends JFrame{
     }
 
     private void makeRemoveButton(GridBagConstraints constraints){
-        StandartButton remove = new StandartButton("Remove");
+        remove = new StandartButton("Remove");
 
         JPanel panel = new JPanel();
         panel.setOpaque(false);
-        panel.setPreferredSize(new Dimension(500,50));
+        panel.setPreferredSize(new Dimension(500,80));
         panel.add(remove, new BorderLayout().CENTER);
 
         commandTab.add(panel, constraints);
@@ -550,6 +564,15 @@ public class MainFrame extends JFrame{
         ok.setSelectedIcon(new ImageIcon(imageDir + "button_ok_1.png"));
         //Прозрачность фона
         ok.setBackground(opaqueColor);
+        ok.addActionListener(new java.awt.event.ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                if ()
+                deque.add(new Employee());
+                save(deque);
+            }
+        });
         JPanel panel = new JPanel();
         panel.setOpaque(false);
 
@@ -560,7 +583,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeNameField(GridBagConstraints constraints){
-        JTextField nameField = new JTextField("Name");
+        nameField = new JTextField("Name");
         //Фон
         nameField.setBackground(opaqueColor);
         //Размер
@@ -576,7 +599,7 @@ public class MainFrame extends JFrame{
 
     private void makeClassTypeChooser(GridBagConstraints constraints){
         String[] classType = {"Employee", "FactoryWorker", "ShopAssistant"};
-        JList<String> classList = new JList<String>(classType);
+        classList = new JList<String>(classType);
         classList.setSelectionMode(0);
         classList.setPreferredSize(new Dimension(500, 90));
         //Шрифт
@@ -593,16 +616,16 @@ public class MainFrame extends JFrame{
 
     private void makeProfessionComboBox(GridBagConstraints constraints){
         String[] prof = {"ShopAssistant", "Economist", "Worker"};
-        JComboBox<String> profession = new JComboBox<String>(prof);
-        profession.setForeground(foregroundColor);
-        profession.setFont(font);
-        profession.setPreferredSize(new Dimension(500, 30));
+        professionComboBox = new JComboBox<String>(prof);
+        professionComboBox.setForeground(foregroundColor);
+        professionComboBox.setFont(font);
+        professionComboBox.setPreferredSize(new Dimension(500, 30));
 
-        commandTab.add(profession, constraints);
+        commandTab.add(professionComboBox, constraints);
     }
 
     private void makeSalarySlider(GridBagConstraints constraints){
-        JSlider salary = new JSlider(JSlider.HORIZONTAL, 10000, 50000, 20000);
+        salary = new JSlider(JSlider.HORIZONTAL, 10000, 50000, 20000);
         salary.setPreferredSize(new Dimension(500, 50));
         salary.setOpaque(false);
         //Прорисовка значений
@@ -622,8 +645,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeBossAttitudePanel(GridBagConstraints constraints){
-        JPanel panelRadio = new JPanel(new GridLayout(0, 5, 0, 0));
-        //panelRadio.setBorder(BorderFactory.createTitledBorder(new LineBorder(Color.BLACK),"Attitude to Boss",1,1,new Font(fontName, Font.PLAIN, 12),foregroundColor));
+        panelRadio = new JPanel(new GridLayout(0, 5, 0, 0));
         panelRadio.setPreferredSize(new Dimension(400,50));
         String[] names1 = { "HATE", "LOW", "DEFAULT", "NORMAL", "HIGH"};
         ButtonGroup bg = new ButtonGroup();
@@ -647,7 +669,7 @@ public class MainFrame extends JFrame{
 
     private void makeQualityStepper(GridBagConstraints constraints){
         SpinnerNumberModel numberModel = new SpinnerNumberModel(0,-127,128,5);
-        JSpinner workQuality = new JSpinner(numberModel);
+        workQuality = new JSpinner(numberModel);
         workQuality.setPreferredSize(new Dimension(500,30));
 
         commandTab.add(workQuality, constraints);
@@ -689,12 +711,53 @@ public class MainFrame extends JFrame{
         menu.add(hotKeysItem);
 
         JMenuItem buttonColorItem = new JMenuItem("Button color");
+        buttonColorItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               colorChooser = new JColorChooser();
+               JFrame frame = new JFrame("Choose Color");
+               JPanel panel = new JPanel();
+
+               colorChooser.setPreferredSize(new Dimension(700,400));
+               panel.add(colorChooser);
+
+               JButton button = new JButton("OK");
+               button.setPreferredSize(new Dimension(50,40));
+               button.addActionListener(new java.awt.event.ActionListener() {
+                   @Override
+                   public void actionPerformed(ActionEvent ev) {
+                       saveButton.setBackground(colorChooser.getColor());
+                       remove.setBackground(colorChooser.getColor());
+                       removeAllButton.setBackground(colorChooser.getColor());
+                       frame.dispose();
+                   }
+               });
+               panel.add(button);
+
+               frame.add(panel);
+               frame.setDefaultCloseOperation(1);
+               frame.setVisible(true);
+               frame.setLocationRelativeTo(null);
+               frame.pack();
+            }
+        });
         buttonColorItem.setFont(font);
         settings.add(buttonColorItem);
 
-        JMenuItem fontColorItem = new JMenuItem("Font color");
-        fontColorItem.setFont(font);
-        settings.add(fontColorItem);
+        JMenuItem standartAvatarItem = new JMenuItem("Standart avatar");
+        standartAvatarItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String avatarPath = imageDir + "standartAvatar.jpg";
+                try {
+                    Image avatarImage = ImageIO.read(new File(avatarPath));
+                    avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
+                    avatar.setBackground(new Color(0,0,0,0));
+                }catch (IOException ex){}
+            }
+        });
+        standartAvatarItem.setFont(font);
+        settings.add(standartAvatarItem);
 
         menu.addSeparator();
 
@@ -736,12 +799,10 @@ public class MainFrame extends JFrame{
         tabbedPane.addTab("Show", panel1);
         searchField = new JTextField();
         panel1.add(searchField, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 2, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        saveButton = new JButton();
-        saveButton.setText("Save");
+        saveButton = new StandartButton("Save");
         panel1.add(saveButton, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
-        removeAllButton = new JButton();
-        removeAllButton.setText("Remove All");
-        panel1.add(removeAllButton, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
+        removeAllButton = new StandartButton("Remove All");
+        panel1.add(removeAllButton);
         final JLabel label1 = new JLabel();
         label1.setText("Label");
         panel1.add(label1, new com.intellij.uiDesigner.core.GridConstraints(0, 3, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -770,8 +831,8 @@ public class MainFrame extends JFrame{
         panel2.add(spacer4, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final com.intellij.uiDesigner.core.Spacer spacer5 = new com.intellij.uiDesigner.core.Spacer();
         panel2.add(spacer5, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        nameTextField = new JTextField();
-        panel2.add(nameTextField, new com.intellij.uiDesigner.core.GridConstraints(3, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        nameField = new JTextField();
+        panel2.add(nameField, new com.intellij.uiDesigner.core.GridConstraints(3, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setText("Name");
         panel2.add(label3, new com.intellij.uiDesigner.core.GridConstraints(3, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

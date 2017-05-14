@@ -17,6 +17,7 @@ public class Employee extends Character implements Comparable {
     private int salary = 0;
     private AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
     private byte workQuality = 0;
+    private String avatarPath = System.getProperty("user.dir") + "\\src\\resources\\images\\" + "standartAvatar.jpg";
 
     public Employee(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession);
@@ -278,6 +279,14 @@ public class Employee extends Character implements Comparable {
             System.exit(1);
         }
         return index;
+    }
+
+    public void setAvatarPath(String path){
+        avatarPath = path;
+    }
+
+    public String getAvatarPath(){
+        return avatarPath;
     }
 }
 

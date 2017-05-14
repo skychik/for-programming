@@ -1,14 +1,14 @@
 package ru.ifmo.cs.programming.lab6.core;
 
-//import com.jidesoft.swing.CheckBoxTree;
+import com.jidesoft.swing.CheckBoxTree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-class MyCheckBoxTree /*extends CheckBoxTree*/ {
+class MyCheckBoxTree extends CheckBoxTree {
     MyCheckBoxTree(DefaultMutableTreeNode rootNode) {
-//        super(rootNode);
+        super(rootNode);
 
-//        this.setCellRenderer(new MyCheckBoxTreeCellRenderer());
+        this.setCellRenderer(new MyCheckBoxTreeCellRenderer());
 
         /*this.addTreeCheckingListener(new TreeCheckingListener() {
             public void valueChanged(TreeCheckingEvent e) {
