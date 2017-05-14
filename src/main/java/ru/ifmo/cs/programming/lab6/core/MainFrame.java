@@ -4,6 +4,9 @@ import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.*;
 
 import javafx.stage.FileChooser;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
+import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab6.App;
 
 import javax.imageio.ImageIO;
@@ -37,16 +40,18 @@ public class MainFrame extends JFrame{
     private StandartButton saveButton;
     private StandartButton removeAllButton;
     private StandartButton remove;
-    private JTextArea textArea;
+    private JTextArea notes;
     private JTextField nameField;
     private JComboBox<String> professionComboBox;
-    private JSlider salary;
-    private JPanel panelRadio;
-    private JSpinner workQuality;
+    private JSlider salarySlider;
+    private JPanel bossAttitudeRadioPanel;
+    private String selectedRadio;
+    private JSpinner workQualityStepper;
     private Background background;
     private Dimension size;
     private ArrayDeque<Employee> deque;
     private JButton avatar;
+    private String avatarPath;
     private FileFilterExt eff;
     private JFileChooser fileChooser;
     private JColorChooser colorChooser;
@@ -424,7 +429,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeAvatarButton(GridBagConstraints constraints){
-        String avatarPath = imageDir + "standartAvatar.jpg";
+        avatarPath = imageDir + "standartAvatar.jpg";
         avatar = new JButton();
         try {
             Image avatarImage = ImageIO.read(new File(avatarPath));
@@ -486,6 +491,7 @@ public class MainFrame extends JFrame{
                 // Если файл выбран, покажем его в сообщении
                 if (result == JFileChooser.APPROVE_OPTION ){
                 setAvatarIcon(fileChooser.getSelectedFile());
+                avatarPath = fileChooser.getSelectedFile().toString();
                 }
             }
         });
@@ -533,7 +539,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeScrollTextArea(GridBagConstraints constraints){
-        JTextArea notes = new JTextArea("Здесь можно вводить заметки", 15,50);
+        notes = new JTextArea("Здесь можно вводить заметки", 15,50);
         notes.setLineWrap(true);
         notes.setWrapStyleWord(true);
         //шрифт
@@ -576,9 +582,8 @@ public class MainFrame extends JFrame{
 
             @Override
             public void actionPerformed(ActionEvent e) {
-//                if ()
-                deque.add(new Employee());
-                save(deque);
+                addEmployee();
+                table.updateUI();
             }
         });
         JPanel panel = new JPanel();
@@ -633,54 +638,107 @@ public class MainFrame extends JFrame{
     }
 
     private void makeSalarySlider(GridBagConstraints constraints){
-        salary = new JSlider(JSlider.HORIZONTAL, 10000, 50000, 20000);
-        salary.setPreferredSize(new Dimension(500, 50));
-        salary.setOpaque(false);
+        salarySlider = new JSlider(JSlider.HORIZONTAL, 10000, 50000, 20000);
+        salarySlider.setPreferredSize(new Dimension(500, 50));
+        salarySlider.setOpaque(false);
         //Прорисовка значений
-        salary.setPaintLabels(true);
-        salary.setMinorTickSpacing(2500);
-        salary.setMajorTickSpacing(5000);
-        salary.setPaintTicks(true);
+        salarySlider.setPaintLabels(true);
+        salarySlider.setMinorTickSpacing(2500);
+        salarySlider.setMajorTickSpacing(5000);
+        salarySlider.setPaintTicks(true);
         //Ползунок перемещается только по значениям
-        salary.setSnapToTicks(true);
+        salarySlider.setSnapToTicks(true);
         //Смена курсора
-        salary.setCursor(new Cursor(12));
+        salarySlider.setCursor(new Cursor(12));
         //Шрифт
-        salary.setFont(font);
-        salary.setForeground(foregroundColor);
+        salarySlider.setFont(font);
+        salarySlider.setForeground(foregroundColor);
 
-        commandTab.add(salary, constraints);
+        commandTab.add(salarySlider, constraints);
     }
 
     private void makeBossAttitudePanel(GridBagConstraints constraints){
-        panelRadio = new JPanel(new GridLayout(0, 5, 0, 0));
-        panelRadio.setPreferredSize(new Dimension(400,50));
+        bossAttitudeRadioPanel = new JPanel(new GridLayout(0, 5, 0, 0));
+        bossAttitudeRadioPanel.setPreferredSize(new Dimension(400,50));
         String[] names1 = { "HATE", "LOW", "DEFAULT", "NORMAL", "HIGH"};
         ButtonGroup bg = new ButtonGroup();
         for (int i = 0; i < names1.length; i++) {
             JRadioButton radio = new JRadioButton(names1[i]);
             if (i == 2) radio.setSelected(true);
+            selectedRadio = "DEFAULT";
             //Шрифт
             radio.setForeground(foregroundColor);
             radio.setFont(font);
             //
             radio.setFocusPainted(false);
             radio.setOpaque(false);
-            panelRadio.add(radio);
+            radio.addActionListener(new java.awt.event.ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectedRadio = radio.getText();
+                }
+            });
+            bossAttitudeRadioPanel.add(radio);
             bg.add(radio);
         }
-        panelRadio.setOpaque(false);
-        panelRadio.setPreferredSize(new Dimension(500, 50));
+        bossAttitudeRadioPanel.setOpaque(false);
+        bossAttitudeRadioPanel.setPreferredSize(new Dimension(500, 50));
 
-        commandTab.add(panelRadio, constraints);
+        commandTab.add(bossAttitudeRadioPanel, constraints);
     }
 
     private void makeQualityStepper(GridBagConstraints constraints){
         SpinnerNumberModel numberModel = new SpinnerNumberModel(0,-127,128,5);
-        workQuality = new JSpinner(numberModel);
-        workQuality.setPreferredSize(new Dimension(500,30));
+        workQualityStepper = new JSpinner(numberModel);
+        workQualityStepper.setPreferredSize(new Dimension(500,30));
 
-        commandTab.add(workQuality, constraints);
+        commandTab.add(workQualityStepper, constraints);
+    }
+
+    private void addEmployee(){
+        Employee employee = new Employee();
+
+        String name = nameField.getText();
+        String profession = professionComboBox.getSelectedItem().toString();
+        int salary = salarySlider.getValue();
+        AttitudeToBoss attitudeToBoss;
+        switch (selectedRadio){
+            case "HIGH": {
+                attitudeToBoss = AttitudeToBoss.HIGH;
+                break;
+            }
+            case "HATE": {
+                attitudeToBoss = AttitudeToBoss.HATE;
+                break;
+            }
+            case "NORMAL": {
+                attitudeToBoss = AttitudeToBoss.NORMAL;
+                break;
+            }
+            case "LOW": {
+                attitudeToBoss = AttitudeToBoss.LOW;
+                break;
+            }
+            default: attitudeToBoss = AttitudeToBoss.DEFAULT;
+        }
+        int wQ = (int) workQualityStepper.getValue();
+        byte workQuality = (byte)wQ;
+
+        if (classList.getSelectedValue().equals("Employee")) {
+            employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+            deque.add(employee);
+        }
+        if (classList.getSelectedValue().equals("FactoryWorker")) {
+            employee = new FactoryWorker(name, profession, salary, attitudeToBoss, workQuality);
+            deque.add(employee);
+        }
+        if (classList.getSelectedValue().equals("ShopAssistant")) {
+            employee = new ShopAssistant(name, profession, salary, attitudeToBoss, workQuality);
+            deque.add(employee);
+        }
+        employee.setAvatarPath(avatarPath);
+        employee.setNotes(notes.getText());
+        save(deque);
     }
 
     private void setBackground() {
@@ -756,9 +814,10 @@ public class MainFrame extends JFrame{
         standartAvatarItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String avatarPath = imageDir + "standartAvatar.jpg";
+                String avatarStandartPath = imageDir + "standartAvatar.jpg";
+                avatarPath = avatarStandartPath;
                 try {
-                    Image avatarImage = ImageIO.read(new File(avatarPath));
+                    Image avatarImage = ImageIO.read(new File(avatarStandartPath));
                     avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
                     avatar.setBackground(new Color(0,0,0,0));
                 }catch (IOException ex){}
@@ -824,8 +883,8 @@ public class MainFrame extends JFrame{
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(7, 5, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("Commands", panel2);
-        textArea = new JTextArea();
-        panel2.add(textArea, new com.intellij.uiDesigner.core.GridConstraints(0, 4, 3, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        notes = new JTextArea();
+        panel2.add(notes, new com.intellij.uiDesigner.core.GridConstraints(0, 4, 3, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
         panel2.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 4, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();

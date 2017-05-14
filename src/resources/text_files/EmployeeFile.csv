@@ -1,0 +1,7 @@
+Employee,,,0,DEFAULT,0
+Employee,,,0,DEFAULT,0
+Employee,,,0,DEFAULT,0
+Employee,Name,Economist,40000,HIGH,15
+Employee,Namekk,ShopAssistant,30000,DEFAULT,-15
+ShopAssistant,Name,ShopAssistant,35000,NORMAL,20
+Employee,Name,Worker,20000,DEFAULT,-15
