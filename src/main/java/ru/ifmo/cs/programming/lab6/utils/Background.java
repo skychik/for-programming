@@ -1,4 +1,4 @@
-package ru.ifmo.cs.programming.lab6.core;
+package ru.ifmo.cs.programming.lab6.utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +6,7 @@ import java.awt.*;
 public class Background extends JPanel {
     private Image img;
 
-    Background(Image img) {
+    public Background(Image img) {
         this.img = img;
         setLayout(null);
     }

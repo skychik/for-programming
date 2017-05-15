@@ -7,6 +7,7 @@ import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab6.App;
+import ru.ifmo.cs.programming.lab6.utils.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -23,21 +24,19 @@ import java.util.Objects;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame {
 
     private JPanel mainPanel;
     private static JTabbedPane tabbedPane;
     private JPanel tableTab;
     private JPanel commandTab;
     private JTree tree;
-    private MyTable table;
+    private static MyTable table;
     private JTextField searchField;
     private boolean isSearchFieldEmpty = true;
     private JButton searchButton;
-    private JButton saveButton;
-    private JButton clearButton;
     private StandartButton saveButton;
-    private StandartButton removeAllButton;
+    private StandartButton clearButton;
     private StandartButton remove;
     private static JTextArea notes = null;
     private static JTextField nameField;
@@ -217,16 +216,16 @@ public class MainFrame extends JFrame{
         constraints.gridheight = 1;
         constraints.gridx = 0;
         constraints.gridy = 2;
-        makeRemoveAllButton(constraints);
+        makeClearButton(constraints);
 
-        constraints.weightx = 0.0;
+        /*constraints.weightx = 0.0;
         constraints.weighty = 0.0;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.gridx = 0;
         constraints.gridy = 3;
-        makeSaveButton(constraints);
+        makeSaveButton(constraints);*/
 
         tabbedPane.addTab("Table", tableTab);
 
@@ -327,11 +326,11 @@ public class MainFrame extends JFrame{
         }
     }
 
-    private void makeRemoveAllButton(GridBagConstraints constraints) {
+    private void makeClearButton(GridBagConstraints constraints) {
         clearButton = new StandartButton("Clear table");
 
         //clearButton.setBorderPainted(false);
-        clearButton.setBackground(new Color(152, 156, 153, 32));
+        //clearButton.setBackground(App.backgroundEighthAlphaColor);
 
         clearButton.addActionListener(e -> {
             // Потверждение очищения таблицы
@@ -350,10 +349,11 @@ public class MainFrame extends JFrame{
 //        saveButton.setBackground(new Color(152, 156, 153, 32));
         //saveButton.setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(5, 15, 5, 15)));
         //saveButton.setBorderPainted(false);
+        saveButton.setBackground(App.backgroundEighthAlphaColor);
 
         saveButton.addActionListener(e -> save(App.getDeque()));
 
-        tableTab.add(saveButton, constraints);
+        //tableTab.add(saveButton, constraints);
     }
 
     private void setCommandTab() {
@@ -497,6 +497,10 @@ public class MainFrame extends JFrame{
                 }
             }
         });
+    }
+
+    public static MyTable getTable() {
+        return table;
     }
 
     class FileFilterExt extends javax.swing.filechooser.FileFilter
@@ -813,9 +817,9 @@ public class MainFrame extends JFrame{
                button.addActionListener(new java.awt.event.ActionListener() {
                    @Override
                    public void actionPerformed(ActionEvent ev) {
-                       saveButton.setBackground(colorChooser.getColor());
+                       clearButton.setBackground(colorChooser.getColor());
                        remove.setBackground(colorChooser.getColor());
-                       removeAllButton.setBackground(colorChooser.getColor());
+                       clearButton.setBackground(colorChooser.getColor());
                        frame.dispose();
                    }
                });
@@ -899,7 +903,7 @@ public class MainFrame extends JFrame{
                 break;
             }
             case "HIGH" : {
-                i = 1;
+                i = 4;
                 break;
             }
         }
@@ -1001,11 +1005,11 @@ public class MainFrame extends JFrame{
         panel1.add(searchField, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 2, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         saveButton = new StandartButton("Save");
         panel1.add(saveButton, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
-        clearButton = new JButton();
+        clearButton = new StandartButton("");
         clearButton.setText("Remove All");
         panel1.add(clearButton, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
-        removeAllButton = new StandartButton("Remove All");
-        panel1.add(removeAllButton);
+        clearButton = new StandartButton("Remove All");
+        panel1.add(clearButton);
         final JLabel label1 = new JLabel();
         label1.setText("Label");
         panel1.add(label1, new com.intellij.uiDesigner.core.GridConstraints(0, 3, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

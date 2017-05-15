@@ -1,4 +1,4 @@
-package ru.ifmo.cs.programming.lab6.core;
+package ru.ifmo.cs.programming.lab6.utils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -13,7 +13,7 @@ public class StandartButton extends JButton {
         private String fontName = "Gill Sans MT EXT Condensed";
         private static Color backgroundColor = new Color(195, 195, 195);
 
-        StandartButton(String text) {
+        public StandartButton(String text) {
             super(text);
             //setMinimumSize(new Dimension(200, 50));
             backgroundColor = new Color(54, 151, 175);

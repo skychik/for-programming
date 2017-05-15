@@ -1,8 +1,7 @@
-package ru.ifmo.cs.programming.lab6.core;
+package ru.ifmo.cs.programming.lab6.utils;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
-import ru.ifmo.cs.programming.lab6.App;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -18,10 +17,10 @@ import java.awt.event.MouseEvent;
 import static ru.ifmo.cs.programming.lab6.App.getDeque;
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.*;
 
-class MyTable extends JTable implements TableModelListener {
+public class MyTable extends JTable implements TableModelListener {
     private TableRowSorter<TableModel> sorter;
 
-    MyTable(TableModel model) {
+    public MyTable(TableModel model) {
         super(model);
 
         this.setOpaque(false);
@@ -42,7 +41,7 @@ class MyTable extends JTable implements TableModelListener {
         //this.setDefaultEditor(String.class, new DefaultCellEditor(new JComboBox(colors)));
     }
 
-    TableRowSorter<TableModel> getSorter() {
+    public TableRowSorter<TableModel> getSorter() {
         return sorter;
     }
 

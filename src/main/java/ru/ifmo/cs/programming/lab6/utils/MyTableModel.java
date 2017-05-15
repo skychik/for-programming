@@ -1,4 +1,4 @@
-package ru.ifmo.cs.programming.lab6.core;
+package ru.ifmo.cs.programming.lab6.utils;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
