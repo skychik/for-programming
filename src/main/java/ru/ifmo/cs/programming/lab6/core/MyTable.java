@@ -16,8 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import static ru.ifmo.cs.programming.lab6.App.getDeque;
-import static ru.ifmo.cs.programming.lab6.core.MainFrame.getCommandTab;
-import static ru.ifmo.cs.programming.lab6.core.MainFrame.getTabbedPane;
+import static ru.ifmo.cs.programming.lab6.core.MainFrame.*;
 
 class MyTable extends JTable implements TableModelListener {
     private TableRowSorter<TableModel> sorter;
@@ -67,7 +66,14 @@ class MyTable extends JTable implements TableModelListener {
                     getDeque().remove(employee);
                     updateUI();
                     getTabbedPane().setSelectedIndex(1);
-
+                    setAvatar(employee.getAvatarPath());
+                    setNotes(employee.getNotes());
+                    setNameField(employee.getName());
+                    setProfessionComboBox(employee.getProfession());
+                    setBg(employee.getAttitudeToBoss().toString());
+                    setClassList(employee.getClass().getSimpleName());
+                    setSalarySlider(employee.getSalary());
+                    setWorkQualityStepper(employee.getWorkQuality());
                 }
             }
 

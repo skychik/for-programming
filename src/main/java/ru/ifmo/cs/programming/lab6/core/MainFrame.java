@@ -17,6 +17,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Enumeration;
 import java.util.Objects;
 
 import java.awt.event.ActionEvent;
@@ -40,10 +41,11 @@ public class MainFrame extends JFrame{
     private StandartButton remove;
     private static JTextArea notes = null;
     private static JTextField nameField;
-    private JComboBox<String> professionComboBox;
+    private static JComboBox<String> professionComboBox;
     private static JSlider salarySlider;
+    private static ButtonGroup bg;
     private JPanel bossAttitudeRadioPanel;
-    private static JRadioButton defaultButton;
+    private JRadioButton defaultButton;
     private String selectedRadio;
     private static JSpinner workQualityStepper;
     private Background background;
@@ -54,7 +56,7 @@ public class MainFrame extends JFrame{
     private FileFilterExt eff;
     private JFileChooser fileChooser;
     private JColorChooser colorChooser;
-    private JList<String> classList;
+    private static JList<String> classList;
     private final String[][] FILTERS = {{"png", "Изображения (*.png)"},
             {"jpg" , "Изображения(*.jpg)"}};
 
@@ -566,6 +568,14 @@ public class MainFrame extends JFrame{
         panel.setPreferredSize(new Dimension(500,80));
         panel.add(remove, new BorderLayout().CENTER);
 
+        remove.addActionListener(new java.awt.event.ActionListener(){
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setDefaultCommandTab();
+            }
+        });
+
         commandTab.add(panel, constraints);
     }
 
@@ -662,7 +672,7 @@ public class MainFrame extends JFrame{
         bossAttitudeRadioPanel = new JPanel(new GridLayout(0, 5, 0, 0));
         bossAttitudeRadioPanel.setPreferredSize(new Dimension(400,50));
         String[] names1 = { "HATE", "LOW", "NORMAL", "HIGH"};
-        ButtonGroup bg = new ButtonGroup();
+        bg = new ButtonGroup();
         defaultButton = new JRadioButton("DEFAULT");
         selectedRadio = "DEFAULT";
         for (int i = 0; i < names1.length; i++) {
@@ -873,6 +883,88 @@ public class MainFrame extends JFrame{
         return tabbedPane;
     }
 
+    public static void setBg(String attitude){
+        int i = 0;
+        switch (attitude){
+            case "LOW" : {
+                i = 1;
+                break;
+            }
+            case "DEFAULT" : {
+                i = 2;
+                break;
+            }
+            case "NORMAL" : {
+                i = 3;
+                break;
+            }
+            case "HIGH" : {
+                i = 1;
+                break;
+            }
+        }
+
+        first: for (Enumeration<AbstractButton> buttons = bg.getElements();
+             buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (i == 0) {
+                button.setSelected(true);
+                break first;
+            }
+            i--;
+        }
+    }
+
+    public static void setProfessionComboBox(String profession){
+        Integer index = null;
+        switch (profession){
+            case "Worker" : {
+                index = 2;
+                break;
+            }
+            case "Economist" : {
+                index = 1;
+                break;
+            }
+            case "ShopAssistant" : {
+                index = 0;
+                break;
+            }
+        }
+        professionComboBox.setSelectedIndex(index);
+    }
+
+    public static void setClassList(String className){
+        Integer index = null;
+        switch (className){
+            case "Employee" : {
+                index = 0;
+                break;
+            }
+            case "FactoryWorker" : {
+                index = 1;
+                break;
+            }
+            case "ShopAssistant" : {
+                index = 2;
+                break;
+            }
+        }
+        classList.setSelectedIndex(index);
+    }
+
+    public static void setWorkQualityStepper(byte quality){
+        workQualityStepper.setValue((int)quality);
+    }
+
+    public static void setSalarySlider(int salary){
+        salarySlider.setValue(salary);
+    }
+
+    public static void setNameField(String name){
+        nameField.setText(name);
+    }
+
     public static void setNotes(String note){
         notes.setText(note);
     }
@@ -884,9 +976,8 @@ public class MainFrame extends JFrame{
             avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
             avatar.setBackground(new Color(0,0,0,0));
         }catch (IOException e){}catch (NullPointerException e){
-            JOptionPane.showMessageDialog(MainFrame.this,
-                    "Выбранный файл ( " +
-                            fileChooser.getSelectedFile() + " ) не может быть выбран в качестве аватара");
+            avatar.setIcon(new ImageIcon(imageDir + "standartAvatar.jpg"));
+            avatar.setBackground(new Color(0,0,0,0));
         }
     }
 
