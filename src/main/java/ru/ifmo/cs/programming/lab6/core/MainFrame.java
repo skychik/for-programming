@@ -34,7 +34,6 @@ public class MainFrame extends JFrame{
     private JTextField searchField;
     private boolean isSearchFieldEmpty = true;
     private JButton searchButton;
-    private JButton saveButton;
     private JButton clearButton;
     private StandartButton saveButton;
     private StandartButton removeAllButton;
@@ -65,10 +64,8 @@ public class MainFrame extends JFrame{
 
     private Color foregroundColor = new Color(152, 156, 153);
     private Color opaqueColor = new Color(0,0,0,0);
-    private Font font = new Font(fontName, Font.ITALIC, 12);
+    private Font font = new Font(fontName, Font.ITALIC, 13);
     private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
-
-
 
     public MainFrame(ArrayDeque<Employee> deque) {
         super("MainFrame");
@@ -625,9 +622,9 @@ public class MainFrame extends JFrame{
         String[] classType = {"Employee", "FactoryWorker", "ShopAssistant"};
         classList = new JList<String>(classType);
         classList.setSelectionMode(0);
-        classList.setPreferredSize(new Dimension(500, 90));
+        classList.setPreferredSize(new Dimension(500, 69));
         //Шрифт
-        classList.setFont(new Font(fontName, Font.PLAIN, 19));
+        classList.setFont(font);
         classList.setForeground(foregroundColor);
         //Цвета
         classList.setBackground(Color.WHITE);
@@ -639,7 +636,7 @@ public class MainFrame extends JFrame{
     }
 
     private void makeProfessionComboBox(GridBagConstraints constraints){
-        String[] prof = {"ShopAssistant", "Economist", "Worker"};
+        String[] prof = {"Programmer", "Economist", "Manager"};
         professionComboBox = new JComboBox<String>(prof);
         professionComboBox.setForeground(foregroundColor);
         professionComboBox.setFont(font);
@@ -815,7 +812,7 @@ public class MainFrame extends JFrame{
                    public void actionPerformed(ActionEvent ev) {
                        saveButton.setBackground(colorChooser.getColor());
                        remove.setBackground(colorChooser.getColor());
-                       removeAllButton.setBackground(colorChooser.getColor());
+                       clearButton.setBackground(colorChooser.getColor());
                        frame.dispose();
                    }
                });
@@ -899,7 +896,7 @@ public class MainFrame extends JFrame{
                 break;
             }
             case "HIGH" : {
-                i = 1;
+                i = 4;
                 break;
             }
         }
@@ -918,7 +915,7 @@ public class MainFrame extends JFrame{
     public static void setProfessionComboBox(String profession){
         Integer index = null;
         switch (profession){
-            case "Worker" : {
+            case "Manager" : {
                 index = 2;
                 break;
             }
@@ -926,7 +923,7 @@ public class MainFrame extends JFrame{
                 index = 1;
                 break;
             }
-            case "ShopAssistant" : {
+            case "Programmer" : {
                 index = 0;
                 break;
             }
