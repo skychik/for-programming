@@ -1,14 +1,23 @@
 package ru.ifmo.cs.programming.lab6.core;
 
+import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab6.App;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+
+import static ru.ifmo.cs.programming.lab6.App.getDeque;
+import static ru.ifmo.cs.programming.lab6.core.MainFrame.getCommandTab;
+import static ru.ifmo.cs.programming.lab6.core.MainFrame.getTabbedPane;
 
 class MyTable extends JTable implements TableModelListener {
     private TableRowSorter<TableModel> sorter;
@@ -30,6 +39,7 @@ class MyTable extends JTable implements TableModelListener {
 
         sorter = new TableRowSorter<>(model);
         this.setRowSorter(sorter);
+        tableListner();
         //this.setDefaultEditor(String.class, new DefaultCellEditor(new JComboBox(colors)));
     }
 
@@ -46,4 +56,49 @@ class MyTable extends JTable implements TableModelListener {
 
         // Do something with the data...
     }*/
+    public void tableListner(){
+        this.addMouseListener(new java.awt.event.MouseListener(){
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println();
+                if (checkClicks(e)) {
+                    Employee employee = (Employee) getDeque().toArray()[getSelectedRow()];
+                    getDeque().remove(employee);
+                    updateUI();
+                    getTabbedPane().setSelectedIndex(1);
+
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+    }
+
+    private boolean checkClicks(MouseEvent e){
+        boolean doubleClick;
+        if(e.getClickCount() == 1){
+            doubleClick = false;
+        }else{
+            doubleClick = true;
+        }
+        return doubleClick;
+    }
 }

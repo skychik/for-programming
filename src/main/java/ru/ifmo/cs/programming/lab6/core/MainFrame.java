@@ -25,7 +25,7 @@ import java.awt.event.ActionListener;
 public class MainFrame extends JFrame{
 
     private JPanel mainPanel;
-    private JTabbedPane tabbedPane;
+    private static JTabbedPane tabbedPane;
     private JPanel tableTab;
     private JPanel commandTab;
     private JTree tree;
@@ -38,18 +38,18 @@ public class MainFrame extends JFrame{
     private StandartButton saveButton;
     private StandartButton removeAllButton;
     private StandartButton remove;
-    private JTextArea notes;
-    private JTextField nameField;
+    private static JTextArea notes = null;
+    private static JTextField nameField;
     private JComboBox<String> professionComboBox;
-    private JSlider salarySlider;
+    private static JSlider salarySlider;
     private JPanel bossAttitudeRadioPanel;
-    private JRadioButton defaultButton;
+    private static JRadioButton defaultButton;
     private String selectedRadio;
-    private JSpinner workQualityStepper;
+    private static JSpinner workQualityStepper;
     private Background background;
     private Dimension size;
     private ArrayDeque<Employee> deque;
-    private JButton avatar;
+    private static JButton avatar;
     private String avatarPath;
     private FileFilterExt eff;
     private JFileChooser fileChooser;
@@ -65,6 +65,7 @@ public class MainFrame extends JFrame{
     private Color opaqueColor = new Color(0,0,0,0);
     private Font font = new Font(fontName, Font.ITALIC, 12);
     private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
+
 
 
     public MainFrame(ArrayDeque<Employee> deque) {
@@ -525,7 +526,7 @@ public class MainFrame extends JFrame{
         }
     }
 
-    private void setAvatarIcon(File avatarFile){
+    public void setAvatarIcon(File avatarFile){
         try {
             Image avatarImage = ImageIO.read(avatarFile);
             avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
@@ -866,6 +867,27 @@ public class MainFrame extends JFrame{
 
     static String getFontName() {
         return fontName;
+    }
+
+    public static JTabbedPane getTabbedPane(){
+        return tabbedPane;
+    }
+
+    public static void setNotes(String note){
+        notes.setText(note);
+    }
+
+    public static void setAvatar(String avatarPath){
+        File avatarFile = new File(avatarPath);
+        try {
+            Image avatarImage = ImageIO.read(avatarFile);
+            avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
+            avatar.setBackground(new Color(0,0,0,0));
+        }catch (IOException e){}catch (NullPointerException e){
+            JOptionPane.showMessageDialog(MainFrame.this,
+                    "Выбранный файл ( " +
+                            fileChooser.getSelectedFile() + " ) не может быть выбран в качестве аватара");
+        }
     }
 
     /**

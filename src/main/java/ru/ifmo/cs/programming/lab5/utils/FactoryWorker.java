@@ -43,17 +43,6 @@ public class FactoryWorker extends Employee {
 
     @Override
     public String toString() {
-        if (bagpack != null) {
-            return ("FactoryWorker;" + getName()  +
-                ";" + getProfession() +
-                ";" + getSalary() +
-                ";" + getAttitudeToBoss().toString() +
-                ";" + getWorkQuality() +
-                ";" + getAvatarPath() +
-                ";{" + getNotes() + "}" +
-                ";" + bagpack);
-
-        }else {
         return ("FactoryWorker;" + getName()  +
                 ";" + getProfession() +
                 ";" + getSalary() +
@@ -61,7 +50,6 @@ public class FactoryWorker extends Employee {
                 ";" + getWorkQuality() +
                 ";" + getAvatarPath() +
                 ";{" + getNotes() + "}");
-        }
     }
 
     @Override
@@ -96,6 +84,7 @@ public class FactoryWorker extends Employee {
 
     public void addProduct (Product product){
         bagpack.add(product);
+        bagpack = null;
     }
 
     /**

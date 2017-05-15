@@ -78,6 +78,10 @@ public class MyTableModel implements TableModel {
                 return employee.getAttitudeToBoss();
             case 4:
                 return employee.getWorkQuality();
+            case 5:
+                return employee.getAvatarPath();
+            case 6:
+                return employee.getNotes();
         }
         return "";
     }

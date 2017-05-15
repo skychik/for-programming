@@ -6,11 +6,12 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.io.File;
 
 public class StandartButton extends JButton {
 
         private String fontName = "Gill Sans MT EXT Condensed";
-        private Color backgroundColor;
+        private static Color backgroundColor = new Color(195, 195, 195);
 
         StandartButton(String text) {
             super(text);
