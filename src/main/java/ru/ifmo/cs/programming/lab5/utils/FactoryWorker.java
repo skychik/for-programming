@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class FactoryWorker extends Employee {
 
-    private ArrayList<Product> bagpack = new ArrayList<>();
+    private ArrayList<Product> bagpack = null;
 
     public FactoryWorker() {super();}
 
@@ -43,12 +43,25 @@ public class FactoryWorker extends Employee {
 
     @Override
     public String toString() {
-        return ("FactoryWorker," + getName()  +
-                "," + getProfession() +
-                "," + getSalary() +
-                "," + getAttitudeToBoss().toString() +
-                "," + getWorkQuality() +
-                "," + bagpack);
+        if (bagpack != null) {
+            return ("FactoryWorker;" + getName()  +
+                ";" + getProfession() +
+                ";" + getSalary() +
+                ";" + getAttitudeToBoss().toString() +
+                ";" + getWorkQuality() +
+                ";" + getAvatarPath() +
+                ";{" + getNotes() + "}" +
+                ";" + bagpack);
+
+        }else {
+        return ("FactoryWorker;" + getName()  +
+                ";" + getProfession() +
+                ";" + getSalary() +
+                ";" + getAttitudeToBoss().toString() +
+                ";" + getWorkQuality() +
+                ";" + getAvatarPath() +
+                ";{" + getNotes() + "}");
+        }
     }
 
     @Override
@@ -92,52 +105,57 @@ public class FactoryWorker extends Employee {
      * @param scanner - строка, в которой хранятся данные о содержимом bagpack
      */
     public void parseFactoryWorker(Scanner scanner) {
-        try {
-            Product product;
-            Boolean foundClosingSquareBracket = false;
-            int itemNumber = 0;
+        first : {
+            try {
+                Product product;
+                Boolean foundClosingSquareBracket = false;
+                int itemNumber = 0;
+                String name = null;
 
-            while (scanner.hasNext()) {
-                String[] nameAndPrice = scanner.next().split(":");
+                while (scanner.hasNext()) {
+                    String[] nameAndPrice = scanner.next().split(":");
 
-                itemNumber++;
+                    itemNumber++;
+                    String a= "Name";
+                    if (a.equals(nameAndPrice[0].replaceFirst("\\[", "")) || nameAndPrice[0].equals("") || nameAndPrice.length < 2){break first;}
+                    if (nameAndPrice.length == 2 || nameAndPrice.length == 1) {
+                        if ((itemNumber == 1) && (nameAndPrice[0].trim().charAt(0) != '[') &&
+                                (nameAndPrice[0].substring(1).equals("")) && (nameAndPrice[1].substring(1).equals(""))) {
+                            System.out.println("Неверно задан " + itemNumber + " предмет багажа в строке " + App.getLineNumber() +
+                                    ". Должны быть указаны название и цена, разделенные \":\", предметы разделены \",\"" +
+                                    " и указаны в квадратных скобках.(name = \"" + nameAndPrice[0].trim() + "\")");
+                            System.exit(1);
+                            return;
+                        }
 
-                if (nameAndPrice.length == 2) {
-                    if ((itemNumber == 1) && (nameAndPrice[0].trim().charAt(0) != '[')) {
+                        String stringForPrice = nameAndPrice[1].trim();
+                        if (stringForPrice.charAt(stringForPrice.length() - 1) == ']') foundClosingSquareBracket = true;
+
+                        name = nameAndPrice[0].replaceFirst("\\[", "").trim();
+                        int price = Integer.parseInt(nameAndPrice[1].replace("]", "").trim());
+                        product = new Product(name, price);
+                    } else {if (name.equals("")){return;}
                         System.out.println("Неверно задан " + itemNumber + " предмет багажа в строке " + App.getLineNumber() +
-                                ". Должны быть указаны название и цена, разделенные \":\", предметы разделены \",\"" +
-                                " и указаны в квадратных скобках.(name = \"" + nameAndPrice[0].trim() + "\")");
+                                ". Должны быть указаны название и цена, разделенные \":\", предметы разделены \",\".");
                         System.exit(1);
                         return;
                     }
 
-                    String stringForPrice = nameAndPrice[1].trim();
-                    if (stringForPrice.charAt(stringForPrice.length() - 1) == ']') foundClosingSquareBracket = true;
+                    addProduct(product);
 
-                    String name = nameAndPrice[0].replaceFirst("\\[", "").trim();
-                    int price = Integer.parseInt(nameAndPrice[1].replace("]", "").trim());
-
-                    product = new Product(name, price);
-                } else {
-                    System.out.println("Неверно задан " + itemNumber + " предмет багажа в строке " + App.getLineNumber() +
-                            ". Должны быть указаны название и цена, разделенные \":\", предметы разделены \",\".");
-                    System.exit(1);
-                    return;
+                    if (foundClosingSquareBracket) break;
                 }
 
-                addProduct(product);
-
-                if (foundClosingSquareBracket) break;
-            }
-            if (scanner.hasNext()) {
-                System.out.println("Неверное количество аргументов в строке " + App.getLineNumber() + "." +
-                    "(не считалось: \"" + scanner.next() + "\")");
+                if (scanner.hasNext()) {
+                    System.out.println("Неверное количество аргументов в строке " + App.getLineNumber() + "." +
+                        "(не считалось: \"" + scanner.next() + "\")");
+                    System.exit(1);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() +
+                        ". Цена(после \":\") должна быть целым числом.");
                 System.exit(1);
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() +
-                    ". Цена(после \":\") должна быть целым числом.");
-            System.exit(1);
         }
     }
 }

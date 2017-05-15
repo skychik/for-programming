@@ -53,11 +53,13 @@ public class Employee extends Character implements Comparable {
 
     @Override
     public String toString() {
-        return ("Employee," + getName()  +
-                "," + getProfession() +
-                "," + getSalary() +
-                "," + getAttitudeToBoss().toString() +
-                "," + getWorkQuality());
+        return ("Employee;" + getName()  +
+                ";" + getProfession() +
+                ";" + getSalary() +
+                ";" + getAttitudeToBoss().toString() +
+                ";" + getWorkQuality() +
+                ";" + getAvatarPath() +
+                ";{" + getNotes()) + "}";
     }
 
     @Override
@@ -171,7 +173,7 @@ public class Employee extends Character implements Comparable {
 
         try {
             sc = new Scanner(line);
-            sc.useDelimiter(",");
+            sc.useDelimiter(";");
 
             className = sc.next();
         } catch (NoSuchElementException e){
@@ -182,32 +184,20 @@ public class Employee extends Character implements Comparable {
         switch (className) {
             case "FactoryWorker": {
                 FactoryWorker fw = new FactoryWorker();
-                index = fw.stringToEmployee(sc);
-                if (index < 6) {
-                    System.out.println("Заданы не все параметры в строке " + App.getLineNumber());
-                    return null;
-                }
+                fw.stringToEmployee(sc);
                 fw.parseFactoryWorker(sc);
                 employee = fw;
                 break;
             }
             case "ShopAssistant": {
                 ShopAssistant shAs = new ShopAssistant();
-                index = shAs.stringToEmployee(sc);
-                if (index < 6 || sc.hasNext()) {
-                    System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
-                    return null;
-                }
+                shAs.stringToEmployee(sc);
                 employee = shAs;
                 break;
             }
             case "Employee": {
                 Employee emp = new Employee();
-                index = emp.stringToEmployee(sc);
-                if (index < 6 || sc.hasNext()) {
-                    System.out.println("Неверное количество параметров в строке " + App.getLineNumber());
-                    return null;
-                }
+                emp.stringToEmployee(sc);
                 employee = emp;
                 break;
             }
@@ -227,7 +217,7 @@ public class Employee extends Character implements Comparable {
     protected int stringToEmployee(Scanner sc) {
         int index = 1;
         try {
-            for (; sc.hasNext() && index < 6; index++)
+            for (; sc.hasNext() && index < 8; index++)
             switch (index){
                 case 1 : {
                     this.setName(sc.next());
@@ -273,6 +263,12 @@ public class Employee extends Character implements Comparable {
                 case 5 : {
                     this.workQuality = Byte.parseByte(sc.next());
                     break;
+                }
+                case  6 : {
+                    this.avatarPath = sc.next();
+                }
+                case  7 : {
+                    this.notes = sc.next().replace("{","").replace("}","");
                 }
             }
         } catch (NumberFormatException e) {
