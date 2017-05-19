@@ -7,8 +7,8 @@ import javax.swing.RowFilter;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.getTable;
 
@@ -20,19 +20,25 @@ public class MyCheckBoxTree extends CheckboxTree {
         setCheckingModel(new MyTreeCheckingModel(new DefaultTreeModel(rootNode)));
 
         addTreeCheckingListener(new TreeCheckingListener() {
-            RowFilter rowFilter;
-            ArrayList<MyRowFilter> filters;
-            Iterable<MyRowFilter> iterableRF;
+            RowFilter<TableModel, Integer> rowFilter;
+            boolean isRowFilterEmpty = true;
 
             public void valueChanged(TreeCheckingEvent e) {
+                if (isRowFilterEmpty) {
+                    isRowFilterEmpty = false;
+                    rowFilter = RowFilter.notFilter(RowFilter.regexFilter(""));
+                }
+
                 if (e.getPath().toString().length() == 10) {
-                    System.out.println("root");
                     //root
+
                     if (e.isCheckedPath()) {
                         //show everything
+
                         getTable().getSorter().setRowFilter(null);
                     } else {
                         //hide everything
+
                         getTable().getSorter().setRowFilter(new RowFilter<TableModel, Integer>() {
                             @Override
                             public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
@@ -42,28 +48,30 @@ public class MyCheckBoxTree extends CheckboxTree {
                     }
                 } else {
                     //not root
+
+                    ArrayList<RowFilter<TableModel, Integer>> filters = new ArrayList<>();
+                    filters.add(rowFilter);
+
                     if (e.isCheckedPath()) {
                         //show this
-                        /*Iterable<RowFilter> filters = new Iterable() {
-                            @Override
-                            public Iterator<RowFilter<? super M, ? super I>> iterator() {
-                                return ;
-                            }
-                        };*/
 
-                        iterableRF = new Iterable<MyRowFilter>() {
-                            @Override
-                            public Iterator<MyRowFilter> iterator() {
-                                return filters.iterator();
-                            }
-                        }
+                        System.out.println(e.getPath().toString().substring(11, e.getPath().toString().length() - 1));
 
-                        getTable().getSorter().setRowFilter(RowFilter.orFilter(iterableRF));
+                        filters.add(RowFilter.regexFilter(
+                                "(?i)" + e.getPath().toString().substring(11, e.getPath().toString().length() - 1), 1));
+
+                        rowFilter = RowFilter.orFilter(filters);
                     } else {
                         //hide this
-                        getTable().getSorter().setRowFilter(RowFilter.notFilter(RowFilter.regexFilter(
-                                "(?i)" + e.getPath().toString().substring(11, e.getPath().toString().length() - 2), 0)));
+
+                        System.out.println(e.getPath().toString().substring(11, e.getPath().toString().length() - 1));
+
+                        filters.add(RowFilter.notFilter(RowFilter.regexFilter(
+                                "(?i)" + e.getPath().toString().substring(11, e.getPath().toString().length() - 1), 1)));
+
+                        rowFilter = RowFilter.andFilter(filters);
                     }
+
                     getTable().getSorter().setRowFilter(rowFilter);
                 }
             }
