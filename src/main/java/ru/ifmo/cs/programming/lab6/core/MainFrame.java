@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
     private JButton searchButton;
     private StandartButton saveButton;
     private StandartButton clearButton;
-    private StandartButton remove;
+    private StandartButton standartValuesButton;
     private static JTextArea notes = null;
     private static JTextField nameField;
     private static JComboBox<String> professionComboBox;
@@ -415,7 +415,7 @@ public class MainFrame extends JFrame {
         constraints.gridx = 1;
         constraints.gridy = 2;
         //Кнопка Remove
-        makeRemoveButton(constraints);
+        makeStandartValuesFieldsButton(constraints);
 
         constraints.gridx = 1;
         constraints.gridy = 4;
@@ -562,15 +562,15 @@ public class MainFrame extends JFrame {
         commandTab.add(scrollNotes, constraints);
     }
 
-    private void makeRemoveButton(GridBagConstraints constraints){
-        remove = new StandartButton("Remove");
+    private void makeStandartValuesFieldsButton(GridBagConstraints constraints){
+        standartValuesButton = new StandartButton("Standart Values");
 
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setPreferredSize(new Dimension(500,80));
-        panel.add(remove, new BorderLayout().CENTER);
+        panel.add(standartValuesButton, new BorderLayout().CENTER);
 
-        remove.addActionListener(new java.awt.event.ActionListener(){
+        standartValuesButton.addActionListener(new java.awt.event.ActionListener(){
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -816,7 +816,7 @@ public class MainFrame extends JFrame {
                    @Override
                    public void actionPerformed(ActionEvent ev) {
                        clearButton.setBackground(colorChooser.getColor());
-                       remove.setBackground(colorChooser.getColor());
+                       standartValuesButton.setBackground(colorChooser.getColor());
                        clearButton.setBackground(colorChooser.getColor());
                        frame.dispose();
                    }

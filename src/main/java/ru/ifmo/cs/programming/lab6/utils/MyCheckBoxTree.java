@@ -19,67 +19,63 @@ public class MyCheckBoxTree extends CheckboxTree {
 
         setCheckingModel(new MyTreeCheckingModel(new DefaultTreeModel(rootNode)));
 
-        addTreeCheckingListener(new TreeCheckingListener() {
-            RowFilter<TableModel, Integer> rowFilter;
-            boolean isRowFilterEmpty = true;
-
-            public void valueChanged(TreeCheckingEvent e) {
-                if (isRowFilterEmpty) {
-                    isRowFilterEmpty = false;
-                    rowFilter = RowFilter.notFilter(RowFilter.regexFilter(""));
-                }
-
-                if (e.getPath().toString().length() == 10) {
-                    //root
-
-                    if (e.isCheckedPath()) {
-                        //show everything
-
-                        getTable().getSorter().setRowFilter(null);
-                    } else {
-                        //hide everything
-
-                        getTable().getSorter().setRowFilter(new RowFilter<TableModel, Integer>() {
-                            @Override
-                            public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                                return false;
-                            }
-                        });
-                    }
-                } else {
-                    //not root
-
-                    ArrayList<RowFilter<TableModel, Integer>> filters = new ArrayList<>();
-                    filters.add(rowFilter);
-
-                    if (e.isCheckedPath()) {
-                        //show this
-
-                        System.out.println(e.getPath().toString().substring(11, e.getPath().toString().length() - 1));
-
-                        filters.add(RowFilter.regexFilter(
-                                "(?i)" + e.getPath().toString().substring(11, e.getPath().toString().length() - 1), 1));
-
-                        rowFilter = RowFilter.orFilter(filters);
-                    } else {
-                        //hide this
-
-                        System.out.println(e.getPath().toString().substring(11, e.getPath().toString().length() - 1));
-
-                        filters.add(RowFilter.notFilter(RowFilter.regexFilter(
-                                "(?i)" + e.getPath().toString().substring(11, e.getPath().toString().length() - 1), 1)));
-
-                        rowFilter = RowFilter.andFilter(filters);
-                    }
-
-                    getTable().getSorter().setRowFilter(rowFilter);
-                }
-            }
-        });
+        addTreeCheckingListener(new MyListener());
 
         setCellRenderer(new MyCheckBoxTreeCellRenderer());
 
         //setShowsRootHandles(true);
         //this.addMouseListener(new );
+    }
+
+    class MyListener implements TreeCheckingListener {
+        RowFilter<TableModel, Integer> rowFilter;
+        boolean isRowFilterEmpty = true;
+
+        public void valueChanged(TreeCheckingEvent e) {
+            if (isRowFilterEmpty) {
+                isRowFilterEmpty = false;
+                rowFilter = RowFilter.notFilter(RowFilter.regexFilter(""));
+            }
+
+            if (e.getPath().toString().length() == 10) {
+                //root
+                if (e.isCheckedPath()) {
+                    //show everything
+                    getTable().getSorter().setRowFilter(null);
+                } else {
+                    //hide everything
+                    getTable().getSorter().setRowFilter(new RowFilter<TableModel, Integer>() {
+                        @Override
+                        public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+                            return false;
+                        }
+                    });
+                }
+            } else {
+                //not root
+                ArrayList<RowFilter<TableModel, Integer>> filters = new ArrayList<>();
+                filters.add(rowFilter);
+
+                if (e.isCheckedPath()) {
+                    //show this
+                    System.out.println(e.getPath().toString().substring(11, e.getPath().toString().length() - 1));
+
+                    filters.add(RowFilter.regexFilter(
+                            "(?i)" + e.getPath().toString().substring(11, e.getPath().toString().length() - 1), 1));
+
+                    rowFilter = RowFilter.orFilter(filters);
+                } else {
+                    //hide this
+                    System.out.println(e.getPath().toString().substring(11, e.getPath().toString().length() - 1));
+
+                    filters.add(RowFilter.notFilter(RowFilter.regexFilter(
+                            "(?i)" + e.getPath().toString().substring(11, e.getPath().toString().length() - 1), 1)));
+
+                    rowFilter = RowFilter.andFilter(filters);
+                }
+
+                getTable().getSorter().setRowFilter(rowFilter);
+            }
+        }
     }
 }
