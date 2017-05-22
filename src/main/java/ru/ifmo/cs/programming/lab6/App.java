@@ -22,10 +22,6 @@ public class App {
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
-    public static final Color backgroundEighthAlphaColor = new Color(112, 122, 130, 32);
-    public static final Color backgroundHalfAlphaColor = new Color(112, 122, 130, 128);
-    public static final Color backgroundColor = new Color(112, 122, 130);
-    public static final Color whiteTextColor = new Color(241, 242, 243);
 
     public static void main(String... args) {
         //i'm not sure, that Pattern has to be that big, but it works

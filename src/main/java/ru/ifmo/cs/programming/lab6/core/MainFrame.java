@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Enumeration;
 import java.util.Objects;
@@ -40,7 +41,7 @@ public class MainFrame extends JFrame {
     private StandartButton standartValuesButton;
     private static JTextArea notes = null;
     private static JTextField nameField;
-    private static JComboBox<String> professionComboBox;
+    private static JComboBox professionComboBox;
     private static JSlider salarySlider;
     private static ButtonGroup bg;
     private JPanel bossAttitudeRadioPanel;
@@ -50,7 +51,7 @@ public class MainFrame extends JFrame {
     private Background background;
     private Dimension size;
     private ArrayDeque<Employee> deque;
-    private static JButton avatar;
+    public static JButton avatar;
     private String avatarPath;
     private FileFilterExt eff;
     private JFileChooser fileChooser;
@@ -60,7 +61,6 @@ public class MainFrame extends JFrame {
             {"jpg" , "Изображения(*.jpg)"}};
 
     private static String fontName = "Gill Sans MT Bold Condensed";
-    private static String imageDir = System.getProperty("user.dir") + "\\src\\resources\\images\\";
 
     private Color foregroundColor = new Color(152, 156, 153);
     private Color opaqueColor = new Color(0,0,0,0);
@@ -71,7 +71,7 @@ public class MainFrame extends JFrame {
         super("MainFrame");
 
         setIconImage(new ImageIcon(
-                System.getProperty("user.dir") + "\\src\\resources\\images\\icon.png").getImage());
+                System.getProperty("user.dir") + "/src/resources/images/icon.png").getImage());
 
         this.deque = deque;
 
@@ -136,7 +136,7 @@ public class MainFrame extends JFrame {
 
         //Цвет
         tabbedPane.setForeground(new Color(152, 156, 153));
-        tabbedPane.setBackground(App.backgroundEighthAlphaColor);
+        tabbedPane.setBackground(MyColor.backgroundEighthAlphaColor);
 
         mainPanel.add(
                 tabbedPane,
@@ -238,7 +238,7 @@ public class MainFrame extends JFrame {
         //UIManager.put("Tree.textBackground", Color.WHITE);
 
         tree.setOpaque(false);
-        tree.setBackground(App.backgroundEighthAlphaColor);
+        tree.setBackground(MyColor.backgroundEighthAlphaColor);
 
         tableTab.add(tree, constraints);
     }
@@ -273,8 +273,8 @@ public class MainFrame extends JFrame {
     private void makeSearchField(GridBagConstraints constraints) {
         searchField = new JTextField("Type to search...", 1);
 
-        searchField.setForeground(App.whiteTextColor);
-        searchField.setBackground(App.backgroundEighthAlphaColor);
+        searchField.setForeground(MyColor.whiteTextColor);
+        searchField.setBackground(MyColor.backgroundEighthAlphaColor);
 
         //if ENTER typed
         searchField.addActionListener(e -> {
@@ -305,7 +305,7 @@ public class MainFrame extends JFrame {
     }
 
     private void makeSearchButton(GridBagConstraints constraints) {
-        searchButton = new JButton(new ImageIcon(System.getProperty("user.dir") + "\\src\\resources\\images\\loop.png"));
+        searchButton = new JButton(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/loop.png"));
         //searchButton.setBackground(new Color(0, 0, 0, 0));
         searchButton.setMargin(new Insets(0, 0, 0, 0));
         searchButton.setBorder(null);
@@ -347,7 +347,7 @@ public class MainFrame extends JFrame {
 //        saveButton.setBackground(new Color(152, 156, 153, 32));
         //saveButton.setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(5, 15, 5, 15)));
         //saveButton.setBorderPainted(false);
-        saveButton.setBackground(App.backgroundEighthAlphaColor);
+        saveButton.setBackground(MyColor.backgroundEighthAlphaColor);
 
         saveButton.addActionListener(e -> save(App.getDeque()));
 
@@ -428,14 +428,16 @@ public class MainFrame extends JFrame {
         //tab2.setOpaque(false);
     }
 
-    private void makeAvatarButton(GridBagConstraints constraints){
-        avatarPath = imageDir + "standartAvatar.jpg";
+    private void makeAvatarButton(GridBagConstraints constraints) {
+        avatarPath = System.getProperty("user.dir") + "/src/resources/images/standartAvatar.jpg";
         avatar = new JButton();
         try {
             Image avatarImage = ImageIO.read(new File(avatarPath));
             avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
             avatar.setBackground(new Color(0,0,0,0));
-        }catch (IOException e){}
+        } catch (IOException e) {
+            //TODO: and what?
+        }
         avatar.setBorder(new LineBorder(new Color(60, 60, 60), 2));
 
         avatar.addMouseListener(new java.awt.event.MouseListener() {
@@ -518,7 +520,7 @@ public class MainFrame extends JFrame {
                 if (file.isDirectory())
                     return true;
                 if( extension == null )
-                    return (extension.length() == 0);
+                    return (extension.length() == 0);//TODO: might produce NULLPOINTEREXCEPTION
                 return file.getName().endsWith(extension);
             }
             return false;
@@ -530,12 +532,14 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public void setAvatarIcon(File avatarFile){
+    private void setAvatarIcon(File avatarFile){
         try {
             Image avatarImage = ImageIO.read(avatarFile);
             avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
             avatar.setBackground(new Color(0,0,0,0));
-        }catch (IOException e){}catch (NullPointerException e){
+        } catch (IOException e) {
+            //TODO: and what?
+        } catch (NullPointerException e) {
             JOptionPane.showMessageDialog(MainFrame.this,
                     "Выбранный файл ( " +
                             fileChooser.getSelectedFile() + " ) не может быть выбран в качестве аватара");
@@ -568,7 +572,7 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setPreferredSize(new Dimension(500,80));
-        panel.add(standartValuesButton, new BorderLayout().CENTER);
+        panel.add(standartValuesButton, BorderLayout.CENTER);
 
         standartValuesButton.addActionListener(new java.awt.event.ActionListener(){
 
@@ -582,12 +586,12 @@ public class MainFrame extends JFrame {
     }
 
     private void makeOkButton(GridBagConstraints constraints){
-        JButton ok = new JButton(new ImageIcon(imageDir + "button_ok.png"));
+        JButton ok = new JButton(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok.png"));
         ok.setBorder(null);
         //Нажатая кнопка
-        ok.setPressedIcon(new ImageIcon(imageDir + "button_ok_2.png"));
+        ok.setPressedIcon(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok_2.png"));
         //Кнопка при наведении
-        ok.setSelectedIcon(new ImageIcon(imageDir + "button_ok_1.png"));
+        ok.setSelectedIcon(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok_1.png"));
         //Прозрачность фона
         ok.setBackground(opaqueColor);
         ok.addActionListener(new java.awt.event.ActionListener() {
@@ -603,7 +607,7 @@ public class MainFrame extends JFrame {
         panel.setOpaque(false);
 
         panel.setPreferredSize(new Dimension(500,80));
-        panel.add(ok, new BorderLayout().CENTER);
+        panel.add(ok, BorderLayout.CENTER);
 
         commandTab.add(panel, constraints);
     }
@@ -625,8 +629,8 @@ public class MainFrame extends JFrame {
 
     private void makeClassTypeChooser(GridBagConstraints constraints){
         String[] classType = {"Employee", "FactoryWorker", "ShopAssistant"};
-        classList = new JList<String>(classType);
-        classList.setSelectionMode(0);
+        classList = new JList<>(classType);
+        classList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         classList.setPreferredSize(new Dimension(500, 69));
         //Шрифт
         classList.setFont(font);
@@ -642,7 +646,7 @@ public class MainFrame extends JFrame {
 
     private void makeProfessionComboBox(GridBagConstraints constraints){
         String[] prof = {"Programmer", "Economist", "Manager"};
-        professionComboBox = new JComboBox<String>(prof);
+        professionComboBox = new JComboBox<>(prof);
         professionComboBox.setForeground(foregroundColor);
         professionComboBox.setFont(font);
         professionComboBox.setPreferredSize(new Dimension(500, 30));
@@ -662,7 +666,7 @@ public class MainFrame extends JFrame {
         //Ползунок перемещается только по значениям
         salarySlider.setSnapToTicks(true);
         //Смена курсора
-        salarySlider.setCursor(new Cursor(12));
+        salarySlider.setCursor(new Cursor(Cursor.HAND_CURSOR));
         //Шрифт
         salarySlider.setFont(font);
         salarySlider.setForeground(foregroundColor);
@@ -765,8 +769,8 @@ public class MainFrame extends JFrame {
     }
 
     private void setBackground() {
-        background = new Background(new ImageIcon(
-                System.getProperty("user.dir") + "\\src\\resources\\images\\background.png").getImage());
+        background = new Background(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/background.png").getImage());
+
         getContentPane().add(background);
     }
 
@@ -824,7 +828,7 @@ public class MainFrame extends JFrame {
                panel.add(button);
 
                frame.add(panel);
-               frame.setDefaultCloseOperation(1);
+               frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
                frame.setVisible(true);
                frame.setLocationRelativeTo(null);
                frame.pack();
@@ -837,13 +841,15 @@ public class MainFrame extends JFrame {
         standartAvatarItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String avatarStandartPath = imageDir + "standartAvatar.jpg";
-                avatarPath = avatarStandartPath;
+                String avatarStandartPath = getClass().getResource("images/standartAvatar.jpg").toString();
+                avatarPath = getClass().getResource("images/standartAvatar.jpg").toString();
                 try {
                     Image avatarImage = ImageIO.read(new File(avatarStandartPath));
                     avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
                     avatar.setBackground(new Color(0,0,0,0));
-                }catch (IOException ex){}
+                } catch (IOException ex) {
+                    //TODO: and what?
+                }
             }
         });
         standartAvatarItem.setFont(font);
@@ -863,7 +869,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setDefaultCommandTab(){
-        avatar.setIcon(new ImageIcon(imageDir + "standartAvatar.jpg"));
+        avatar.setIcon(new ImageIcon(getClass().getResource("images/standartAvatar.jpg")));
         notes.setText("Здесь можно вводить заметки");
         nameField.setText("Name");
         classList.setSelectedIndex(0);
@@ -906,12 +912,12 @@ public class MainFrame extends JFrame {
             }
         }
 
-        first: for (Enumeration<AbstractButton> buttons = bg.getElements();
-             buttons.hasMoreElements();) {
+        for (Enumeration<AbstractButton> buttons = bg.getElements();
+             buttons.hasMoreElements(); ) {
             AbstractButton button = buttons.nextElement();
             if (i == 0) {
                 button.setSelected(true);
-                break first;
+                break;
             }
             i--;
         }
@@ -933,7 +939,7 @@ public class MainFrame extends JFrame {
                 break;
             }
         }
-        professionComboBox.setSelectedIndex(index);
+        professionComboBox.setSelectedIndex(index);//TODO: might produce NULLPOINTEREXCEPTION
     }
 
     public static void setClassList(String className){
@@ -952,7 +958,7 @@ public class MainFrame extends JFrame {
                 break;
             }
         }
-        classList.setSelectedIndex(index);
+        classList.setSelectedIndex(index);//TODO: might produce NULLPOINTEREXCEPTION
     }
 
     public static void setWorkQualityStepper(byte quality){
@@ -969,18 +975,6 @@ public class MainFrame extends JFrame {
 
     public static void setNotes(String note){
         notes.setText(note);
-    }
-
-    public static void setAvatar(String avatarPath){
-        File avatarFile = new File(avatarPath);
-        try {
-            Image avatarImage = ImageIO.read(avatarFile);
-            avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
-            avatar.setBackground(new Color(0,0,0,0));
-        }catch (IOException e){}catch (NullPointerException e){
-            avatar.setIcon(new ImageIcon(imageDir + "standartAvatar.jpg"));
-            avatar.setBackground(new Color(0,0,0,0));
-        }
     }
 
     /**

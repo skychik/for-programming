@@ -43,13 +43,13 @@ public class MyTableCellRenderer extends DefaultTableCellRenderer {
         c.setOpaque(true);
 
         c.setForeground(isSelected ?
-                App.whiteTextColor :
-                App.whiteTextColor.brighter());
+                MyColor.whiteTextColor :
+                MyColor.whiteTextColor.brighter());
         c.setBackground(isSelected ?
-                App.backgroundColor :
-                App.backgroundEighthAlphaColor);
+                MyColor.backgroundColor :
+                MyColor.backgroundEighthAlphaColor);
         c.setBorder(hasFocus ?
-                BorderFactory.createLineBorder(App.whiteTextColor, SBT) :
+                BorderFactory.createLineBorder(MyColor.whiteTextColor, SBT) :
                 BorderFactory.createEmptyBorder(BT, BT, BT, BT));
 
 //        return c;

@@ -3,16 +3,15 @@ package ru.ifmo.cs.programming.lab6.utils;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.plaf.ColorUIResource;
-import javax.swing.event.TreeModelEvent;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 
 import static ru.ifmo.cs.programming.lab6.App.getDeque;
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.*;
@@ -37,7 +36,7 @@ public class MyTable extends JTable implements TableModelListener {
 
         sorter = new TableRowSorter<>(model);
         this.setRowSorter(sorter);
-        tableListner();
+        tableListener();
         //this.setDefaultEditor(String.class, new DefaultCellEditor(new JComboBox(colors)));
     }
 
@@ -54,7 +53,7 @@ public class MyTable extends JTable implements TableModelListener {
 
         // Do something with the data...
     }*/
-    public void tableListner(){
+    private void tableListener(){
         this.addMouseListener(new java.awt.event.MouseListener(){
 
             @Override
@@ -97,13 +96,22 @@ public class MyTable extends JTable implements TableModelListener {
         });
     }
 
-    private boolean checkClicks(MouseEvent e){
-        boolean doubleClick;
-        if(e.getClickCount() == 1){
-            doubleClick = false;
-        }else{
-            doubleClick = true;
+    private void setAvatar(String avatarPath) {
+        File avatarFile = new File(avatarPath);
+        try {
+            Image avatarImage = ImageIO.read(avatarFile);
+            avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
+            avatar.setBackground(new Color(0,0,0,0));
+        } catch (IOException e) {
+            //TODO: and what?
+
+        } catch (NullPointerException e) {
+            avatar.setIcon(new ImageIcon(getClass().getResource("images/standartAvatar.jpg")));
+            avatar.setBackground(new Color(0,0,0,0));
         }
-        return doubleClick;
+    }
+
+    private boolean checkClicks(MouseEvent e) {
+        return e.getClickCount() != 1;
     }
 }
