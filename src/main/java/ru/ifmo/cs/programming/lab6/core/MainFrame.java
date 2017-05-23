@@ -1,54 +1,43 @@
+//TODO: make commandTab as new class
 package ru.ifmo.cs.programming.lab6.core;
-
-import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.*;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
-import ru.ifmo.cs.programming.lab6.App;
-import ru.ifmo.cs.programming.lab6.utils.*;
+import ru.ifmo.cs.programming.lab6.utils.Background;
+import ru.ifmo.cs.programming.lab6.utils.MyColor;
+import ru.ifmo.cs.programming.lab6.utils.StandartButton;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Enumeration;
-import java.util.Objects;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.save;
+import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
+import static ru.ifmo.cs.programming.lab6.utils.MyColor.foregroundColor;
+import static ru.ifmo.cs.programming.lab6.utils.MyColor.opaqueColor;
 
 public class MainFrame extends JFrame {
 
     private JPanel mainPanel;
     private static JTabbedPane tabbedPane;
-    private JPanel tableTab;
     private JPanel commandTab;
-    private JTree tree;
-    private static MyTable table;
-    private JTextField searchField;
-    private boolean isSearchFieldEmpty = true;
-    private JButton searchButton;
-    private StandartButton saveButton;
-    private StandartButton clearButton;
     private StandartButton standartValuesButton;
     private static JTextArea notes = null;
     private static JTextField nameField;
     private static JComboBox professionComboBox;
     private static JSlider salarySlider;
     private static ButtonGroup bg;
-    private JPanel bossAttitudeRadioPanel;
     private JRadioButton defaultButton;
     private String selectedRadio;
     private static JSpinner workQualityStepper;
-    private Background background;
     private Dimension size;
     private ArrayDeque<Employee> deque;
     public static JButton avatar;
@@ -57,13 +46,8 @@ public class MainFrame extends JFrame {
     private JFileChooser fileChooser;
     private JColorChooser colorChooser;
     private static JList<String> classList;
-    private final String[][] FILTERS = {{"png", "Изображения (*.png)"},
-            {"jpg" , "Изображения(*.jpg)"}};
 
-    private static String fontName = "Gill Sans MT Bold Condensed";
-
-    private Color foregroundColor = new Color(152, 156, 153);
-    private Color opaqueColor = new Color(0,0,0,0);
+    static String fontName = "Gill Sans MT Bold Condensed";
     private Font font = new Font(fontName, Font.ITALIC, 13);
     private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
 
@@ -123,7 +107,10 @@ public class MainFrame extends JFrame {
             protected void paintContentBorder(Graphics g,int tabPlacement,int selectedIndex){}
         });*/
 
-        setTableTab();
+        JPanel tableTab = new MyTableTab(deque);
+        tabbedPane.addTab("Table", tableTab);
+        tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+
         setCommandTab();
 
         //Прозрачность фона вкладок
@@ -160,188 +147,8 @@ public class MainFrame extends JFrame {
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);//при маленьком окне табы в линию, а не друг под другом
     }
 
-    private void setTableTab() {
-        tableTab = new JPanel();
-
-        tableTab.setFont(new Font(fontName, Font.PLAIN, 16));
-        //tableTab.setBackground(App.backgroundEighthAlphaColor);
-        tableTab.setOpaque(false);
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        GridBagLayout gridBagLayout = new GridBagLayout();
-        tableTab.setLayout(gridBagLayout);
-
-        constraints.weightx = 0.1;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 2;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        makeTree(constraints);
-
-        constraints.weightx = 1.0;
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        makeSearchField(constraints);
-
-        constraints.weightx = 0.0;
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        makeSearchButton(constraints);
-
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 3;
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        makeScrollTable(constraints);
-
-        constraints.weightx = 0.0;
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        makeClearButton(constraints);
-
-        /*constraints.weightx = 0.0;
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        makeSaveButton(constraints);*/
-
-        tabbedPane.addTab("Table", tableTab);
-
-        tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-    }
-
-    private void makeTree(GridBagConstraints constraints) {
-        tree = new MyCheckBoxTree(initRootNode());
-
-        //tree.putClientProperty();
-        //UIManager.put("Tree.textForeground", Color.WHITE);
-        //UIManager.put("Tree.textBackground", Color.WHITE);
-
-        tree.setOpaque(false);
-        tree.setBackground(MyColor.backgroundEighthAlphaColor);
-
-        tableTab.add(tree, constraints);
-    }
-
-    private DefaultMutableTreeNode initRootNode() {
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Employee");
-
-        DefaultMutableTreeNode secondNode;
-
-        secondNode = new DefaultMutableTreeNode("Factory Worker");
-        rootNode.add(secondNode);
-
-        secondNode = new DefaultMutableTreeNode("Shop Assistant");
-        rootNode.add(secondNode);
-
-        return rootNode;
-    }
-
-    private void makeScrollTable(GridBagConstraints constraints) {
-        table = new MyTable(new MyTableModel(deque));
-
-        table.getModel().addTableModelListener(table);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setOpaque(false);
-        //scrollPane.setBackground(new Color(0, 0, 0, 0));
-        scrollPane.getViewport().setOpaque(false);
-
-        tableTab.add(scrollPane, constraints);
-    }
-
-    private void makeSearchField(GridBagConstraints constraints) {
-        searchField = new JTextField("Type to search...", 1);
-
-        searchField.setForeground(MyColor.whiteTextColor);
-        searchField.setBackground(MyColor.backgroundEighthAlphaColor);
-
-        //if ENTER typed
-        searchField.addActionListener(e -> {
-            if (Objects.equals(searchField.getText(), "")) {
-                searchField.setText("Type to search...");
-                isSearchFieldEmpty = true;
-            } else isSearchFieldEmpty = false;
-            doSearch();
-        });
-
-        //автоматически заполняет строчку дефолтной строкой
-        searchField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (isSearchFieldEmpty) searchField.setText(null); // Empty the text field when it receives focus
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (Objects.equals(searchField.getText(), "")) {
-                    searchField.setText("Type something...");
-                    isSearchFieldEmpty = true;
-                } else isSearchFieldEmpty = false;
-            }
-        });
-
-        tableTab.add(searchField, constraints);
-    }
-
-    private void makeSearchButton(GridBagConstraints constraints) {
-        searchButton = new JButton(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/loop.png"));
-        //searchButton.setBackground(new Color(0, 0, 0, 0));
-        searchButton.setMargin(new Insets(0, 0, 0, 0));
-        searchButton.setBorder(null);
-
-        searchButton.addActionListener(e -> doSearch());
-
-        tableTab.add(searchButton, constraints);
-    }
-
-    private void doSearch() {
-        if (isSearchFieldEmpty) {
-            table.getSorter().setRowFilter(null);
-        } else {
-            //поиск по таблице без учета регистра
-            table.getSorter().setRowFilter(RowFilter.regexFilter("(?i)" + searchField.getText().trim()));
-        }
-    }
-
-    private void makeClearButton(GridBagConstraints constraints) {
-        clearButton = new StandartButton("Clear table");
-
-        //clearButton.setBorderPainted(false);
-        //clearButton.setBackground(App.backgroundEighthAlphaColor);
-
-        clearButton.addActionListener(e -> {
-            // Потверждение очищения таблицы
-            int n = JOptionPane.showConfirmDialog(clearButton, "Очистить таблицу работников?",
-                    "Подтверждение", JOptionPane.YES_NO_OPTION);
-            if (n == 0) deque.clear();
-        });
-
-        tableTab.add(clearButton, constraints);
-    }
-
-    private void makeSaveButton(GridBagConstraints constraints) {
-        saveButton = new StandartButton("Save");
+    /*private void makeSaveButton(GridBagConstraints constraints) {
+        StandartButton saveButton = new StandartButton("Save");
 
         //saveButton.setForeground(Color.BLACK);
 //        saveButton.setBackground(new Color(152, 156, 153, 32));
@@ -352,7 +159,7 @@ public class MainFrame extends JFrame {
         saveButton.addActionListener(e -> save(App.getDeque()));
 
         //tableTab.add(saveButton, constraints);
-    }
+    }*/
 
     private void setCommandTab() {
 
@@ -477,6 +284,9 @@ public class MainFrame extends JFrame {
     {
         avatar.addActionListener(new ActionListener()
         {
+            private final String[][] FILTERS = {{"png", "Изображения (*.png)"},
+                    {"jpg" , "Изображения(*.jpg)"}};
+
             public void actionPerformed(ActionEvent e)
             {
                 fileChooser.setDialogTitle("Выберите файл");
@@ -497,10 +307,6 @@ public class MainFrame extends JFrame {
                 }
             }
         });
-    }
-
-    public static MyTable getTable() {
-        return table;
     }
 
     class FileFilterExt extends javax.swing.filechooser.FileFilter
@@ -599,7 +405,7 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addEmployee();
-                table.updateUI();
+                getTable().updateUI();
                 setDefaultCommandTab();
             }
         });
@@ -675,7 +481,7 @@ public class MainFrame extends JFrame {
     }
 
     private void makeBossAttitudePanel(GridBagConstraints constraints){
-        bossAttitudeRadioPanel = new JPanel(new GridLayout(0, 5, 0, 0));
+        JPanel bossAttitudeRadioPanel = new JPanel(new GridLayout(0, 5, 0, 0));
         bossAttitudeRadioPanel.setPreferredSize(new Dimension(400,50));
         String[] names1 = { "HATE", "LOW", "NORMAL", "HIGH"};
         bg = new ButtonGroup();
@@ -769,7 +575,8 @@ public class MainFrame extends JFrame {
     }
 
     private void setBackground() {
-        background = new Background(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/background.png").getImage());
+        Background background = new Background(new ImageIcon(System.getProperty("user.dir") +
+                "/src/resources/images/background.png").getImage());
 
         getContentPane().add(background);
     }
@@ -814,18 +621,20 @@ public class MainFrame extends JFrame {
                colorChooser.setPreferredSize(new Dimension(700,400));
                panel.add(colorChooser);
 
-               JButton button = new JButton("OK");
-               button.setPreferredSize(new Dimension(50,40));
-               button.addActionListener(new java.awt.event.ActionListener() {
+               JButton okButton = new JButton("OK");
+               okButton.setPreferredSize(new Dimension(50,40));
+               okButton.addActionListener(new java.awt.event.ActionListener() {
                    @Override
                    public void actionPerformed(ActionEvent ev) {
-                       clearButton.setBackground(colorChooser.getColor());
+
+                       //TODO: make normal color change, with every StandartButton
+                       //clearButton.setBackground(colorChooser.getColor());
                        standartValuesButton.setBackground(colorChooser.getColor());
-                       clearButton.setBackground(colorChooser.getColor());
+                       //clearButton.setBackground(colorChooser.getColor());
                        frame.dispose();
                    }
                });
-               panel.add(button);
+               panel.add(okButton);
 
                frame.add(panel);
                frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
@@ -984,7 +793,7 @@ public class MainFrame extends JFrame {
      *
      */
 
-    private void $$$setupUI$$$() {
+    /*private void $$$setupUI$$$() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(15, 15, 15, 15), -1, -1));
         mainPanel.setBackground(new Color(-9408400));
@@ -1048,7 +857,7 @@ public class MainFrame extends JFrame {
         defaultComboBoxModel1.addElement("FactoryWorker");
         professionComboBox.setModel(defaultComboBoxModel1);
         panel2.add(professionComboBox, new com.intellij.uiDesigner.core.GridConstraints(5, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-    }
+    }*/
 
     /**
      * @noinspection ALL

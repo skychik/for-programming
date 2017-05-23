@@ -5,7 +5,6 @@ import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab6.core.MainFrame;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -93,7 +92,7 @@ public class App {
         f.setMaximumSize(new Dimension(1000, 1000));
     }
 
-    static void setInputStreamReader(InputStreamReader inputStreamReader) {
+    public static void setInputStreamReader(InputStreamReader inputStreamReader) {
         App.inputStreamReader = inputStreamReader;
     }
 

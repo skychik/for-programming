@@ -1,16 +1,17 @@
 package ru.ifmo.cs.programming.lab6.utils;
 
 
-import eu.floraresearch.lablib.gui.checkboxtree.*;
+import eu.floraresearch.lablib.gui.checkboxtree.CheckboxTree;
+import eu.floraresearch.lablib.gui.checkboxtree.TreeCheckingEvent;
+import eu.floraresearch.lablib.gui.checkboxtree.TreeCheckingListener;
 
-import javax.swing.RowFilter;
+import javax.swing.*;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import java.util.ArrayList;
 
-import static ru.ifmo.cs.programming.lab6.core.MainFrame.getTable;
+import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
 
 public class MyCheckBoxTree extends CheckboxTree {
 

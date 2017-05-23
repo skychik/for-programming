@@ -8,6 +8,8 @@ public class MyColor extends Color {
     public final static Color backgroundHalfAlphaColor = new Color(112, 122, 130, 128);
     public final static Color backgroundColor = new Color(112, 122, 130);
     public final static Color whiteTextColor = new Color(241, 242, 243);
+    public final static Color foregroundColor = new Color(152, 156, 153);
+    public final static Color opaqueColor = new Color(0,0,0,0);
 
     public MyColor(int r, int g, int b) {
         super(r, g, b);
