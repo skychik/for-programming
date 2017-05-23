@@ -32,4 +32,9 @@ public class ShopAssistant extends Employee {
                 ";" + getAvatarPath() +
                 ";{" + getNotes()) + "}";
     }
+
+    @Override
+    public String getSpeciality() {
+        return "Shop Assistant";
+    }
 }

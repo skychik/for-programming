@@ -5,6 +5,7 @@ import com.google.gson.stream.JsonToken;
 import ru.ifmo.cs.programming.lab5.App;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
+import ru.ifmo.cs.programming.lab6.utils.HasSpeciality;
 
 import java.io.IOException;
 import java.lang.*;
@@ -12,7 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Employee extends Character implements Comparable {
+public class Employee extends Character implements Comparable, HasSpeciality {
 
     private int salary = 0;
     private AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
@@ -292,6 +293,11 @@ public class Employee extends Character implements Comparable {
 
     public String getNotes(){
         return notes;
+    }
+
+    @Override
+    public String getSpeciality() {
+        return "Employee";
     }
 }
 

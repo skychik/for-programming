@@ -147,4 +147,9 @@ public class FactoryWorker extends Employee {
             }
         }
     }
+
+    @Override
+    public String getSpeciality() {
+        return "Factory Worker";
+    }
 }

@@ -24,7 +24,8 @@ public class App {
 
     public static void main(String... args) {
         //i'm not sure, that Pattern has to be that big, but it works
-        InteractiveModeFunctions.setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile("[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
+        InteractiveModeFunctions.setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile(
+                "[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
         try {
             if (getFilePath() == null)
                 setFilePath(new File(System.getProperty("user.dir") + "/src/resources/text_files/EmployeeFile.csv"));
@@ -64,7 +65,7 @@ public class App {
                 }
             }
         } catch (Exception e) {
-            // If Nimbus is not available, you can set the GUI to another look and feel.
+            System.out.println("Nimbus is not available, you can set the GUI to another look and feel.");
         }
 
         SwingUtilities.invokeLater(App::gui);
@@ -81,15 +82,11 @@ public class App {
     private static void gui() {
         JFrame f = new MainFrame(deque);
 
-        /*Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int locationX = (screenSize.width - f.getSize().width) / 2;
-        int locationY = (screenSize.height - f.getSize().height) / 2;
-        f.setBounds(locationX, locationY, f.getSize().width, f.getSize().height);//по центру экрана*/
-        f.setLocationRelativeTo(null);//вроде тоже самое
+        f.setLocationRelativeTo(null);//по центру экрана
+        //f.setResizable(false);
 
         f.pack();
         f.setVisible(true);
-        f.setMaximumSize(new Dimension(1000, 1000));
     }
 
     public static void setInputStreamReader(InputStreamReader inputStreamReader) {

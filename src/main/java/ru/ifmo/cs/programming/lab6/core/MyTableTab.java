@@ -34,6 +34,7 @@ public class MyTableTab extends JPanel {
         GridBagLayout gridBagLayout = new GridBagLayout();
         this.setLayout(gridBagLayout);
 
+        //Add components
         constraints.weightx = 0.1;
         constraints.weighty = 1.0;
         constraints.fill = GridBagConstraints.BOTH;

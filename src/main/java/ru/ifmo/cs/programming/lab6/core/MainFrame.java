@@ -650,8 +650,10 @@ public class MainFrame extends JFrame {
         standartAvatarItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String avatarStandartPath = getClass().getResource("images/standartAvatar.jpg").toString();
-                avatarPath = getClass().getResource("images/standartAvatar.jpg").toString();
+                String avatarStandartPath = System.getProperty("user.dir") +
+                        "/src/resources/images/standartAvatar.jpg";
+                avatarPath = System.getProperty("user.dir") +
+                        "/src/resources/images/standartAvatar.jpg";
                 try {
                     Image avatarImage = ImageIO.read(new File(avatarStandartPath));
                     avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
@@ -678,7 +680,8 @@ public class MainFrame extends JFrame {
     }
 
     private void setDefaultCommandTab(){
-        avatar.setIcon(new ImageIcon(getClass().getResource("images/standartAvatar.jpg")));
+        avatar.setIcon(new ImageIcon(System.getProperty("user.dir") +
+                "/src/resources/images/standartAvatar.jpg"));
         notes.setText("Здесь можно вводить заметки");
         nameField.setText("Name");
         classList.setSelectedIndex(0);

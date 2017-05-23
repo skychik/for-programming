@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MyTableModel implements TableModel {
-    private Set<TableModelListener> listeners = new HashSet<>();
+    private HashSet<TableModelListener> listeners = new HashSet<>();
     private ArrayDeque<Employee> deque;
 
     public MyTableModel(ArrayDeque<Employee> deque) {
@@ -26,10 +26,12 @@ public class MyTableModel implements TableModel {
             case 1:
                 return String.class;
             case 2:
-                return Integer.class;
+                return String.class;
             case 3:
-                return AttitudeToBoss.class;
+                return Integer.class;
             case 4:
+                return AttitudeToBoss.class;
+            case 5:
                 return Byte.class;
             default:
                 return Product.class;
@@ -37,7 +39,7 @@ public class MyTableModel implements TableModel {
     }
 
     public int getColumnCount() {
-        return 5;
+        return 6;
     }
 
     public String getColumnName(int columnIndex) {
@@ -45,12 +47,14 @@ public class MyTableModel implements TableModel {
             case 0:
                 return "Name";
             case 1:
-                return "Profession";
+                return "Speciality";
             case 2:
-                return "Salary";
+                return "Profession";
             case 3:
-                return "Attitude to boss";
+                return "Salary";
             case 4:
+                return "Attitude to boss";
+            case 5:
                 return "Work quality";
         }
         return "";
@@ -71,16 +75,18 @@ public class MyTableModel implements TableModel {
             case 0:
                 return employee.getName();
             case 1:
-                return employee.getProfession();
+                return employee.getSpeciality();
             case 2:
-                return employee.getSalary();
+                return employee.getProfession();
             case 3:
-                return employee.getAttitudeToBoss();
+                return employee.getSalary();
             case 4:
-                return employee.getWorkQuality();
+                return employee.getAttitudeToBoss();
             case 5:
+                return employee.getWorkQuality();
+            case 6://TODO: TAKE AWAY FROM HERE
                 return employee.getAvatarPath();
-            case 6:
+            case 7://TODO: TAKE AWAY FROM HERE
                 return employee.getNotes();
         }
         return "";
