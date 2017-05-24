@@ -2,6 +2,7 @@ package ru.ifmo.cs.programming.lab6;
 
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.utils.SaveDequeThread;
 import ru.ifmo.cs.programming.lab6.core.MainFrame;
 
 import javax.swing.*;
@@ -38,7 +39,7 @@ public class App {
         load(deque);
 
         //Save deque after every shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> save(deque)));
+        Runtime.getRuntime().addShutdownHook(new SaveDequeThread(deque));
 
         //GUI
         try {
@@ -83,7 +84,7 @@ public class App {
         JFrame f = new MainFrame(deque);
 
         f.setLocationRelativeTo(null);//по центру экрана
-        //f.setResizable(false);
+        f.setResizable(false);
 
         f.pack();
         f.setVisible(true);

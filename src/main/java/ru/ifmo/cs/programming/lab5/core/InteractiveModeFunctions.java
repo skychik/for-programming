@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
+import ru.ifmo.cs.programming.lab5.utils.SaveDequeThread;
 
 import java.io.*;
 import java.util.ArrayDeque;
@@ -181,19 +182,10 @@ public abstract class InteractiveModeFunctions {
      * @author Zhurbova A.E.
      */
     public static void save(ArrayDeque<Employee> deque) {
-        PrintWriter writer;
+        ArrayDeque<Employee> bufferedDeque = deque;
 
-        try {
-            writer = new PrintWriter(getFilePath());
-
-            for (Employee employee : deque) {
-                writer.println(employee);
-            }
-
-            writer.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Невозможно произвести запись в файл по пути: " + getFilePath());
-        }
+        SaveDequeThread thread = new SaveDequeThread(bufferedDeque);
+        thread.start();
     }
 
     /**

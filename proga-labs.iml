@@ -39,5 +39,12 @@
     <orderEntry type="library" name="Maven: com.jgoodies:forms:1.0.7" level="project" />
     <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
     <orderEntry type="library" name="Maven: eu.floraresearch:lablib-checkboxtree:4.0-beta-1" level="project" />
+    <orderEntry type="library" name="Maven: jpox:jpox-tangosol:1.1.9" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.8" level="project" />
+    <orderEntry type="library" name="Maven: javax.jdo:jdo2-api:2.0" level="project" />
+    <orderEntry type="library" name="Maven: geronimo-spec:geronimo-spec-jta:1.0.1B-rc2" level="project" />
+    <orderEntry type="library" name="Maven: jpox:jpox-thirdparty:1.1.9" level="project" />
+    <orderEntry type="library" name="Maven: jpox:jpox:1.1.9" level="project" />
+    <orderEntry type="library" name="Maven: com.tangosol:coherence-mock:3.4.2" level="project" />
   </component>
 </module>

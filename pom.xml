@@ -172,6 +172,27 @@
             <version>4.0-beta-1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/jpox/jpox-tangosol -->
+        <dependency>
+            <groupId>jpox</groupId>
+            <artifactId>jpox-tangosol</artifactId>
+            <version>1.1.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.tangosol/coherence-mock -->
+        <dependency>
+            <groupId>com.tangosol</groupId>
+            <artifactId>coherence-mock</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.java.dev.glazedlists</groupId>
+            <artifactId>glazedlists_java15</artifactId>
+            <version>1.9.1</version>
+        </dependency>
+
+
     </dependencies>
 
     <repositories>

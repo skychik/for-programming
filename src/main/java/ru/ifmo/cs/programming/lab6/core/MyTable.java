@@ -1,32 +1,71 @@
-package ru.ifmo.cs.programming.lab6.utils;
+package ru.ifmo.cs.programming.lab6.core;
 
+import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
-import ru.ifmo.cs.programming.lab5.utils.Product;
+import ru.ifmo.cs.programming.lab6.utils.MyColor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
-import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static ru.ifmo.cs.programming.lab6.App.getDeque;
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.*;
+import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
 
-public class MyTable extends JTable implements TableModelListener {
+class MyTable extends JTable implements TableModelListener {
     private TableRowSorter<TableModel> sorter;
 
-    public MyTable(TableModel model) {
+//    private static ArrayList<VisibilityOfSpeciality> visibilitiesOfSpecialities = new List<>();
+
+    static class VisibilityOfSpeciality implements Map.Entry {
+        String key;
+        Boolean value;
+
+        VisibilityOfSpeciality(String key, Boolean value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        VisibilityOfSpeciality() {
+            this.key = "";
+            this.value = true;
+        }
+
+
+        @Override
+        public String getKey() {
+            return "Employee";
+        }
+
+        @Override
+        public Boolean getValue() {
+            return value;
+        }
+
+        @Override
+        public Object setValue(Object value) {
+            if (this.value == value) {
+                this.value = (Boolean) value;
+                return true;
+            } else {
+                this.value = (Boolean) value;
+                return false;
+            }
+        }
+    }
+
+    MyTable(TableModel model) {
         super(model);
 
         this.setOpaque(false);
@@ -38,12 +77,31 @@ public class MyTable extends JTable implements TableModelListener {
         setDefaultRenderer(AttitudeToBoss.class, new MyTableCellRenderer());
 
         getTableHeader().setReorderingAllowed(false);
-        //setShowVerticalLines(true);
 
         sorter = new TableRowSorter<>(model);
         this.setRowSorter(sorter);
         tableListener();
         //this.setDefaultEditor(String.class, new DefaultCellEditor(new JComboBox(colors)));
+//
+//        initVisibilityOfSpeciality();
+//
+//        visibilitiesOfSpecialities. {
+//            @Override
+//            public void onChanged(Change<? extends String, ? extends Boolean> change) {
+//                System.out.println("vos");
+//                if (change.getValueAdded() == change.getValueRemoved()) {
+//                    try {
+//                        throw new IOException();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                } else try {
+//                    getTable().getSorter().setRowFilter(getTable().getRowFilter());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
     }
 
     public class MyTableCellRenderer extends DefaultTableCellRenderer {
@@ -73,13 +131,6 @@ public class MyTable extends JTable implements TableModelListener {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        /*Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        if (comp instanceof JComponent)
-            ((JComponent)comp).setBorder(BorderFactory.createEmptyBorder());*/
-
-            //c.setOpaque(true);
-            //c.setForeground(Color.WHITE);
-            //c.setBorder(BorderFactory.createEmptyBorder(BT, BT, BT, BT));
             c.setOpaque(true);
 
             c.setForeground(isSelected ?
@@ -133,7 +184,7 @@ public class MyTable extends JTable implements TableModelListener {
         }
     }
 
-    public TableRowSorter<TableModel> getSorter() {
+    TableRowSorter<TableModel> getSorter() {
         return sorter;
     }
 
@@ -146,7 +197,7 @@ public class MyTable extends JTable implements TableModelListener {
 
         // Do something with the data...
     }*/
-    private void tableListener(){
+    private void tableListener() {
         this.addMouseListener(new java.awt.event.MouseListener(){
 
             @Override
@@ -207,4 +258,57 @@ public class MyTable extends JTable implements TableModelListener {
     private boolean checkClicks(MouseEvent e) {
         return e.getClickCount() != 1;
     }
+
+//    private void initVisibilityOfSpeciality() {
+//        visibilityOfSpeciality.put("[Employee]", false);
+//        visibilityOfSpeciality.put("[Employee, Factory Worker]", false);
+//        visibilityOfSpeciality.put("[Employee, Shop Assistant]", false);
+//    }
+//
+//    private RowFilter getRowFilter() throws IOException {
+//        StringBuilder format = new StringBuilder();
+//
+//        for (Boolean key : visibilityOfSpeciality.values()) {
+//            if (key) format.append('t');
+//                else format.append('f');
+//        }
+//
+//        System.out.println(visibilityOfSpeciality.values().toString());
+//        System.out.println(visibilityOfSpeciality.keySet().toString());
+//
+//        switch (format.toString()) {
+//            case "ttt":
+//                return RowFilter.regexFilter(
+//                        "", 1);//everything
+//            case "fff":
+//                return new RowFilter<TableModel, Integer>() {
+//                        @Override
+//                        public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+//                            return false;
+//                        }
+//                    };
+//            case "tff":
+//                return RowFilter.regexFilter(
+//                            "(?i)Employee", 1);
+//            case "ttf":
+//            case "ftf":
+//                return RowFilter.notFilter(RowFilter.regexFilter(
+//                        "(?i)Shop Assistant", 1));
+//            case "tft":
+//            case "fft":
+//                return RowFilter.notFilter(RowFilter.regexFilter(
+//                        "(?i)Fabric Worker", 1));
+//            case "ftt":
+//            default:
+//                throw new IOException(format.toString());
+//        }
+//    }
+//
+//    static void changeVisibilityOfSpeciality(String speciality, Boolean b) throws IOException {
+//        visibilityOfSpeciality.put(speciality, b);
+//    }
+
+    /*public ObservableMap<String, Boolean> getVisibilityOfSpeciality() {
+        return visibilityOfSpeciality;
+    }*/
 }

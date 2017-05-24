@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.fontName;
 
-public class MyTableTab extends JPanel {
+class MyTableTab extends JPanel {
     private static MyTable table;
     private JTextField searchField;
     private boolean isSearchFieldEmpty = true;

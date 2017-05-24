@@ -52,7 +52,10 @@ public class MainFrame extends JFrame {
     private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
 
     public MainFrame(ArrayDeque<Employee> deque) {
-        super("MainFrame");
+        super("CRUD application");
+
+        size = new Dimension(1200, 675);
+        setPreferredSize(size);
 
         setIconImage(new ImageIcon(
                 System.getProperty("user.dir") + "/src/resources/images/icon.png").getImage());
@@ -91,9 +94,6 @@ public class MainFrame extends JFrame {
 
     private void setMainPanel() {
         mainPanel = new JPanel();
-
-        size = new Dimension(1100, 710);
-        setPreferredSize(size);
 
         LayoutManager overlay = new OverlayLayout(mainPanel);
         mainPanel.setLayout(overlay);
@@ -603,6 +603,8 @@ public class MainFrame extends JFrame {
                 int locationX = (screenSize.width - dialog.getSize().width) / 2;
                 int locationY = (screenSize.height - dialog.getSize().height) / 2;
                 dialog.setBounds(locationX, locationY, dialog.getSize().width, dialog.getSize().height);//по центру экрана
+
+                dialog.setResizable(false);
 
                 dialog.pack();
                 dialog.setVisible(true);
