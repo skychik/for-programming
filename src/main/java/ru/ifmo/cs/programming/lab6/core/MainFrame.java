@@ -156,7 +156,7 @@ public class MainFrame extends JFrame {
         //saveButton.setBorderPainted(false);
         saveButton.setBackground(MyColor.backgroundEighthAlphaColor);
 
-        saveButton.addActionListener(e -> save(App.getDeque()));
+        saveButton.addActionListener(e -> save(AppGUI.getDeque()));
 
         //tableTab.add(saveButton, constraints);
     }*/

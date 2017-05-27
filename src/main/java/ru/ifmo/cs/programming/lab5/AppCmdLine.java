@@ -12,13 +12,11 @@ import ru.ifmo.cs.programming.lab5.domain.Employee;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class App extends InteractiveModeFunctions {
+public class AppCmdLine extends InteractiveModeFunctions {
 
     /*это наш дек*/
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
@@ -115,7 +113,7 @@ public class App extends InteractiveModeFunctions {
     }
 
     static void setInputStreamReader(InputStreamReader inputStreamReader) {
-        App.inputStreamReader = inputStreamReader;
+        AppCmdLine.inputStreamReader = inputStreamReader;
     }
 }
 

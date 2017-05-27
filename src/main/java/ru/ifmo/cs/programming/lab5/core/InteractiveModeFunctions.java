@@ -182,10 +182,11 @@ public abstract class InteractiveModeFunctions {
      * @author Zhurbova A.E.
      */
     public static void save(ArrayDeque<Employee> deque) {
-        ArrayDeque<Employee> bufferedDeque = deque;
+        ArrayDeque<Employee> bufferedDeque = deque.clone();
 
         SaveDequeThread thread = new SaveDequeThread(bufferedDeque);
         thread.start();
+        System.out.println("Deque saved.");
     }
 
     /**

@@ -1,10 +1,9 @@
 package ru.ifmo.cs.programming.lab5.utils;
 
-import ru.ifmo.cs.programming.lab5.App;
+import ru.ifmo.cs.programming.lab5.AppCmdLine;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -110,7 +109,7 @@ public class FactoryWorker extends Employee {
                     if (nameAndPrice.length == 2 || nameAndPrice.length == 1) {
                         if ((itemNumber == 1) && (nameAndPrice[0].trim().charAt(0) != '[') &&
                                 (nameAndPrice[0].substring(1).equals("")) && (nameAndPrice[1].substring(1).equals(""))) {
-                            System.out.println("Неверно задан " + itemNumber + " предмет багажа в строке " + App.getLineNumber() +
+                            System.out.println("Неверно задан " + itemNumber + " предмет багажа в строке " + AppCmdLine.getLineNumber() +
                                     ". Должны быть указаны название и цена, разделенные \":\", предметы разделены \",\"" +
                                     " и указаны в квадратных скобках.(name = \"" + nameAndPrice[0].trim() + "\")");
                             System.exit(1);
@@ -124,7 +123,7 @@ public class FactoryWorker extends Employee {
                         int price = Integer.parseInt(nameAndPrice[1].replace("]", "").trim());
                         product = new Product(name, price);
                     } else {if (name.equals("")){return;}
-                        System.out.println("Неверно задан " + itemNumber + " предмет багажа в строке " + App.getLineNumber() +
+                        System.out.println("Неверно задан " + itemNumber + " предмет багажа в строке " + AppCmdLine.getLineNumber() +
                                 ". Должны быть указаны название и цена, разделенные \":\", предметы разделены \",\".");
                         System.exit(1);
                         return;
@@ -136,12 +135,12 @@ public class FactoryWorker extends Employee {
                 }
 
                 if (scanner.hasNext()) {
-                    System.out.println("Неверное количество аргументов в строке " + App.getLineNumber() + "." +
+                    System.out.println("Неверное количество аргументов в строке " + AppCmdLine.getLineNumber() + "." +
                         "(не считалось: \"" + scanner.next() + "\")");
                     System.exit(1);
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Неверно заданы предметы багажа в строке " + App.getLineNumber() +
+                System.out.println("Неверно заданы предметы багажа в строке " + AppCmdLine.getLineNumber() +
                         ". Цена(после \":\") должна быть целым числом.");
                 System.exit(1);
             }

@@ -12,9 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 
-import static java.lang.Thread.currentThread;
-
-public class AppTests extends App{
+public class AppCmdLineGUITests extends AppCmdLine {
 
     /**
      * testingDir - directory with this class
@@ -34,14 +32,14 @@ public class AppTests extends App{
 
         //copy input and EmployeeFile
         FileUtils.copyFile(new File(testingDir, "Test" + testNumber + "input.txt"), new File(testingDir, "input.txt"));
-        App.setInputStreamReader(new FileReader(testingDir + "\\input.txt"));
+        AppCmdLine.setInputStreamReader(new FileReader(testingDir + "\\input.txt"));
         FileUtils.copyFile(new File(testingDir, "Test" + testNumber + "EmployeeFileInput.csv"),
                 new File(testingDir, "EmployeeFile.csv"));
-        App.setFilePath(new File(testingDir, "EmployeeFile.csv"));
+        AppCmdLine.setFilePath(new File(testingDir, "EmployeeFile.csv"));
 
 
         try {
-            App.main(new String[0]);
+            AppCmdLine.main(new String[0]);
             System.out.println("\n!!!Main ended!!!");
             throw new StoppedByUserException();
         } catch (StoppedByUserException e) {

@@ -1,19 +1,17 @@
 package ru.ifmo.cs.programming.lab5.domain;
 
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import ru.ifmo.cs.programming.lab5.App;
+import ru.ifmo.cs.programming.lab5.AppCmdLine;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab6.utils.HasSpeciality;
 
-import java.io.IOException;
+import java.io.Serializable;
 import java.lang.*;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Employee extends Character implements Comparable, HasSpeciality {
+public class Employee extends Character implements Comparable, HasSpeciality, Serializable {
 
     private int salary = 0;
     private AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
@@ -109,7 +107,7 @@ public class Employee extends Character implements Comparable, HasSpeciality {
         return salary;
     }
 
-    public void setSalary(int salary) {
+    protected void setSalary(int salary) {
         this.salary = salary;
     }
 
@@ -117,7 +115,7 @@ public class Employee extends Character implements Comparable, HasSpeciality {
         return attitudeToBoss;
     }
 
-    public void setAttitudeToBoss(AttitudeToBoss attitudeToBoss) {
+    protected void setAttitudeToBoss(AttitudeToBoss attitudeToBoss) {
         this.attitudeToBoss = attitudeToBoss;
     }
 
@@ -125,40 +123,40 @@ public class Employee extends Character implements Comparable, HasSpeciality {
         return workQuality;
     }
 
-    public void setWorkQuality(byte workQuality) {
+    protected void setWorkQuality(byte workQuality) {
         this.workQuality = workQuality;
     }
 
-    public static Employee readEmployee(JsonReader reader) throws IOException {
-        String name = null;
-        String profession = null;
-        int salary = 0;
-        AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
-        byte workQuality = 0;
-
-        reader.beginObject();
-        while (reader.hasNext()) {
-            String nextName = reader.nextName();
-            if (nextName.equals("name")) {
-                name = reader.nextString();
-            } else if (nextName.equals("profession")) {
-                profession = reader.nextString();
-            } else if (nextName.equals("salary")) {
-                salary = reader.nextInt();
-            } else if (nextName.equals("attitudeToBoss") && reader.peek() != JsonToken.NULL) {
-                attitudeToBoss = AttitudeToBoss.readAttitudeToBoss(reader);
-            } else if (nextName.equals("workQuality")) {
-                int i = reader.nextInt();
-                if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE))
-                    throw new IllegalArgumentException("workQuality value isn't a byte value");
-                workQuality = (byte) i;
-            } else {
-                reader.skipValue();
-            }
-        }
-        reader.endObject();
-        return new Employee(name, profession, salary, attitudeToBoss, workQuality);
-    }
+//    public static Employee readEmployee(JsonReader reader) throws IOException {
+//        String name = null;
+//        String profession = null;
+//        int salary = 0;
+//        AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
+//        byte workQuality = 0;
+//
+//        reader.beginObject();
+//        while (reader.hasNext()) {
+//            String nextName = reader.nextName();
+//            if (nextName.equals("name")) {
+//                name = reader.nextString();
+//            } else if (nextName.equals("profession")) {
+//                profession = reader.nextString();
+//            } else if (nextName.equals("salary")) {
+//                salary = reader.nextInt();
+//            } else if (nextName.equals("attitudeToBoss") && reader.peek() != JsonToken.NULL) {
+//                attitudeToBoss = AttitudeToBoss.readAttitudeToBoss(reader);
+//            } else if (nextName.equals("workQuality")) {
+//                int i = reader.nextInt();
+//                if ((i > Byte.MAX_VALUE)||(i < Byte.MIN_VALUE))
+//                    throw new IllegalArgumentException("workQuality value isn't a byte value");
+//                workQuality = (byte) i;
+//            } else {
+//                reader.skipValue();
+//            }
+//        }
+//        reader.endObject();
+//        return new Employee(name, profession, salary, attitudeToBoss, workQuality);
+//    }
 
     /**
      * Метод, определяет класс объекта и вызывает методы по преобразованию строки в объект,
@@ -168,7 +166,6 @@ public class Employee extends Character implements Comparable, HasSpeciality {
      */
     public static Employee parseEmployee(String line) {
         Scanner sc;
-        int index;
         Employee employee;
         String className;
 
@@ -203,7 +200,7 @@ public class Employee extends Character implements Comparable, HasSpeciality {
                 break;
             }
             default: {
-                System.out.println("Приложение не обрабатывает указанный в строке " + App.getLineNumber() + " класс.");
+                System.out.println("Приложение не обрабатывает указанный в строке " + AppCmdLine.getLineNumber() + " класс.");
                 return null;
             }
         }
@@ -215,7 +212,7 @@ public class Employee extends Character implements Comparable, HasSpeciality {
      * @author Zhurbova A.E.
      * @param sc - строка, в которой хранятся данные объекта
      */
-    protected int stringToEmployee(Scanner sc) {
+    protected void stringToEmployee(Scanner sc) {
         int index = 1;
         try {
             for (; sc.hasNext() && index < 8; index++)
@@ -255,8 +252,8 @@ public class Employee extends Character implements Comparable, HasSpeciality {
                             break;
                         }
                         default: {
-                            System.out.println("Неверно указано значение в ячейке E" + App.getLineNumber() + ".");
-                            return 0;
+                            System.out.println("Неверно указано значение в ячейке E" + AppCmdLine.getLineNumber() + ".");
+                            return;
                         }
                     }
                     break;
@@ -273,10 +270,9 @@ public class Employee extends Character implements Comparable, HasSpeciality {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("Исправьте значения в строке " + App.getLineNumber() + ". Столбцы D и F должны содержать числа.");
+            System.out.println("Исправьте значения в строке " + AppCmdLine.getLineNumber() + ". Столбцы D и F должны содержать числа.");
             System.exit(1);
         }
-        return index;
     }
 
     public void setAvatarPath(String path){

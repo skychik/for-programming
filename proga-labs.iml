@@ -6,7 +6,6 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -45,6 +44,7 @@
     <orderEntry type="library" name="Maven: geronimo-spec:geronimo-spec-jta:1.0.1B-rc2" level="project" />
     <orderEntry type="library" name="Maven: jpox:jpox-thirdparty:1.1.9" level="project" />
     <orderEntry type="library" name="Maven: jpox:jpox:1.1.9" level="project" />
-    <orderEntry type="library" name="Maven: com.tangosol:coherence-mock:3.4.2" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.glazedlists:glazedlists_java15:1.9.1" level="project" />
+    <orderEntry type="library" name="Maven: postgresql:postgresql:9.1-901.jdbc4" level="project" />
   </component>
 </module>

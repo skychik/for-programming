@@ -7,7 +7,6 @@ import java.util.*;
 public abstract class Character implements Movement {
 
     private String name = "";
-
     private String profession = "";
 
     Character(String name, String profession){

@@ -16,12 +16,14 @@ import java.util.regex.Pattern;
 
 import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.*;
 
-public class App {
+public class AppGUI {
 
     /*это наш дек*/
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
+
+    private static JFrame frame;
 
     public static void main(String... args) {
         //i'm not sure, that Pattern has to be that big, but it works
@@ -42,15 +44,22 @@ public class App {
         Runtime.getRuntime().addShutdownHook(new SaveDequeThread(deque));
 
         //GUI
+        SwingUtilities.invokeLater(AppGUI::gui);
+
+        //Close input stream reader
+        try {
+            inputStreamReader.close();
+        } catch (IOException e) {
+            System.out.println("Can't close input stream");
+            System.exit(1);
+        }
+    }
+
+    public static void gui() {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
-                    /*UIManager.getLookAndFeelDefaults().put("Table:\"Table.cellRenderer\".background", Color.DARK_GRAY);
-                    UIManager.getLookAndFeelDefaults().put("Table.background",new ColorUIResource(Color.DARK_GRAY));
-                    UIManager.getLookAndFeelDefaults().put("Table.alternateRowColor", Color.DARK_GRAY.brighter());*/
-                    //UIManager.getLookAndFeelDefaults().put("Table.disabled", new Color(0, 0, 0, 0));
-                    //UIManager.getLookAndFeelDefaults().put("ScrollPane", null);
                     UIManager.getLookAndFeelDefaults().put(
                             "ScrollPane.contentMargins",
                             new Insets (0,0,0,0));
@@ -69,32 +78,24 @@ public class App {
             System.out.println("Nimbus is not available, you can set the GUI to another look and feel.");
         }
 
-        SwingUtilities.invokeLater(App::gui);
+        frame = new MainFrame(deque);
 
-        //Close input stream reader
-        try {
-            inputStreamReader.close();
-        } catch (IOException e) {
-            System.out.println("Can't close input stream");
-            System.exit(1);
-        }
-    }
+        frame.setLocationRelativeTo(null);//по центру экрана
+        frame.setResizable(false);
 
-    private static void gui() {
-        JFrame f = new MainFrame(deque);
-
-        f.setLocationRelativeTo(null);//по центру экрана
-        f.setResizable(false);
-
-        f.pack();
-        f.setVisible(true);
+        frame.pack();
+        frame.setVisible(true);
     }
 
     public static void setInputStreamReader(InputStreamReader inputStreamReader) {
-        App.inputStreamReader = inputStreamReader;
+        AppGUI.inputStreamReader = inputStreamReader;
     }
 
     public static ArrayDeque<Employee> getDeque() {
         return deque;
+    }
+
+    public static JFrame getFrame() {
+        return frame;
     }
 }

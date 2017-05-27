@@ -27,7 +27,7 @@ class MyTableTab extends JPanel {
         this.deque = deque;
 
         this.setFont(new Font(fontName, Font.PLAIN, 16));
-        //tableTab.setBackground(App.backgroundEighthAlphaColor);
+        //tableTab.setBackground(AppGUI.backgroundEighthAlphaColor);
         this.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -188,7 +188,7 @@ class MyTableTab extends JPanel {
         clearButton = new StandartButton("Clear table");
 
         //clearButton.setBorderPainted(false);
-        //clearButton.setBackground(App.backgroundEighthAlphaColor);
+        //clearButton.setBackground(AppGUI.backgroundEighthAlphaColor);
 
         clearButton.addActionListener(e -> {
             // Потверждение очищения таблицы

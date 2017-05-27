@@ -33,7 +33,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.ifmo.cs.programming.lab5.App</mainClass>
+                            <mainClass>ru.ifmo.cs.programming.lab5.AppCmdLine</mainClass>
                         </manifest>
                     </archive>
                     <finalName>dict</finalName>
@@ -69,7 +69,7 @@
                         <argument>-classpath</argument>
                         <classpath />
                         <argument>-Xmx2048m</argument>
-                        <argument>ru.ifmo.cs.programming.lab5.App</argument>
+                        <argument>ru.ifmo.cs.programming.lab5.AppCmdLine</argument>
                     </arguments>
                 </configuration>
             </plugin>
@@ -179,18 +179,19 @@
             <version>1.1.9</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.tangosol/coherence-mock -->
-        <dependency>
-            <groupId>com.tangosol</groupId>
-            <artifactId>coherence-mock</artifactId>
-            <version>3.4.2</version>
-        </dependency>
-
         <dependency>
             <groupId>net.java.dev.glazedlists</groupId>
             <artifactId>glazedlists_java15</artifactId>
             <version>1.9.1</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/postgresql/postgresql -->
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901.jdbc4</version>
+        </dependency>
+
 
 
     </dependencies>

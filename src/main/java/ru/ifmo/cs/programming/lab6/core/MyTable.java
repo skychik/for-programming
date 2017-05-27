@@ -1,8 +1,5 @@
 package ru.ifmo.cs.programming.lab6.core;
 
-import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableMap;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
@@ -19,9 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static ru.ifmo.cs.programming.lab6.App.getDeque;
+import static ru.ifmo.cs.programming.lab6.AppGUI.getDeque;
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.*;
-import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
 
 class MyTable extends JTable implements TableModelListener {
     private TableRowSorter<TableModel> sorter;
@@ -69,7 +65,7 @@ class MyTable extends JTable implements TableModelListener {
         super(model);
 
         this.setOpaque(false);
-        //this.setBackground(App.backgroundEighthAlphaColor);
+        //this.setBackground(AppGUI.backgroundEighthAlphaColor);
 
         setDefaultRenderer(Integer.class, new MyTableCellRenderer());
         setDefaultRenderer(String.class, new MyTableCellRenderer());
