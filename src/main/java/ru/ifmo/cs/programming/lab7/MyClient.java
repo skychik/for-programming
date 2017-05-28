@@ -1,14 +1,15 @@
 package ru.ifmo.cs.programming.lab7;
 
-import ru.ifmo.cs.programming.lab7.core.MyHashtable;
+import org.postgresql.ds.PGConnectionPoolDataSource;
 
+import javax.sql.PooledConnection;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Hashtable;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import static ru.ifmo.cs.programming.lab6.AppGUI.getFrame;
 import static ru.ifmo.cs.programming.lab6.AppGUI.gui;
@@ -55,7 +56,7 @@ public class MyClient extends Thread {
 
     public void run() {
         gui();
-        connect();
+        Connection c = connect();
 
 //        try {
 //            // берём поток вывода и выводим туда первый аргумент, заданный при вызове, адрес открытого сокета и его порт
@@ -74,7 +75,33 @@ public class MyClient extends Thread {
 //        }
     }
 
-    private MyHashtable<String, String> askNameAndPassword() {
+    private Connection connect() {
+        Pair<String, String> nameAndPassword =
+                guiNameAndPassword();
+        String username = nameAndPassword.getFirst();
+        String password = nameAndPassword.getSecond();
+
+        PGConnectionPoolDataSource ds = new PGConnectionPoolDataSource();
+        ds.setServerName("localhost");
+        ds.setDatabaseName("postgres");
+
+        PooledConnection pc = null;
+        try {
+            pc = ds.getPooledConnection(username, password);
+            return pc.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Cannot get (pooled) connection");
+
+            if (guiException()) {
+                return connect();
+            } else disconnect();
+        }
+
+        return null;
+    }
+
+    private Pair<String, String> guiNameAndPassword() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
 
@@ -92,21 +119,69 @@ public class MyClient extends Thread {
         JOptionPane.showConfirmDialog(
                 getFrame(), panel, "Sign in", JOptionPane.DEFAULT_OPTION);
 
-        MyHashtable<String, String> loginInformation = new MyHashtable<>();
-        loginInformation.put("user", username.getText());
-        loginInformation.put("pass", new String(password.getPassword()));
-
-        return loginInformation;
+        return new Pair<>(username.getText(), new String(password.getPassword()));
     }
 
-    private void connect() {
-        MyHashtable<String, String> nameAndPassword = askNameAndPassword();
-        try {
-            new ObjectOutputStream(socket.getOutputStream()).writeObject(nameAndPassword);
-        } catch (IOException e) {
-            e.printStackTrace();
-            connect();
+    public class Pair<A, B> {
+        private A first;
+        private B second;
+
+        Pair(A first, B second) {
+            super();
+            this.first = first;
+            this.second = second;
         }
+
+        public int hashCode() {
+            int hashFirst = first != null ? first.hashCode() : 0;
+            int hashSecond = second != null ? second.hashCode() : 0;
+
+            return (hashFirst + hashSecond) * hashSecond + hashFirst;
+        }
+
+        public boolean equals(Object other) {
+            if (other instanceof Pair) {
+                Pair otherPair = (Pair) other;
+                return
+                        ((  this.first == otherPair.first ||
+                                ( this.first != null && otherPair.first != null &&
+                                        this.first.equals(otherPair.first))) &&
+                                (  this.second == otherPair.second ||
+                                        ( this.second != null && otherPair.second != null &&
+                                                this.second.equals(otherPair.second))) );
+            }
+
+            return false;
+        }
+
+        public String toString()
+        {
+            return "(" + first + ", " + second + ")";
+        }
+
+        public A getFirst() {
+            return first;
+        }
+
+        public B getSecond() {
+            return second;
+        }
+    }
+
+    private boolean guiException() {
+        JPanel panel = new JPanel();
+        JPanel label = new JPanel();
+
+        label.add(new JLabel("Username", SwingConstants.RIGHT));
+        panel.add(label);
+
+        int reply = JOptionPane.showConfirmDialog(
+                getFrame(), panel, "Try again?", JOptionPane.YES_NO_OPTION);
+        return reply == JOptionPane.YES_OPTION;
+    }
+
+    private void disconnect() {
+        System.exit(1);
     }
 }
 

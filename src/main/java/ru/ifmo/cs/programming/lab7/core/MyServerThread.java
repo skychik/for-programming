@@ -1,17 +1,24 @@
 package ru.ifmo.cs.programming.lab7.core;
 
-import ru.ifmo.cs.programming.lab7.MyServer;
+import org.postgresql.ds.PGConnectionPoolDataSource;
+import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab7.MyClient;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.channels.SocketChannel;
-import java.util.Hashtable;
+import java.sql.*;
+import java.util.ArrayDeque;
+
+import static ru.ifmo.cs.programming.lab7.MyServer.getDeque;
+import static ru.ifmo.cs.programming.lab7.MyServer.getPort;
 
 
 public class MyServerThread extends Thread {
     private SocketChannel socketChannel;
-    private int num;
+    private int num;// will be used for exceptions
 
     public MyServerThread(int num, SocketChannel socketChannel) {
         // копируем данные
@@ -51,20 +58,25 @@ public class MyServerThread extends Thread {
 //        catch(Exception e) {
 //            System.out.println("init error: "+e);// вывод исключений
 //        }
-
-//        if (askNameAndPassword(socketChannel)) {
-//            sendDeque(socketChannel);
-//        } else {
+        MyClient.Pair<String, String> nameAndPassword = askNameAndPassword(socketChannel);
+        String username = nameAndPassword.getFirst();
+        String password = nameAndPassword.getSecond();
+//        try {
+//            getDataFromDatabase(getDeque(), username, password);
+//        } catch (SQLException e1) {
+//            e1.printStackTrace();
 //            disconnect();
 //        }
-        Object obj = null;
+        PGConnectionPoolDataSource connectionPoolDataSource = new PGConnectionPoolDataSource();
+
         try {
-            ObjectInputStream oiStream= new ObjectInputStream(socketChannel.socket().getInputStream());
-            obj = oiStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+            connectionPoolDataSource.getPooledConnection(username, password);
+        } catch (SQLException e) {
             e.printStackTrace();
-            System.exit(-1);
+            disconnect();
         }
+
+        sendDeque(socketChannel);
 
         while (true) {
             if (receiveChanges() == -1) break;
@@ -78,9 +90,43 @@ public class MyServerThread extends Thread {
         }
     }
 
-    private int receiveChanges() {
-        //TODO: receiveChanges()
-        return -1;
+    private static MyClient.Pair<String, String> askNameAndPassword(SocketChannel socketChannel) {
+        Object obj = null;
+        try {
+            ObjectInputStream oiStream= new ObjectInputStream(socketChannel.socket().getInputStream());
+            obj = oiStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        return (MyClient.Pair<String, String>) obj;
+    }
+
+    private void getDataFromDatabase(ArrayDeque<Employee> deque, String username, String password) throws SQLException {
+        Connection conn = DriverManager.getConnection(
+                "jdbc:tcp:localhost:" + getPort() + ":postgres", username, password);
+        Statement stat = conn.createStatement();
+        ResultSet res = stat.executeQuery(
+                "SELECT * FROM public.\"EMPLOYEE\"");
+        deque.clear();
+        while (res.next()) {
+            String name = res.getString("NAME");
+            String profession = res.getString("PROFESSION");
+            int salary = res.getInt("SALARY");
+            AttitudeToBoss attitudeToBoss = (AttitudeToBoss)res.getObject("ATTITUDE_TO_BOSS");
+            byte workQuality = res.getByte("WORK_QUALITY");
+            String avatarPath = res.getString("AVATAR_PATH");
+            String notes = res.getString("NOTES");
+
+            Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+            employee.setAvatarPath(avatarPath);
+            employee.setNotes(notes);
+
+            deque.add(employee);
+        }
+
+        stat.close();
+        conn.close();
     }
 
     private static void sendDeque(SocketChannel socketChannel) {
@@ -91,49 +137,18 @@ public class MyServerThread extends Thread {
             e.printStackTrace();
         }
         try {
-            ooStream.writeObject(MyServer.getDeque());
+            ooStream.writeObject(getDeque());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static boolean askNameAndPassword(SocketChannel socketChannel) {
-        Object obj = null;
-        try {
-            ObjectInputStream oiStream= new ObjectInputStream(socketChannel.socket().getInputStream());
-            obj = oiStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        return true;
-        //return isNameAndPasswordCorrect((Hashtable<String, String>)(String) obj);
+    private int receiveChanges() {
+        //TODO: receiveChanges()
+        return -1;
     }
 
     private void disconnect() {
         // TODO: disconnect()
     }
-
-    private static boolean isNameAndPasswordCorrect(Hashtable<String, String> nameAndPassword) {
-        if (nameAndPassword == null)
-            return false;
-        // TODO: isNameAndPasswordCorrect()
-        return true;
-    }
-
-//    private static Connection getConnection() throws NamingException, SQLException {
-//        InitialContext initCtx = null;
-//        initCtx = createContext();
-//        String jndiName = "HrDS";
-//        ConnectionPoolDataSource dataSource = (ConnectionPoolDataSource) initCtx.lookup(jndiName);
-//        PooledConnection pooledConnection = dataSource.getPooledConnection();
-//        return pooledConnection.getConnection(); // Obtain connection from pool
-//    }
-//
-//    private static InitialContext createContext() throws NamingException {
-//        Properties env = new Properties();
-//        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory");
-//        env.put(Context.PROVIDER_URL, "rmi://localhost:1099");
-//        return new InitialContext(env);
-//    }
 }

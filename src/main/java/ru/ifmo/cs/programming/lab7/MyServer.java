@@ -83,4 +83,6 @@ public class MyServer {
     public static ArrayDeque<Employee> getDeque() {
         return deque;
     }
+
+    public static int getPort() {return 5432;}
 }
