@@ -1,21 +1,23 @@
 package ru.ifmo.cs.programming.lab7;
 
-import org.postgresql.ds.PGConnectionPoolDataSource;
+import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 
-import javax.sql.PooledConnection;
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
-import static ru.ifmo.cs.programming.lab6.AppGUI.getFrame;
-import static ru.ifmo.cs.programming.lab6.AppGUI.gui;
+import static ru.ifmo.cs.programming.lab6.AppGUI.*;
 
-public class MyClient extends Thread {
+public class MyClient extends Thread implements Serializable {
     private static Socket socket = null;
+    private transient InputStream socketIn;
+    private transient OutputStream socketOut;
 
     public static void main(String args[]) {
         if (args.length > 0) {
@@ -38,26 +40,36 @@ public class MyClient extends Thread {
             System.out.println("Неизвестный хост: " + host);
             System.exit(-1);
         } catch (IOException e) {
-            System.out.println("Ошибка ввода/вывода при создании сокета " + host + ":" + port);
+            System.out.println("Ошибка при создании сокета на " + host + ":" + port);
             System.exit(-1);
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::disconnect));
 
         // запускаем новый вычислительный поток (см. ф-ю run())
         start();
     }
 
     private MyClient(String host) {
-        this(host, 5432);
+        this(host, 5431);
     }
 
     private MyClient() {
-        this("localhost", 5432);
+        this("localhost", 5431);
     }
 
     public void run() {
-        gui();
-        Connection c = connect();
+        try {
+            socketOut = socket.getOutputStream();
+            socketIn = socket.getInputStream();
 
+            connect();
+            initDeque(receiveTable());
+            gui();
+
+        } catch (IOException | ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
 //        try {
 //            // берём поток вывода и выводим туда первый аргумент, заданный при вызове, адрес открытого сокета и его порт
 //            args[0] = args[0]+"\n" + socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort();
@@ -75,30 +87,46 @@ public class MyClient extends Thread {
 //        }
     }
 
-    private Connection connect() {
+    private void/*Connection*/ connect() throws IOException {
+        System.out.println("trying to connect to server");
         Pair<String, String> nameAndPassword =
                 guiNameAndPassword();
-        String username = nameAndPassword.getFirst();
-        String password = nameAndPassword.getSecond();
+//        String username = nameAndPassword.getFirst();
+//        String password = nameAndPassword.getSecond();
 
-        PGConnectionPoolDataSource ds = new PGConnectionPoolDataSource();
-        ds.setServerName("localhost");
-        ds.setDatabaseName("postgres");
+//        PGConnectionPoolDataSource ds = new PGConnectionPoolDataSource();
+//        ds.setServerName("localhost");
+//        ds.setDatabaseName("postgres");
+//
+//        PooledConnection pc = null;
+//        try {
+//            pc = ds.getPooledConnection(username, password);
+//            return pc.getConnection();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            System.out.println("Cannot get (pooled) connection");
+//
+//            if (guiTryAgain()) {
+//                return connect();
+//            } else disconnect();
+//        }
+//
+//        return null;
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socketOut);
+        objectOutputStream.writeObject(nameAndPassword);
 
-        PooledConnection pc = null;
+        ObjectInputStream objectInputStream = new ObjectInputStream(socketIn);
+        String message = null;
         try {
-            pc = ds.getPooledConnection(username, password);
-            return pc.getConnection();
-        } catch (SQLException e) {
+            message = (String) objectInputStream.readObject();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            System.out.println("Cannot get (pooled) connection");
-
-            if (guiException()) {
-                return connect();
-            } else disconnect();
         }
 
-        return null;
+        if (message != null) System.out.println(message);
+            else System.out.println("null");
+
+        if (!Objects.equals(message, "connected to database")) connect();
     }
 
     private Pair<String, String> guiNameAndPassword() {
@@ -122,9 +150,9 @@ public class MyClient extends Thread {
         return new Pair<>(username.getText(), new String(password.getPassword()));
     }
 
-    public class Pair<A, B> {
-        private A first;
-        private B second;
+    public class Pair<A, B> implements Serializable {
+        private transient A first;
+        private transient B second;
 
         Pair(A first, B second) {
             super();
@@ -168,7 +196,7 @@ public class MyClient extends Thread {
         }
     }
 
-    private boolean guiException() {
+    private boolean guiTryAgain() {
         JPanel panel = new JPanel();
         JPanel label = new JPanel();
 
@@ -180,8 +208,39 @@ public class MyClient extends Thread {
         return reply == JOptionPane.YES_OPTION;
     }
 
+    private ResultSet receiveTable() throws IOException, ClassNotFoundException {
+        System.out.println("trying to receive table");
+        ObjectInputStream dataInputStream = new ObjectInputStream(socketIn);
+        return (ResultSet) dataInputStream.readObject();
+    }
+
+    private void initDeque(ResultSet res) throws SQLException {
+        getDeque().clear();
+        while (res.next()) {
+            String name = res.getString("NAME");
+            String profession = res.getString("PROFESSION");
+            int salary = res.getInt("SALARY");
+            AttitudeToBoss attitudeToBoss = (AttitudeToBoss)res.getObject("ATTITUDE_TO_BOSS");
+            byte workQuality = res.getByte("WORK_QUALITY");
+            String avatarPath = res.getString("AVATAR_PATH");
+            String notes = res.getString("NOTES");
+
+            Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+            employee.setAvatarPath(avatarPath);
+            employee.setNotes(notes);
+
+            getDeque().add(employee);
+        }
+    }
+
     private void disconnect() {
-        System.exit(1);
+        System.out.println("trying to disconnect");
+        try {
+            socket.close();
+            System.out.println("socket closed");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 //TODO: make commandTab as new class
 package ru.ifmo.cs.programming.lab6.core;
 
+import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
@@ -19,12 +20,12 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Enumeration;
 
-import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.save;
 import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
 import static ru.ifmo.cs.programming.lab6.utils.MyColor.foregroundColor;
 import static ru.ifmo.cs.programming.lab6.utils.MyColor.opaqueColor;
 
 public class MainFrame extends JFrame {
+    private InteractiveModeFunctions imf;
 
     private JPanel mainPanel;
     private static JTabbedPane tabbedPane;
@@ -40,7 +41,7 @@ public class MainFrame extends JFrame {
     private static JSpinner workQualityStepper;
     private Dimension size;
     private ArrayDeque<Employee> deque;
-    public static JButton avatar;
+    static JButton avatar;
     private String avatarPath;
     private FileFilterExt eff;
     private JFileChooser fileChooser;
@@ -53,6 +54,8 @@ public class MainFrame extends JFrame {
 
     public MainFrame(ArrayDeque<Employee> deque) {
         super("CRUD application");
+
+        imf = new InteractiveModeFunctions();
 
         size = new Dimension(1200, 675);
         setPreferredSize(size);
@@ -571,7 +574,7 @@ public class MainFrame extends JFrame {
         }
         employee.setAvatarPath(avatarPath);
         employee.setNotes(notes.getText());
-        save(deque);
+        imf.save(deque);
     }
 
     private void setBackground() {

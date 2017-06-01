@@ -14,18 +14,19 @@ import java.util.ArrayDeque;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import static ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions.*;
-
-public class AppGUI {
+public class AppGUI extends InteractiveModeFunctions {
 
     /*это наш дек*/
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
-    private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
-
+    private InputStreamReader inputStreamReader = new InputStreamReader(System.in);
     private static JFrame frame;
 
     public static void main(String... args) {
+        new AppGUI();
+    }
+
+    private AppGUI() {
         //i'm not sure, that Pattern has to be that big, but it works
         InteractiveModeFunctions.setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile(
                 "[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
@@ -87,8 +88,8 @@ public class AppGUI {
         frame.setVisible(true);
     }
 
-    public static void setInputStreamReader(InputStreamReader inputStreamReader) {
-        AppGUI.inputStreamReader = inputStreamReader;
+    public void setInputStreamReader(InputStreamReader inputStreamReader) {
+        this.inputStreamReader = inputStreamReader;
     }
 
     public static ArrayDeque<Employee> getDeque() {

@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 import static ru.ifmo.cs.programming.lab5.domain.Employee.parseEmployee;
 
-public abstract class InteractiveModeFunctions {
+public class InteractiveModeFunctions {
 
     /*файл, который хранит deque*/
     private static File filePath = null;
@@ -25,20 +25,12 @@ public abstract class InteractiveModeFunctions {
     //for working with Gson library
     private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
-    /**
-     * Show out all supported commands
-     */
-    protected static void help() {
+    public void help() {
         System.out.println("** You can use commands:\n" +
                 "add {}, remove {}, remove_lower {}, remove_all {}, save, load, show, end\n");
     }
 
-    /**
-     * Add Employee to deque
-     *
-     * @param deque Works with this deque
-     */
-    protected static void add(ArrayDeque<Employee> deque) {
+    public void add(ArrayDeque<Employee> deque) {
 
         obj = jsonObject(scanner);
 
@@ -57,12 +49,7 @@ public abstract class InteractiveModeFunctions {
         System.out.println("добавлено");
     }
 
-    /**
-     * Removes employee from deque
-     *
-     * @param deque ArrayDeque
-     */
-    protected static void remove(ArrayDeque<Employee> deque) {
+    public void remove(ArrayDeque<Employee> deque) {
         obj = jsonObject(scanner);
         if (obj == null) return;//if incorrect input (more closing brackets than opening)
         //System.out.println(obj);
@@ -73,12 +60,7 @@ public abstract class InteractiveModeFunctions {
         System.out.println("First met employee, which you typed, removed");
     }
 
-    /**
-     * Removes all employees from deque, which are lower(compares .toStrings), than this employee
-     *
-     * @param deque    ArrayDeque
-     */
-    protected static void remove_lower(ArrayDeque<Employee> deque) {
+    public void remove_lower(ArrayDeque<Employee> deque) {
         obj = jsonObject(scanner);
         if (obj == null) return;//if incorrect input (more closing brackets than opening)
         //System.out.println(obj);
@@ -90,12 +72,7 @@ public abstract class InteractiveModeFunctions {
         System.out.println("Removed all employees, which are lower, than your typed employee");
     }
 
-    /**
-     * Removes all Emloyees = this employee
-     *
-     * @param deque    ArrayDeque
-     */
-    protected static void remove_all(ArrayDeque<Employee> deque) {
+    public void remove_all(ArrayDeque<Employee> deque) {
         obj = jsonObject(scanner);
         if (obj == null) return;//if incorrect input (more closing brackets than opening)
         //System.out.println(obj);
@@ -128,14 +105,7 @@ public abstract class InteractiveModeFunctions {
         System.out.println("All employees, which are the same with your typed employee, removed from deque");
     }
 
-    /**
-     * Метод, осуществляющий загрузку коллекции из файла
-     *
-     * @param deque - коллекция, в которую происходит запись
-     * @author Zhurbova A.E.
-     */
-
-    public static void load(ArrayDeque<Employee> deque) {
+    public void load(ArrayDeque<Employee> deque) {
 
         BufferedReader reader = null;
         String line;
@@ -175,13 +145,7 @@ public abstract class InteractiveModeFunctions {
         }
     }
 
-    /**
-     * Метод, осуществляющий запись коллекции в файл
-     *
-     * @param deque - коллекция, из которой считываются данные
-     * @author Zhurbova A.E.
-     */
-    public static void save(ArrayDeque<Employee> deque) {
+    public void save(ArrayDeque<Employee> deque) {
         ArrayDeque<Employee> bufferedDeque = deque.clone();
 
         SaveDequeThread thread = new SaveDequeThread(bufferedDeque);
@@ -189,12 +153,7 @@ public abstract class InteractiveModeFunctions {
         System.out.println("Deque saved.");
     }
 
-    /**
-     * Show all Employees from this deque
-     *
-     * @param deque Current deque
-     */
-    protected static void show(ArrayDeque<Employee> deque) {
+    public void show(ArrayDeque<Employee> deque) {
         System.out.println("Current employees now are(might be not saved):\n");
         if (!deque.isEmpty()) {
             for (Employee employee : deque) {
@@ -266,7 +225,8 @@ public abstract class InteractiveModeFunctions {
         }
     }
 
-    public static void setFilePath(File filePath) {InteractiveModeFunctions.filePath = filePath;}
+    public static void setFilePath(File filePath) {
+        InteractiveModeFunctions.filePath = filePath;}
 
     public static File getFilePath() { return filePath; }
 

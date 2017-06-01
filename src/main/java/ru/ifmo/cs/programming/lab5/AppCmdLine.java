@@ -19,23 +19,15 @@ import java.util.regex.Pattern;
 public class AppCmdLine extends InteractiveModeFunctions {
 
     /*это наш дек*/
-    private static ArrayDeque<Employee> deque = new ArrayDeque<>();
+    private ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
-    //comparators for Employee collection
-//    private static Comparator<Employee> NAME_ORDER = (o1, o2) ->
-//            !Objects.equals(o1.getName(), o2.getName()) ? o1.getName().compareTo(o2.getName()) : 0;
-//    private static Comparator<Employee> PROFESSION_ORDER = (o1, o2) ->
-//            !Objects.equals(o1.getProfession(), o2.getProfession()) ? o1.getProfession().compareTo(o2.getProfession()) : 0;
-//    private static Comparator<Employee> SALARY_ORDER = (o1, o2) ->
-//            !Objects.equals(o1.getSalary(), o2.getSalary()) ? o1.getSalary() - o2.getSalary() : 0;
-//    private static Comparator<Employee> ATTITUDE_TO_BOSS_ORDER = (o1, o2) ->
-//            !Objects.equals(o1.getAttitudeToBoss(), o2.getAttitudeToBoss()) ? o1.getAttitudeToBoss().compareTo(o2.getAttitudeToBoss()) : 0;
-//    private static Comparator<Employee> WORK_QUALITY_ORDER = (o1, o2) ->
-//            !Objects.equals(o1.getWorkQuality(), o2.getWorkQuality()) ? o1.getWorkQuality() - o2.getWorkQuality() : 0;
 
     public static void main(String[] args) {
+        new AppCmdLine();
+    }
 
+    AppCmdLine(){
         //i'm not sure, that Pattern has to be that big, but it works
         setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile("[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
         try {
@@ -64,7 +56,7 @@ public class AppCmdLine extends InteractiveModeFunctions {
         }
     }
 
-    private static void interactiveMode() {
+    private void interactiveMode() {
         String command = null;
 
         System.out.println("** Type '--help' to see all commands\n" +
@@ -112,8 +104,8 @@ public class AppCmdLine extends InteractiveModeFunctions {
         }
     }
 
-    static void setInputStreamReader(InputStreamReader inputStreamReader) {
-        AppCmdLine.inputStreamReader = inputStreamReader;
+    static void setInputStreamReader(InputStreamReader isr) {
+        inputStreamReader = isr;
     }
 }
 

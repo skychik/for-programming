@@ -1,29 +1,36 @@
 package ru.ifmo.cs.programming.lab7.core;
 
 import org.postgresql.ds.PGConnectionPoolDataSource;
-import ru.ifmo.cs.programming.lab5.domain.Employee;
-import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab7.MyClient;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import javax.sql.PooledConnection;
+import java.io.*;
 import java.nio.channels.SocketChannel;
-import java.sql.*;
-import java.util.ArrayDeque;
-
-import static ru.ifmo.cs.programming.lab7.MyServer.getDeque;
-import static ru.ifmo.cs.programming.lab7.MyServer.getPort;
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class MyServerThread extends Thread {
     private SocketChannel socketChannel;
     private int num;// will be used for exceptions
+    private OutputStream socketout;
+    private InputStream socketin;
 
     public MyServerThread(int num, SocketChannel socketChannel) {
         // копируем данные
         this.num = num;
-        this.socketChannel = socketChannel;
+        if (socketChannel != null) {
+            this.socketChannel = socketChannel;
+        } else {
+            throw new NullPointerException("" + num);
+        }
+
+        try {
+            socketout = socketChannel.socket().getOutputStream();
+            socketin = socketChannel.socket().getInputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // и запускаем новый вычислительный поток (см. ф-ю run())
         setDaemon(true);
@@ -58,86 +65,90 @@ public class MyServerThread extends Thread {
 //        catch(Exception e) {
 //            System.out.println("init error: "+e);// вывод исключений
 //        }
-        MyClient.Pair<String, String> nameAndPassword = askNameAndPassword(socketChannel);
-        String username = nameAndPassword.getFirst();
-        String password = nameAndPassword.getSecond();
-//        try {
-//            getDataFromDatabase(getDeque(), username, password);
-//        } catch (SQLException e1) {
-//            e1.printStackTrace();
-//            disconnect();
-//        }
-        PGConnectionPoolDataSource connectionPoolDataSource = new PGConnectionPoolDataSource();
+        PooledConnection pc = connectToDatabase(askNameAndPassword(socketChannel));
 
-        try {
-            connectionPoolDataSource.getPooledConnection(username, password);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            disconnect();
-        }
+        sendTable(getDataFromDatabase(pc));
 
-        sendDeque(socketChannel);
-
-        while (true) {
+        while (true)
             if (receiveChanges() == -1) break;
-        }
 
         try {
             socketChannel.close();
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(-1);
         }
     }
 
-    private static MyClient.Pair<String, String> askNameAndPassword(SocketChannel socketChannel) {
+    private MyClient.Pair<String, String> askNameAndPassword(SocketChannel socketChannel) {
+        System.out.println(num + ": trying to receive username and password");
         Object obj = null;
         try {
-            ObjectInputStream oiStream= new ObjectInputStream(socketChannel.socket().getInputStream());
+            ObjectInputStream oiStream = new ObjectInputStream(socketChannel.socket().getInputStream());
             obj = oiStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            System.exit(-1);
         }
         return (MyClient.Pair<String, String>) obj;
     }
 
-    private void getDataFromDatabase(ArrayDeque<Employee> deque, String username, String password) throws SQLException {
-        Connection conn = DriverManager.getConnection(
-                "jdbc:tcp:localhost:" + getPort() + ":postgres", username, password);
-        Statement stat = conn.createStatement();
-        ResultSet res = stat.executeQuery(
-                "SELECT * FROM public.\"EMPLOYEE\"");
-        deque.clear();
-        while (res.next()) {
-            String name = res.getString("NAME");
-            String profession = res.getString("PROFESSION");
-            int salary = res.getInt("SALARY");
-            AttitudeToBoss attitudeToBoss = (AttitudeToBoss)res.getObject("ATTITUDE_TO_BOSS");
-            byte workQuality = res.getByte("WORK_QUALITY");
-            String avatarPath = res.getString("AVATAR_PATH");
-            String notes = res.getString("NOTES");
+    private PooledConnection connectToDatabase(MyClient.Pair<String, String> nameAndPassword) {
+        System.out.println(num + ": trying to connect to database");
+        String username = nameAndPassword.getFirst();
+        String password = nameAndPassword.getSecond();
+        //        try {
+        //            getDataFromDatabase(getDeque(), username, password);
+        //        } catch (SQLException e1) {
+        //            e1.printStackTrace();
+        //            disconnect();
+        //        }
+        PGConnectionPoolDataSource connectionPoolDataSource = new PGConnectionPoolDataSource();
 
-            Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
-            employee.setAvatarPath(avatarPath);
-            employee.setNotes(notes);
-
-            deque.add(employee);
+        PooledConnection pc = null;
+        try {
+            pc = connectionPoolDataSource.getPooledConnection(username, password);
+        } catch (SQLException e) {
+            try {
+                ObjectOutputStream ooStream = new ObjectOutputStream(socketout);
+                ooStream.writeChars(e.getLocalizedMessage());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            System.out.println(num + ": Cannot connect to database: " + e.getLocalizedMessage());
+            return connectToDatabase(askNameAndPassword(socketChannel));
         }
 
-        stat.close();
-        conn.close();
-    }
+        System.out.println(num + ": connected to database");
 
-    private static void sendDeque(SocketChannel socketChannel) {
-        ObjectOutputStream ooStream = null;
         try {
-            ooStream = new ObjectOutputStream(socketChannel.socket().getOutputStream());
+            ObjectOutputStream ooStream = new ObjectOutputStream(socketout);
+            ooStream.writeChars("connected to database");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return pc;
+    }
+
+    private ResultSet getDataFromDatabase(PooledConnection pc) {
+        System.out.println(num + ": trying to get data from database");
+        ResultSet set = null;
         try {
-            ooStream.writeObject(getDeque());
+            Statement stat = pc.getConnection().createStatement();
+            set = stat.executeQuery(
+                    "SELECT * FROM public.\"EMPLOYEE\"");
+            stat.close();
+            set.close();
+        } catch (SQLException e) {
+            System.out.println((e.getSQLState()));
+        }
+        return set;
+    }
+
+    private void sendTable(ResultSet res) {
+        System.out.println(num + ": trying to send table");
+        try {
+            ObjectOutputStream ooStream = new ObjectOutputStream(socketout);
+            ooStream.writeObject(res);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -145,10 +156,13 @@ public class MyServerThread extends Thread {
 
     private int receiveChanges() {
         //TODO: receiveChanges()
+        System.out.println(num + ": trying to receive changes");
         return -1;
     }
 
     private void disconnect() {
         // TODO: disconnect()
+        System.out.println(num + ": trying to disconnect");
+        System.exit(1);
     }
 }
