@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static ru.ifmo.cs.programming.lab6.AppGUI.*;
 
@@ -89,7 +90,7 @@ public class MyClient extends Thread implements Serializable {
 
     private void/*Connection*/ connect() throws IOException {
         System.out.println("trying to connect to server");
-        Pair<String, String> nameAndPassword =
+        Pair nameAndPassword =
                 guiNameAndPassword();
 //        String username = nameAndPassword.getFirst();
 //        String password = nameAndPassword.getSecond();
@@ -112,24 +113,33 @@ public class MyClient extends Thread implements Serializable {
 //        }
 //
 //        return null;
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socketOut);
-        objectOutputStream.writeObject(nameAndPassword);
+        socketOut.write(nameAndPassword.toString().getBytes());
+        socketOut.flush();
 
-        ObjectInputStream objectInputStream = new ObjectInputStream(socketIn);
-        String message = null;
-        try {
-            message = (String) objectInputStream.readObject();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        System.out.println("receiving answer...");
+        byte[] buffer = new byte[8192];// хз на сколько расчитано
+        // ByteArrayOutputStream используется, как накопитель байт, чтобы
+        //   потом превратить в строку все полученные данные.
+        //   преобразовывать часть потока в строку опасно, т.к.
+        //   если данные идут в многобайтной кодировке, один символ может
+        //   быть разрезан между чтениями
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // InputStream.read( byte[] ) возвращает количество прочитанных байт
+        //   и -1, если поток кончился (сервер закрыл соединение)
+        for ( int received; (received = socketIn.read( buffer )) != -1; ) {
+            // записываем прочитанное из потока, от 0 до количества считанных
+            baos.write( buffer, 0, received );
         }
+        String reply = baos.toString();
 
-        if (message != null) System.out.println(message);
+        System.out.print("server: ");
+        if (reply != null) System.out.println(reply);
             else System.out.println("null");
 
-        if (!Objects.equals(message, "connected to database")) connect();
+        if (!Objects.equals(reply, "connected to database")) connect();
     }
 
-    private Pair<String, String> guiNameAndPassword() {
+    private Pair guiNameAndPassword() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
 
@@ -144,20 +154,39 @@ public class MyClient extends Thread implements Serializable {
         controls.add(password);
         panel.add(controls, BorderLayout.CENTER);
 
-        JOptionPane.showConfirmDialog(
-                getFrame(), panel, "Sign in", JOptionPane.DEFAULT_OPTION);
+        Frame frame = new Frame("CRUD application");
+        frame.setIconImage(new ImageIcon(
+                System.getProperty("user.dir") + "/src/resources/images/icon.png").getImage());
 
-        return new Pair<>(username.getText(), new String(password.getPassword()));
+        JOptionPane.showConfirmDialog(
+                frame, panel, "Sign in", JOptionPane.DEFAULT_OPTION);
+
+        return new Pair(username.getText(), new String(password.getPassword()));
     }
 
-    public class Pair<A, B> implements Serializable {
-        private transient A first;
-        private transient B second;
+    public class Pair {
+        private transient String first;
+        private transient String second;
 
-        Pair(A first, B second) {
+        Pair(String first, String second) {
             super();
             this.first = first;
             this.second = second;
+        }
+
+        /**
+         *
+         * @param string - "(first, second)"
+         */
+        Pair(String string) throws IllegalArgumentException {
+            super();
+            Pattern p = Pattern.compile("\\(\\w*, \\w*\\)");
+            if (!p.matcher(string).matches()) throw new IllegalArgumentException();
+
+            p = Pattern.compile("[,()]");
+            String[] ans = p.split(string);
+            first = ans[1];
+            second = ans[2];
         }
 
         public int hashCode() {
@@ -182,16 +211,20 @@ public class MyClient extends Thread implements Serializable {
             return false;
         }
 
+        /**
+         *
+         * @return "(first, second)"
+         */
         public String toString()
         {
             return "(" + first + ", " + second + ")";
         }
 
-        public A getFirst() {
+        public String getFirst() {
             return first;
         }
 
-        public B getSecond() {
+        public String getSecond() {
             return second;
         }
     }

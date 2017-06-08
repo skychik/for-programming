@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Deprecated
 public class MyServerThread extends Thread {
     private SocketChannel socketChannel;
     private int num;// will be used for exceptions
@@ -79,7 +80,7 @@ public class MyServerThread extends Thread {
         }
     }
 
-    private MyClient.Pair<String, String> askNameAndPassword(SocketChannel socketChannel) {
+    private MyClient.Pair askNameAndPassword(SocketChannel socketChannel) {
         System.out.println(num + ": trying to receive username and password");
         Object obj = null;
         try {
@@ -88,10 +89,11 @@ public class MyServerThread extends Thread {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return (MyClient.Pair<String, String>) obj;
+        return (MyClient.Pair) obj;
     }
 
-    private PooledConnection connectToDatabase(MyClient.Pair<String, String> nameAndPassword) {
+    private PooledConnection connectToDatabase(MyClient.Pair nameAndPassword) {
+        System.out.println(nameAndPassword.toString());
         System.out.println(num + ": trying to connect to database");
         String username = nameAndPassword.getFirst();
         String password = nameAndPassword.getSecond();
