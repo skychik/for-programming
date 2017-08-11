@@ -21,7 +21,6 @@ public class MyClient extends Thread implements Serializable {
     private static Socket socket = null;
     private transient InputStream socketIn;
     private transient OutputStream socketOut;
-
     public static void main(String args[]) {
         if (args.length > 0) {
             if (args.length == 1) {
@@ -121,8 +120,18 @@ public class MyClient extends Thread implements Serializable {
         socketOut.flush();
 
         System.out.println("receiving answer...");
-        byte[] buffer = new byte[8192];// хз на сколько расчитано
-        // ByteArrayOutputStream используется, как накопитель байт, чтобы
+        String reply = receivingString();
+
+        System.out.print("server: ");
+        if (reply != null) System.out.println(reply);
+            else System.out.println("null");
+
+        if (!Objects.equals(reply, "connected to database")) connect();
+    }
+
+    private String receivingString() throws IOException {
+        byte[] buffer = new byte[8192];// хз насколько расчитано должно быть
+        //   ByteArrayOutputStream используется, как накопитель байт, чтобы
         //   потом превратить в строку все полученные данные.
         //   преобразовывать часть потока в строку опасно, т.к.
         //   если данные идут в многобайтной кодировке, один символ может
@@ -134,13 +143,7 @@ public class MyClient extends Thread implements Serializable {
             // записываем прочитанное из потока, от 0 до количества считанных
             baos.write( buffer, 0, received );
         }
-        String reply = baos.toString();
-
-        System.out.print("server: ");
-        if (reply != null) System.out.println(reply);
-            else System.out.println("null");
-
-        if (!Objects.equals(reply, "connected to database")) connect();
+        return baos.toString();
     }
 
     private Pair guiNameAndPassword() {

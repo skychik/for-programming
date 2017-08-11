@@ -1,11 +1,3 @@
-// !!!
-// !!!
-// !!!
-// TODO: при привильном логине и пароле создавать поток сервлета, который ждет указаний сервера на чтение и запись в канал
-// !!!
-// !!!
-// !!!
-
 package ru.ifmo.cs.programming.lab7;
 
 import org.postgresql.ds.PGConnectionPoolDataSource;
@@ -19,6 +11,8 @@ import java.nio.channels.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -31,6 +25,7 @@ public class MyServer {
 //    private final int waitingTimeForNewConnection = 10000;
     private Selector selector;
 	PGConnectionPoolDataSource connectionPoolDataSource;
+    HashMap<SocketChannel, PooledConnection> pooledConnections;
 
     public static void main(String args[]) throws IOException {
         try {
@@ -70,7 +65,7 @@ public class MyServer {
             System.exit(1);
         }
 
-        // Register server to selector (type OP_ACCEPT)
+        //
         try {
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         } catch (ClosedChannelException e) {
@@ -119,6 +114,8 @@ public class MyServer {
                     } catch (ClosedChannelException e) {
                         System.out.println("Shit_occurred#6: Channel is closed");
                     }
+
+                    pooledConnections.put(acceptedSocketChannel, null);
 
                     continue;
                 }
@@ -194,25 +191,37 @@ public class MyServer {
 
         switch (request.getKey()) {
             case NAME_AND_PASSWORD:
-	            System.out.println(request.getValue().toString());
+	            System.out.println(request.getValue().toString()); // вывод имени и пароля на экран
 	            System.out.println("trying to connect to database");
 
 	            if (!(request.getValue() instanceof MyClient.Pair)) {
 		            System.out.println("Shit_occurred#: incorrect type of MyEntry value");
+		            // send back NULL
 	            }
 
-                PooledConnection pc = connectToDatabase((MyClient.Pair) request.getValue());
-        }
+                if (pooledConnections.get(socketChannel) != null) {
+                    System.out.println("Shit_occurred");
+                    // send back NULL
+                }
 
-        // -----------------------
+                try {
+                    pooledConnections.replace(socketChannel, connectToDatabase((MyClient.Pair) request.getValue()));
+                } catch (SQLException e) {
+	                try {
+                        ObjectOutputStream ooStream = new ObjectOutputStream(socketChannel.socket().getOutputStream());
+                        ooStream.writeChars("connected to database");
+                    } catch (IOException e1) {
+                        e.printStackTrace();
+                    }
+                }
 
-        while (true)
-            if (receiveChanges() == -1) break;
-
-        try {
-            socketChannel.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+	            // send back "connected to database"
+                try {
+                    ObjectOutputStream ooStream = new ObjectOutputStream(socketChannel.socket().getOutputStream());
+                    ooStream.writeChars("connected to database");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
     }
 
@@ -258,32 +267,13 @@ public class MyServer {
         return new MyClient.Pair((String) obj);
     }
 
-    private PooledConnection connectToDatabase(MyClient.Pair nameAndPassword) {
+    private PooledConnection connectToDatabase(MyClient.Pair nameAndPassword) throws SQLException {
         String username = nameAndPassword.getFirst();
         String password = nameAndPassword.getSecond();
 
-        PooledConnection pc = null;
-        try {
-            pc = connectionPoolDataSource.getPooledConnection(username, password);
-        } catch (SQLException e) {
-            try {
-                ObjectOutputStream ooStream = new ObjectOutputStream(socketChannel.socket().getOutputStream());
-                ooStream.writeChars(e.getLocalizedMessage());
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            System.out.println("Cannot connect to database: " + e.getLocalizedMessage());
-            return connectToDatabase(socketChannel);
-        }
+        PooledConnection pc = connectionPoolDataSource.getPooledConnection(username, password);
 
         System.out.println("connected to database");
-
-        try {
-            ObjectOutputStream ooStream = new ObjectOutputStream(socketChannel.socket().getOutputStream());
-            ooStream.writeChars("connected to database");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         return pc;
     }
