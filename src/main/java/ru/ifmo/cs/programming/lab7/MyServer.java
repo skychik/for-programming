@@ -1,3 +1,6 @@
+/*
+Сервер не принимает/обрабатывает отправленное от клиента
+ */
 package ru.ifmo.cs.programming.lab7;
 
 import org.postgresql.ds.PGConnectionPoolDataSource;
@@ -12,7 +15,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -115,13 +117,16 @@ public class MyServer {
                         System.out.println("Shit_occurred#6: Channel is closed");
                     }
 
-                    pooledConnections.put(acceptedSocketChannel, null);
+	                System.out.println("Accepted new client");
+
+//                    pooledConnections.put(acceptedSocketChannel, null);
 
                     continue;
                 }
 
                 if (key.isReadable()) {
-                    SocketChannel client = (SocketChannel) key.channel();
+	                System.out.println("New income info");
+	                SocketChannel client = (SocketChannel) key.channel();
                     processInput(client);
                 }
 //                threads.add(new MyServerThread(num, serverSocketChannel.accept()));
@@ -185,7 +190,8 @@ public class MyServer {
 //    }
 
     private void processInput(SocketChannel socketChannel) {
-        //sendTable(getDataFromDatabase(pc), acceptedSocketChannel);
+	    System.out.println("Started processing new input info:");
+	    //sendTable(getDataFromDatabase(pc), acceptedSocketChannel);
 
         MyEntry request = identifyRequest(socketChannel);
 
@@ -199,13 +205,13 @@ public class MyServer {
 		            // send back NULL
 	            }
 
-                if (pooledConnections.get(socketChannel) != null) {
-                    System.out.println("Shit_occurred");
-                    // send back NULL
-                }
+//                if (pooledConnections.get(socketChannel) != null) {
+//                    System.out.println("Shit_occurred");
+//                    // send back NULL
+//                }
 
                 try {
-                    pooledConnections.replace(socketChannel, connectToDatabase((MyClient.Pair) request.getValue()));
+                    pooledConnections.put(socketChannel, connectToDatabase((MyClient.Pair) request.getValue()));
                 } catch (SQLException e) {
 	                try {
                         ObjectOutputStream ooStream = new ObjectOutputStream(socketChannel.socket().getOutputStream());
