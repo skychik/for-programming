@@ -24,6 +24,11 @@ public class InteractiveModeFunctions {
     private static Scanner scanner;
     //for working with Gson library
     private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+//    private static final InteractiveModeFunctions instance = new InteractiveModeFunctions();
+//
+//    public static InteractiveModeFunctions getInstance() {
+//        return instance;
+//    }
 
     public void help() {
         System.out.println("** You can use commands:\n" +

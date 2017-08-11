@@ -1,11 +1,20 @@
+// !!!
+// !!!
+// !!!
+// TODO: при привильном логине и пароле создавать поток сервлета, который ждет указаний сервера на чтение и запись в канал
+// !!!
+// !!!
+// !!!
+
 package ru.ifmo.cs.programming.lab7;
 
-
 import org.postgresql.ds.PGConnectionPoolDataSource;
+import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 
 import javax.sql.PooledConnection;
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,41 +22,40 @@ import java.sql.Statement;
 import java.util.Iterator;
 import java.util.Set;
 
+import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
+
 public class MyServer {
     private static int port = 5431;
 //    private ArrayList<MyServerThread> threads;
 //    private static boolean stopIdentifier = false;
 //    private final int waitingTimeForNewConnection = 10000;
     private Selector selector;
+	PGConnectionPoolDataSource connectionPoolDataSource;
 
     public static void main(String args[]) throws IOException {
         try {
-            Class.forName("org.postgresql.Driver"); // TODO: надо?
+            Class.forName("org.postgresql.Driver"); // loading driver
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Shit_occurred#0: cannot load postgresql driver");
+            System.exit(1);
         }
 
-        /* Если аргументы отсутствуют, порт принимает значение по умолчанию */
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
         }
-//        /* Создаем серверный сокет на полученном порту */
-//        ServerSocket serverSocket = null;
-//        try {
-//            serverSocket = new ServerSocket(port, 0,
-//                    InetAddress.getByName("localhost")); // создаем сокет сервера на локалхосте
-//        } catch (IOException e) {
-//            System.out.println("Порт занят: " + port);
-//            System.exit(-1);
-//        }
+        // Если аргументы отсутствуют, порт принимает значение по умолчанию
+
         new MyServer();
     }
 
     private MyServer() {
+    	connectionPoolDataSource = new PGConnectionPoolDataSource();
+
         ServerSocketChannel serverSocketChannel = null;
+
         try {
             serverSocketChannel = ServerSocketChannel.open();
-            serverSocketChannel.configureBlocking(false);
+            serverSocketChannel.configureBlocking(false); // nonblocking I/O
             serverSocketChannel.bind(new InetSocketAddress(port));
         } catch (IOException e) {
             System.out.println("Shit_occurred#1: cannot open nonblocking server socket channel on port " + port);
@@ -66,12 +74,11 @@ public class MyServer {
         try {
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         } catch (ClosedChannelException e) {
-            System.out.println("Shit_occurred#3: second parameter does not correspond to an operation\n" +
-                    "that is supported by server socket channel");
+            System.out.println("Shit_occurred#3: channel is closed");
             System.exit(1);
         }
 
-        System.out.println("server is started");
+        System.out.println("server has started");
 
         // Infinite server loop
         while (true) {
@@ -98,6 +105,8 @@ public class MyServer {
                     SocketChannel acceptedSocketChannel;
                     try {
                         acceptedSocketChannel = serverSocketChannel.accept();
+                        while (acceptedSocketChannel == null) // тк неблокирующий
+                            acceptedSocketChannel = serverSocketChannel.accept();
                         acceptedSocketChannel.configureBlocking(false); // Non Blocking I/O
                     } catch (IOException e) {
                         System.out.println("Shit_occurred#5: cannot register income socket channel");
@@ -110,10 +119,6 @@ public class MyServer {
                     } catch (ClosedChannelException e) {
                         System.out.println("Shit_occurred#6: Channel is closed");
                     }
-
-                    PooledConnection pc = connectToDatabase(acceptedSocketChannel);
-
-                    sendTable(getDataFromDatabase(pc), acceptedSocketChannel);
 
                     continue;
                 }
@@ -183,17 +188,20 @@ public class MyServer {
 //    }
 
     private void processInput(SocketChannel socketChannel) {
-        OutputStream socketOut = null;
-        InputStream socketIn = null;
-        try {
-            socketOut = socketChannel.socket().getOutputStream();
-            socketIn = socketChannel.socket().getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //sendTable(getDataFromDatabase(pc), acceptedSocketChannel);
 
-        switch (identifyRequest(socketIn).getFirst()) {
-            //case : disconnect();
+        MyEntry request = identifyRequest(socketChannel);
+
+        switch (request.getKey()) {
+            case NAME_AND_PASSWORD:
+	            System.out.println(request.getValue().toString());
+	            System.out.println("trying to connect to database");
+
+	            if (!(request.getValue() instanceof MyClient.Pair)) {
+		            System.out.println("Shit_occurred#: incorrect type of MyEntry value");
+	            }
+
+                PooledConnection pc = connectToDatabase((MyClient.Pair) request.getValue());
         }
 
         // -----------------------
@@ -208,18 +216,13 @@ public class MyServer {
         }
     }
 
-    private MyClient.Pair identifyRequest(InputStream in) {
-        ObjectInputStream stream = null;
+    private MyEntry identifyRequest(SocketChannel channel) {
+        MyEntry obj = null;
+        ByteBuffer buffer = ByteBuffer.allocate(8192);
         try {
-            stream = new ObjectInputStream(in);
-        } catch (IOException e) {
-            System.out.println("Shit occurred#10: cannot identify request");
-
-        }
-
-        MyClient.Pair obj = null;
-        try {
-            obj = (MyClient.Pair) stream.readObject();
+            if (channel.read(buffer) == 0)
+                System.out.println("Shit_occurred#?: empty income");
+            obj = (MyEntry) deserialize(buffer.array());
         } catch (IOException e) {
             System.out.println("Shit occurred#11");
         } catch (ClassNotFoundException e) {
@@ -229,31 +232,35 @@ public class MyServer {
         return obj;
     }
 
+    private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        return is.readObject();
+    }
+
+    @Deprecated
     private MyClient.Pair askNameAndPassword(SocketChannel socketChannel) {
         System.out.println("trying to receive username and password");
         Object obj = null;
         try {
-            ObjectInputStream oiStream = new ObjectInputStream(socketChannel.socket().getInputStream());
-            obj = oiStream.readObject();
+            ByteBuffer buffer = ByteBuffer.allocate(8192);
+            int bytesRead = socketChannel.read(buffer);
+            if (bytesRead > 0) {
+                buffer.flip();
+                InputStream bais = new ByteArrayInputStream(buffer.array(), 0, buffer.limit());
+                ObjectInputStream oiStream = new ObjectInputStream(bais);
+                obj = oiStream.readObject();
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+            System.exit(13);
         }
-        return (MyClient.Pair) obj;
+        return new MyClient.Pair((String) obj);
     }
 
-    private PooledConnection connectToDatabase(SocketChannel socketChannel) {
-        MyClient.Pair nameAndPassword = askNameAndPassword(socketChannel);
-        System.out.println(nameAndPassword.toString());
-        System.out.println("trying to connect to database");
+    private PooledConnection connectToDatabase(MyClient.Pair nameAndPassword) {
         String username = nameAndPassword.getFirst();
         String password = nameAndPassword.getSecond();
-        //        try {
-        //            getDataFromDatabase(getDeque(), username, password);
-        //        } catch (SQLException e1) {
-        //            e1.printStackTrace();
-        //            disconnect();
-        //        }
-        PGConnectionPoolDataSource connectionPoolDataSource = new PGConnectionPoolDataSource();
 
         PooledConnection pc = null;
         try {

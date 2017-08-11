@@ -2,6 +2,7 @@ package ru.ifmo.cs.programming.lab7;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static ru.ifmo.cs.programming.lab6.AppGUI.*;
+import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
 
 public class MyClient extends Thread implements Serializable {
     private static Socket socket = null;
@@ -70,6 +72,7 @@ public class MyClient extends Thread implements Serializable {
 
         } catch (IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
+            System.exit(1);
         }
 //        try {
 //            // берём поток вывода и выводим туда первый аргумент, заданный при вызове, адрес открытого сокета и его порт
@@ -113,7 +116,8 @@ public class MyClient extends Thread implements Serializable {
 //        }
 //
 //        return null;
-        socketOut.write(nameAndPassword.toString().getBytes());
+        System.out.println(nameAndPassword.toString());
+        socketOut.write(getBytes(new MyEntry(NAME_AND_PASSWORD, nameAndPassword)));
         socketOut.flush();
 
         System.out.println("receiving answer...");
@@ -164,7 +168,7 @@ public class MyClient extends Thread implements Serializable {
         return new Pair(username.getText(), new String(password.getPassword()));
     }
 
-    public class Pair {
+    public static class Pair {
         private transient String first;
         private transient String second;
 
@@ -176,15 +180,15 @@ public class MyClient extends Thread implements Serializable {
 
         /**
          *
-         * @param string - "(first, second)"
+         * @param str - "(first, second)"
          */
-        Pair(String string) throws IllegalArgumentException {
+        Pair(String str) throws IllegalArgumentException {
             super();
             Pattern p = Pattern.compile("\\(\\w*, \\w*\\)");
-            if (!p.matcher(string).matches()) throw new IllegalArgumentException();
+            if (!p.matcher(str).matches()) throw new IllegalArgumentException();
 
             p = Pattern.compile("[,()]");
-            String[] ans = p.split(string);
+            String[] ans = p.split(str);
             first = ans[1];
             second = ans[2];
         }
@@ -227,6 +231,18 @@ public class MyClient extends Thread implements Serializable {
         public String getSecond() {
             return second;
         }
+    }
+
+    private byte[] getBytes(Object obj) {
+        byte[] bytes = new byte[0];
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutput out = new ObjectOutputStream(bos);
+            out.writeObject(obj);
+            out.flush();
+            bytes = bos.toByteArray();
+        } catch (IOException ignored) {}
+        return bytes;
     }
 
     private boolean guiTryAgain() {
