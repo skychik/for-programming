@@ -116,8 +116,18 @@ public class MyClient extends Thread implements Serializable {
 //
 //        return null;
         System.out.println(nameAndPassword.toString());
-        socketOut.write(getBytes(new MyEntry(NAME_AND_PASSWORD, nameAndPassword)));
-        socketOut.flush();
+
+
+        ObjectOutputStream oos = new ObjectOutputStream(socketOut);
+        MyEntry entry = new MyEntry(NAME_AND_PASSWORD, nameAndPassword);
+
+        oos.writeLong(byteLengthOfObject(entry));
+        oos.flush();
+        oos.writeObject(entry);
+		oos.flush();
+//        socketOut.write(getBytes(new MyEntry(NAME_AND_PASSWORD, nameAndPassword)));
+//        socketOut.write(0);
+//        socketOut.flush();
 
         System.out.println("receiving answer...");
         String reply = receivingString();
@@ -128,6 +138,16 @@ public class MyClient extends Thread implements Serializable {
 
         if (!Objects.equals(reply, "connected to database")) connect();
     }
+
+	private long byteLengthOfObject (MyEntry entry) throws IOException {
+		ByteArrayOutputStream byteObject = new ByteArrayOutputStream();
+		ObjectOutputStream s = new ObjectOutputStream(byteObject);
+		s.writeObject(entry);
+		s.flush();
+		s.close();
+		//System.out.println("length=" + byteObject.toByteArray().length);
+		return byteObject.size();
+	}
 
     private String receivingString() throws IOException {
         byte[] buffer = new byte[8192];// хз насколько расчитано должно быть
@@ -171,7 +191,7 @@ public class MyClient extends Thread implements Serializable {
         return new Pair(username.getText(), new String(password.getPassword()));
     }
 
-    public static class Pair {
+    public static class Pair implements Serializable {
         private transient String first;
         private transient String second;
 
@@ -185,7 +205,7 @@ public class MyClient extends Thread implements Serializable {
          *
          * @param str - "(first, second)"
          */
-        Pair(String str) throws IllegalArgumentException {
+        public Pair(String str) throws IllegalArgumentException {
             super();
             Pattern p = Pattern.compile("\\(\\w*, \\w*\\)");
             if (!p.matcher(str).matches()) throw new IllegalArgumentException();
@@ -240,7 +260,7 @@ public class MyClient extends Thread implements Serializable {
         byte[] bytes = new byte[0];
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutput out = new ObjectOutputStream(bos);
+            ObjectOutputStream out = new ObjectOutputStream(bos);
             out.writeObject(obj);
             out.flush();
             bytes = bos.toByteArray();
