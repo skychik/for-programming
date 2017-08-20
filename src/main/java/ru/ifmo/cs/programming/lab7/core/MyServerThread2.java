@@ -51,10 +51,14 @@ public class MyServerThread2 extends Thread {
 		MyEntry request = null;
 		try {
 			request = identifyRequest(ois);
-		} catch (IOException e) {
+		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			disconnect();
+		}
+
+		if (request.getKey() == null) {
+			System.out.println("Shit_occurred: incorrect format of answer (key is null)");
+			System.exit(1);
 		}
 
 		switch (request.getKey()) {
@@ -77,7 +81,7 @@ public class MyServerThread2 extends Thread {
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 					try {
-						oos.writeObject(new MyEntry(1, new String(e.getMessage().getBytes("ISO-8859-1"), "UTF-8")));
+						oos.writeObject(new MyEntry(1, e.getMessage()));
 					} catch (IOException e1) {
 						System.out.println("Shit_in_thread№" + num + ": can't send answer back");
 						e1.printStackTrace();

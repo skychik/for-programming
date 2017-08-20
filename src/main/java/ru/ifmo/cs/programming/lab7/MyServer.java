@@ -9,17 +9,16 @@ import ru.ifmo.cs.programming.lab7.core.MyServerThread2;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.*;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
 public class MyServer {
     private static int port = 5431;
-    private ArrayList<MyServerThread2> threads = new ArrayList<>();
+//    private ArrayList<MyServerThread2> threads = new ArrayList<>();
 //    private static boolean stopIdentifier = false;
 //    private final int waitingTimeForNewConnection = 10000;
     private Selector selector;
-	PGConnectionPoolDataSource connectionPoolDataSource;
+	private PGConnectionPoolDataSource connectionPoolDataSource;
 //    HashMap<SocketChannel, PooledConnection> pooledConnections;
 
     public static void main(String args[]) throws IOException {
@@ -40,6 +39,7 @@ public class MyServer {
 
     private MyServer() {
     	connectionPoolDataSource = new PGConnectionPoolDataSource();
+    	connectionPoolDataSource.setDatabaseName("crud_application");
 
         ServerSocketChannel serverSocketChannel = null;
 
@@ -75,11 +75,11 @@ public class MyServer {
             // Проверяем, если ли какие-либо активности - входящие соединения или входящие данные в
             // существующем соединении. Если никаких активностей нет, выходим из цикла и снова ждём.
             try {
-	            int numberOfKeys = selector.select();
-	            System.out.println(numberOfKeys + " new actions");
+	            int numberOfKeys = selector.select(60000);
                 if (numberOfKeys == 0) {
-	                continue;
+	                break;
                 }
+	            System.out.println(numberOfKeys + " new actions");
             } catch (IOException e) {
                 System.out.println("Shit_occurred#4: selector is closed");
             }
@@ -107,8 +107,8 @@ public class MyServer {
                         continue;
                     }
 
-                    MyServerThread2 newThread = new MyServerThread2(this, 0, acceptedSocketChannel);
-	                threads.add(newThread);
+                    /*MyServerThread2 newThread = */new MyServerThread2(this, 0, acceptedSocketChannel);
+//	                threads.add(newThread);
 
 //	                // recording to the selector (reading and writing)
 //                    try {
@@ -191,8 +191,4 @@ public class MyServer {
 	public PGConnectionPoolDataSource getConnectionPoolDataSource() {
     	return connectionPoolDataSource;
 	}
-
-    public static int getPort() {
-        return port;
-    }
 }

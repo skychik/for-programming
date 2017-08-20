@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static ru.ifmo.cs.programming.lab6.AppGUI.*;
@@ -134,14 +135,19 @@ public class MyClient extends Thread implements Serializable {
 		    reply = receivingAnswer();
 	    } catch (ClassNotFoundException e) {
 		    e.printStackTrace();
-		    disconnect();
+		    System.exit(1);
+	    }
+
+	    if (reply.getKey() == null) {
+		    System.out.println("Shit_occurred: incorrect format of answer (key is null)");
+		    System.exit(1);
 	    }
 
 	    System.out.print("server: ");
         if (reply.getKey() == 0) System.out.println("connected to database");
             else {
             	System.out.println("Shit_occurred: " + reply.getValue());
-                disconnect();
+                System.exit(1);
             }
     }
 
@@ -157,7 +163,7 @@ public class MyClient extends Thread implements Serializable {
 
     private MyEntry receivingAnswer() throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(socketIn);
-        return (MyEntry) ois.readObject();
+	    return (MyEntry) ois.readObject();
     }
 
     private Pair guiNameAndPassword() {
@@ -221,10 +227,10 @@ public class MyClient extends Thread implements Serializable {
             if (other instanceof Pair) {
                 Pair otherPair = (Pair) other;
                 return
-                        ((  this.first == otherPair.first ||
+                        ((Objects.equals(this.first, otherPair.first) ||
                                 ( this.first != null && otherPair.first != null &&
                                         this.first.equals(otherPair.first))) &&
-                                (  this.second == otherPair.second ||
+                                (Objects.equals(this.second, otherPair.second) ||
                                         ( this.second != null && otherPair.second != null &&
                                                 this.second.equals(otherPair.second))) );
             }
@@ -250,29 +256,29 @@ public class MyClient extends Thread implements Serializable {
         }
     }
 
-    private byte[] getBytes(Object obj) {
-        byte[] bytes = new byte[0];
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject(obj);
-            out.flush();
-            bytes = bos.toByteArray();
-        } catch (IOException ignored) {}
-        return bytes;
-    }
-
-    private boolean guiTryAgain() {
-        JPanel panel = new JPanel();
-        JPanel label = new JPanel();
-
-        label.add(new JLabel("Username", SwingConstants.RIGHT));
-        panel.add(label);
-
-        int reply = JOptionPane.showConfirmDialog(
-                getFrame(), panel, "Try again?", JOptionPane.YES_NO_OPTION);
-        return reply == JOptionPane.YES_OPTION;
-    }
+//    private byte[] getBytes(Object obj) {
+//        byte[] bytes = new byte[0];
+//        try {
+//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//            ObjectOutputStream out = new ObjectOutputStream(bos);
+//            out.writeObject(obj);
+//            out.flush();
+//            bytes = bos.toByteArray();
+//        } catch (IOException ignored) {}
+//        return bytes;
+//    }
+//
+//    private boolean guiTryAgain() {
+//        JPanel panel = new JPanel();
+//        JPanel label = new JPanel();
+//
+//        label.add(new JLabel("Username", SwingConstants.RIGHT));
+//        panel.add(label);
+//
+//        int reply = JOptionPane.showConfirmDialog(
+//                getFrame(), panel, "Try again?", JOptionPane.YES_NO_OPTION);
+//        return reply == JOptionPane.YES_OPTION;
+//    }
 
     private ResultSet receiveTable() throws IOException, ClassNotFoundException {
         System.out.println("trying to receive table");
@@ -307,7 +313,6 @@ public class MyClient extends Thread implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.exit(1);
     }
 }
 
