@@ -91,7 +91,7 @@ public class MyClient extends Thread implements Serializable {
     }
 
     private void/*Connection*/ connect() throws IOException {
-        System.out.println("trying to connect to server");
+        System.out.println("trying to connect to server...");
         Pair nameAndPassword =
                 guiNameAndPassword();
 //        String username = nameAndPassword.getFirst();
@@ -306,7 +306,7 @@ public class MyClient extends Thread implements Serializable {
     }
 
     private void disconnect() {
-        System.out.println("trying to disconnect");
+        System.out.println("trying to disconnect...");
         try {
             socket.close();
             System.out.println("socket closed");

@@ -9,12 +9,13 @@ import ru.ifmo.cs.programming.lab7.core.MyServerThread2;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
 public class MyServer {
     private static int port = 5431;
-//    private ArrayList<MyServerThread2> threads = new ArrayList<>();
+    private ArrayList<MyServerThread2> threads = new ArrayList<>();
 //    private static boolean stopIdentifier = false;
 //    private final int waitingTimeForNewConnection = 10000;
     private Selector selector;
@@ -68,7 +69,7 @@ public class MyServer {
             System.exit(1);
         }
 
-        System.out.println("server has started");
+        System.out.println("server has started...");
 
         // Infinite server loop
         while (true) {
@@ -76,10 +77,11 @@ public class MyServer {
             // существующем соединении. Если никаких активностей нет, выходим из цикла и снова ждём.
             try {
 	            int numberOfKeys = selector.select(60000);
-                if (numberOfKeys == 0) {
+                if (numberOfKeys == 0 && threads.isEmpty()) {
+	                System.out.println("timeout (60 secs)");
 	                break;
                 }
-	            System.out.println(numberOfKeys + " new actions");
+	            System.out.println(numberOfKeys + " new acceptance(s)");
             } catch (IOException e) {
                 System.out.println("Shit_occurred#4: selector is closed");
             }
@@ -89,14 +91,14 @@ public class MyServer {
 
             Iterator iterator = keys.iterator();
             while (iterator.hasNext()) {
-	            System.out.println("new action:");
+	            //System.out.println("New action:");
 	            SelectionKey key = (SelectionKey) iterator.next();
 
                 // Remove the current key
                 iterator.remove();
 
                 if (key.isAcceptable()) {
-	                System.out.println("trying to accept new client");
+	                System.out.println("trying to accept new client...");
 	                // Принимаем входящее соединение
                     SocketChannel acceptedSocketChannel;
                     try {
@@ -107,8 +109,8 @@ public class MyServer {
                         continue;
                     }
 
-                    /*MyServerThread2 newThread = */new MyServerThread2(this, 0, acceptedSocketChannel);
-//	                threads.add(newThread);
+                    MyServerThread2 newThread = new MyServerThread2(this, 0, acceptedSocketChannel);
+	                threads.add(newThread);
 
 //	                // recording to the selector (reading and writing)
 //                    try {
@@ -117,7 +119,7 @@ public class MyServer {
 //                        System.out.println("Shit_occurred#6: Channel is closed");
 //                    }
 
-	                System.out.println("Accepted new client");
+	                System.out.println("accepted new client.");
 //                    pooledConnections.put(acceptedSocketChannel, null);
 
                     //continue;
@@ -190,5 +192,9 @@ public class MyServer {
 
 	public PGConnectionPoolDataSource getConnectionPoolDataSource() {
     	return connectionPoolDataSource;
+	}
+
+	public ArrayList<MyServerThread2> getThreads() {
+    	return threads;
 	}
 }
