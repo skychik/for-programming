@@ -6,23 +6,21 @@ package ru.ifmo.cs.programming.lab7;
 import org.postgresql.ds.PGConnectionPoolDataSource;
 import ru.ifmo.cs.programming.lab7.core.MyServerThread2;
 
-import javax.sql.PooledConnection;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
 public class MyServer {
     private static int port = 5431;
-    private ArrayList<MyServerThread2> threads;
+    private ArrayList<MyServerThread2> threads = new ArrayList<>();
 //    private static boolean stopIdentifier = false;
 //    private final int waitingTimeForNewConnection = 10000;
     private Selector selector;
 	PGConnectionPoolDataSource connectionPoolDataSource;
-    HashMap<SocketChannel, PooledConnection> pooledConnections;
+//    HashMap<SocketChannel, PooledConnection> pooledConnections;
 
     public static void main(String args[]) throws IOException {
         try {
@@ -109,9 +107,8 @@ public class MyServer {
                         continue;
                     }
 
-                    MyServerThread2 newThread = new MyServerThread2(0, acceptedSocketChannel);
-
-                    threads.add(newThread);
+                    MyServerThread2 newThread = new MyServerThread2(this, 0, acceptedSocketChannel);
+	                threads.add(newThread);
 
 //	                // recording to the selector (reading and writing)
 //                    try {
@@ -190,6 +187,10 @@ public class MyServer {
 //    public static ArrayDeque<Employee> getDeque() {
 //        return deque;
 //    }
+
+	public PGConnectionPoolDataSource getConnectionPoolDataSource() {
+    	return connectionPoolDataSource;
+	}
 
     public static int getPort() {
         return port;

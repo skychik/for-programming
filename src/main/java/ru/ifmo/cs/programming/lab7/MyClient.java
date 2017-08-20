@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static ru.ifmo.cs.programming.lab6.AppGUI.*;
@@ -121,8 +120,8 @@ public class MyClient extends Thread implements Serializable {
         ObjectOutputStream oos = new ObjectOutputStream(socketOut);
         MyEntry entry = new MyEntry(NAME_AND_PASSWORD, nameAndPassword);
 
-        oos.writeLong(byteLengthOfObject(entry));
-        oos.flush();
+//        oos.writeLong(byteLengthOfObject(entry));
+//        oos.flush();
         oos.writeObject(entry);
 		oos.flush();
 //        socketOut.write(getBytes(new MyEntry(NAME_AND_PASSWORD, nameAndPassword)));
@@ -130,40 +129,35 @@ public class MyClient extends Thread implements Serializable {
 //        socketOut.flush();
 
         System.out.println("receiving answer...");
-        String reply = receivingString();
+	    MyEntry reply = null;
+	    try {
+		    reply = receivingAnswer();
+	    } catch (ClassNotFoundException e) {
+		    e.printStackTrace();
+		    disconnect();
+	    }
 
-        System.out.print("server: ");
-        if (reply != null) System.out.println(reply);
-            else System.out.println("null");
-
-        if (!Objects.equals(reply, "connected to database")) connect();
+	    System.out.print("server: ");
+        if (reply.getKey() == 0) System.out.println("connected to database");
+            else {
+            	System.out.println("Shit_occurred: " + reply.getValue());
+                disconnect();
+            }
     }
 
-	private long byteLengthOfObject (MyEntry entry) throws IOException {
-		ByteArrayOutputStream byteObject = new ByteArrayOutputStream();
-		ObjectOutputStream s = new ObjectOutputStream(byteObject);
-		s.writeObject(entry);
-		s.flush();
-		s.close();
-		//System.out.println("length=" + byteObject.toByteArray().length);
-		return byteObject.size();
-	}
+//	private long byteLengthOfObject (MyEntry entry) throws IOException {
+//		ByteArrayOutputStream byteObject = new ByteArrayOutputStream();
+//		ObjectOutputStream s = new ObjectOutputStream(byteObject);
+//		s.writeObject(entry);
+//		s.flush();
+//		s.close();
+//		//System.out.println("length=" + byteObject.toByteArray().length);
+//		return byteObject.size();
+//	}
 
-    private String receivingString() throws IOException {
-        byte[] buffer = new byte[8192];// хз насколько расчитано должно быть
-        //   ByteArrayOutputStream используется, как накопитель байт, чтобы
-        //   потом превратить в строку все полученные данные.
-        //   преобразовывать часть потока в строку опасно, т.к.
-        //   если данные идут в многобайтной кодировке, один символ может
-        //   быть разрезан между чтениями
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        // InputStream.read( byte[] ) возвращает количество прочитанных байт
-        //   и -1, если поток кончился (сервер закрыл соединение)
-        for ( int received; (received = socketIn.read( buffer )) != -1; ) {
-            // записываем прочитанное из потока, от 0 до количества считанных
-            baos.write( buffer, 0, received );
-        }
-        return baos.toString();
+    private MyEntry receivingAnswer() throws IOException, ClassNotFoundException {
+        ObjectInputStream ois = new ObjectInputStream(socketIn);
+        return (MyEntry) ois.readObject();
     }
 
     private Pair guiNameAndPassword() {
@@ -192,8 +186,8 @@ public class MyClient extends Thread implements Serializable {
     }
 
     public static class Pair implements Serializable {
-        private transient String first;
-        private transient String second;
+        private String first;
+        private String second;
 
         Pair(String first, String second) {
             super();
@@ -313,6 +307,7 @@ public class MyClient extends Thread implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.exit(1);
     }
 }
 

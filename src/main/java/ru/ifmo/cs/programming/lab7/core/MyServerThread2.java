@@ -1,6 +1,7 @@
 package ru.ifmo.cs.programming.lab7.core;
 
 import ru.ifmo.cs.programming.lab7.MyClient;
+import ru.ifmo.cs.programming.lab7.MyServer;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 
 import javax.sql.PooledConnection;
@@ -14,11 +15,15 @@ import java.sql.Statement;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
 
 public class MyServerThread2 extends Thread {
-	int num; // server thread number; for exceptions
-	SocketChannel socketChannel;
+	private MyServer server;
+	private int num; // server thread number; for exceptions
+	private SocketChannel socketChannel;
+	private PooledConnection pooledConnection;
 
-	public MyServerThread2 (int num, SocketChannel socketChannel) {
+	public MyServerThread2 (MyServer server, int num, SocketChannel socketChannel) {
+		this.server = server;
 		this.num = num;
+
 		if (socketChannel != null) {
 			this.socketChannel = socketChannel;
 		} else {
@@ -32,16 +37,25 @@ public class MyServerThread2 extends Thread {
 	}
 
 	public void run() {
-		if (socketChannel.)// TODO: START FROM HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		System.out.println("New income from client");
-		processInput();
-	}
+		ObjectInputStream ois;
+		ObjectOutputStream oos;
+		try {
+			ois = new ObjectInputStream(socketChannel.socket().getInputStream());
+			oos = new ObjectOutputStream(socketChannel.socket().getOutputStream());
+		} catch (IOException e) {
+			System.out.println("Shit_in_thread№" + num);
+			e.printStackTrace();
+			return;
+		}
 
-	private void processInput(SocketChannel socketChannel) {
-		System.out.println("Started processing new input info:");
-		//sendTable(getDataFromDatabase(pc), acceptedSocketChannel);
-
-		MyEntry request = identifyRequest(socketChannel);
+		MyEntry request = null;
+		try {
+			request = identifyRequest(ois);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		switch (request.getKey()) {
 			case NAME_AND_PASSWORD:
@@ -49,7 +63,7 @@ public class MyServerThread2 extends Thread {
 				System.out.println("trying to connect to database");
 
 				if (!(request.getValue() instanceof MyClient.Pair)) {
-					System.out.println("Shit_occurred#: incorrect type of MyEntry value");
+					System.out.println("Shit_in_thread№" + num + ": incorrect type of MyEntry value");
 					// send back NULL
 				}
 
@@ -59,28 +73,35 @@ public class MyServerThread2 extends Thread {
 //                }
 
 				try {
-					pooledConnections.put(socketChannel, connectToDatabase((MyClient.Pair) request.getValue()));
+					pooledConnection = connectToDatabase((MyClient.Pair) request.getValue());
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 					try {
-						//ObjectOutputStream ooStream = new ObjectOutputStream(socketChannel.socket().getOutputStream());
-						socketChannel.read(ByteBuffer.wrap("connected to database".getBytes()));
+						oos.writeObject(new MyEntry(1, new String(e.getMessage().getBytes("ISO-8859-1"), "UTF-8")));
 					} catch (IOException e1) {
-						e.printStackTrace();
+						System.out.println("Shit_in_thread№" + num + ": can't send answer back");
+						e1.printStackTrace();
 					}
+					disconnect();
 				}
 
 				// send back "connected to database"
 				try {
-					//ObjectOutputStream ooStream = new ObjectOutputStream(socketChannel.socket().getOutputStream());
-					socketChannel.read(ByteBuffer.wrap("connected to database".getBytes()));
+					oos.writeObject(new MyEntry(0, null));
 				} catch (IOException e) {
+					System.out.println("Shit_in_thread№" + num + ": can't send answer back");
 					e.printStackTrace();
+					disconnect();
 				}
 		}
 	}
 
-	private MyEntry identifyRequest(SocketChannel channel) {
+	private void processInput(SocketChannel socketChannel) {
+		System.out.println("Started processing new input info:");
+		//sendTable(getDataFromDatabase(pc), acceptedSocketChannel);
+	}
+
+	private MyEntry identifyRequest(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 //	    ObjectInputStream ois = null;
 //    	try {
 //		    ois = new ObjectInputStream(Channels.newInputStream(channel));
@@ -104,40 +125,41 @@ public class MyServerThread2 extends Thread {
 
 		//
 		System.out.println("identifying request");
-		MyEntry obj = null;
-		ByteBuffer buffer = ByteBuffer.allocate(128);
+		return (MyEntry) ois.readObject();
+//		System.out.println(obj);
+//		//ByteBuffer buffer = ByteBuffer.allocate(128);
+//		long length = ois.readLong();
+//		System.out.println("length="+length);
+
 		//
-		long length = readLength(channel);
-		System.out.println("length="+length);
-		//
-		int count;
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-		int sum = 0;
-		try {
-			do {
-				count = channel.read(buffer);
-				//System.out.println("count="+count);
-				if (count != -1) {
-					buffer.rewind();
-					for (int i = 0; i < count; i++) {
-						outStream.write((char) buffer.get());
-					}
-					sum += count;
-				}
-			} while (count != -1 && sum < length);
-			System.out.println("sum=" + sum);
-			if (sum == length) {
-				obj = deserialize(outStream, sum);
-			} else {
-				//System.out.println("sum=" + sum + ", length=" + length);
-			}
-		} catch (IOException e) {
-			System.out.println("Shit_occurred: can't identify request");
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			System.out.println("Shit occurred#12");
-			e.printStackTrace();
-		}
+//		int count;
+//		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+//		int sum = 0;
+//		try {
+//			do {
+//				count = channel.read(buffer);
+//				//System.out.println("count="+count);
+//				if (count != -1) {
+//					buffer.rewind();
+//					for (int i = 0; i < count; i++) {
+//						outStream.write((char) buffer.get());
+//					}
+//					sum += count;
+//				}
+//			} while (count != -1 && sum < length);
+//			System.out.println("sum=" + sum);
+//			if (sum == length) {
+//				obj = deserialize(outStream, sum);
+//			} else {
+//				//System.out.println("sum=" + sum + ", length=" + length);
+//			}
+//		} catch (IOException e) {
+//			System.out.println("Shit_occurred: can't identify request");
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			System.out.println("Shit occurred#12");
+//			e.printStackTrace();
+//		}
 
 		//
 //        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -160,49 +182,52 @@ public class MyServerThread2 extends Thread {
 //	        e.printStackTrace();
 //        }
 
-		return obj;
+		//return obj;
 	}
 
-	private long readLength(SocketChannel channel) {
-		ByteBuffer length = ByteBuffer.allocate(8);
-		int count;
-		int sum = 0;
-		try {
-			do {
-				count = channel.read(length);
-				if (count != -1) {
-					//length.rewind();
-					sum += count;
-					System.out.println("count=" + count + "sum=" + sum);
-					if (count > 0) {
-						for (int i = 0; i < length.array().length; i++) {
-							System.out.print(length.array()[i] + ".");
-						}
-					}
-				}
-			} while (count != -1 && sum < 8);
-
-			if (sum != 8) {
-				System.out.println("sum=" + sum);
-				for (int i = 0; i < length.array().length; i++) {
-					System.out.print(length.array()[i] + ".");
-				}
-				throw new IOException();
-			}
-		} catch (IOException e) {
-			System.out.println("Shit_occurred: can't identify length of request");
-			e.printStackTrace();
-			return -1;
-		}
-
-		System.out.println("sum=" + sum);
-		for (int i = 0; i < length.array().length; i++) {
-			System.out.print(length.array()[i] + ".");
-		}
-
-		length.rewind();
-
-		return length.getLong();
+	private long readLength(SocketChannel channel) throws IOException {
+		ObjectInputStream ois = new ObjectInputStream(socketChannel.socket().getInputStream());
+		return ois.readLong();
+		//
+//		ByteBuffer length = ByteBuffer.allocate(8);
+//		int count;
+//		int sum = 0;
+//		try {
+//			do {
+//				count = channel.read(length);
+//				if (count != -1) {
+//					//length.rewind();
+//					sum += count;
+//					System.out.println("count=" + count + "sum=" + sum);
+//					if (count > 0) {
+//						for (int i = 0; i < length.array().length; i++) {
+//							System.out.print(length.array()[i] + ".");
+//						}
+//					}
+//				}
+//			} while (count != -1 && sum < 8);
+//
+//			if (sum != 8) {
+//				System.out.println("sum=" + sum);
+//				for (int i = 0; i < length.array().length; i++) {
+//					System.out.print(length.array()[i] + ".");
+//				}
+//				throw new IOException();
+//			}
+//		} catch (IOException e) {
+//			System.out.println("Shit_occurred: can't identify length of request");
+//			e.printStackTrace();
+//			return -1;
+//		}
+//
+//		System.out.println("sum=" + sum);
+//		for (int i = 0; i < length.array().length; i++) {
+//			System.out.print(length.array()[i] + ".");
+//		}
+//
+//		length.rewind();
+//
+//		return length.getLong();
 	}
 
 	private MyEntry deserialize(ByteArrayOutputStream data, int kol) throws IOException, ClassNotFoundException {
@@ -246,7 +271,7 @@ public class MyServerThread2 extends Thread {
 		String username = nameAndPassword.getFirst();
 		String password = nameAndPassword.getSecond();
 
-		PooledConnection pc = connectionPoolDataSource.getPooledConnection(username, password);
+		PooledConnection pc = server.getConnectionPoolDataSource().getPooledConnection(username, password);
 
 		System.out.println("connected to database");
 
@@ -285,8 +310,12 @@ public class MyServerThread2 extends Thread {
 	}
 
 	private void disconnect() {
-		// TODO: disconnect()
 		System.out.println("trying to disconnect");
+		try {
+			socketChannel.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		System.exit(1);
 	}
 }
