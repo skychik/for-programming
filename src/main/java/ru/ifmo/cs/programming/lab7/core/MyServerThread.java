@@ -1,6 +1,7 @@
 package ru.ifmo.cs.programming.lab7.core;
 
 import com.sun.istack.NotNull;
+import com.sun.rowset.CachedRowSetImpl;
 import ru.ifmo.cs.programming.lab7.MyClient;
 import ru.ifmo.cs.programming.lab7.MyServer;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
@@ -15,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
+import static ru.ifmo.cs.programming.lab7.utils.MyEntry.TABLE;
 
 public class MyServerThread extends Thread {
 	private MyServer server;
@@ -46,20 +48,21 @@ public class MyServerThread extends Thread {
 				ois = new ObjectInputStream(socketChannel.socket().getInputStream());
 				oos = new ObjectOutputStream(socketChannel.socket().getOutputStream());
 			} catch (IOException e) {
-				System.out.println("Shit_in_thread№" + num);
+				System.out.println(num + ": Shit_in_thread");
 				e.printStackTrace();
 				disconnect();
 			}
 
 
 			// Receiving and trying to connect to DB
-			while(!connectToDatabase());
+			connectToDatabase();
 
-	//		MyEntry request = identifyRequest();
-	//		switch (request.getKey()) {
-	//			case :
-	//
-	//		}
+			MyEntry request = identifyRequest();
+			switch (request.getKey()) {
+				case TABLE :
+					sendTable(getDataFromDatabase());
+
+			}
 		} catch (InterruptedException ignored){}
 	}
 
@@ -80,72 +83,61 @@ public class MyServerThread extends Thread {
 //		return (MyEntry) o;
 //	}
 
-	private boolean connectToDatabase() throws InterruptedException {
+	private void connectToDatabase() throws InterruptedException {
 		MyEntry request = identifyRequest();
 
 		if (request.getKey() != NAME_AND_PASSWORD) {
-			System.out.println("Shit_in_thread№" + num + ": incorrect format of request (key is null)");
+			System.out.println(num + ": Shit_in_thread: incorrect format of request (key is null)");
 			try {
-				oos.writeObject(new MyEntry(1, "incorrect format of request (key != NAME_AND_PASSWORD)"));
+				oos.writeObject(new MyEntry(-1, "incorrect format of request (key != NAME_AND_PASSWORD)"));
 			} catch (IOException e1) {
-				System.out.println("Shit_in_thread№" + num + ": can't send answer back");
-				e1.printStackTrace();
-				disconnect();
-			}
-			return false;
-		}
-
-		if (!(request.getValue() instanceof MyClient.Pair)) {
-			System.out.println("Shit_in_thread№" + num + ": incorrect type of MyEntry value");
-			try {
-				oos.writeObject(new MyEntry(1, "incorrect format of request (key != NAME_AND_PASSWORD)"));
-			} catch (IOException e1) {
-				System.out.println("Shit_in_thread№" + num + ": can't send answer back");
+				System.out.println(num + ": Shit_in_thread: can't send answer back");
 				e1.printStackTrace();
 				disconnect();
 			}
 			disconnect();
 		}
 
-		System.out.println(request.getValue().toString()); // вывод имени и пароля на экран
-		System.out.println("trying to connect to database");
+		if (!(request.getValue() instanceof MyClient.Pair)) {
+			System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry value");
+			try {
+				oos.writeObject(new MyEntry(-1, "incorrect format of request (key != NAME_AND_PASSWORD)"));
+			} catch (IOException e1) {
+				System.out.println(num + ": Shit_in_thread: can't send answer back");
+				e1.printStackTrace();
+				disconnect();
+			}
+			disconnect();
+		}
+
+		System.out.println(num + ": " + request.getValue().toString()); // вывод имени и пароля на экран
+		System.out.println(num + ": trying to connect to database...");
 		try {
 			String username = ((MyClient.Pair) request.getValue()).getFirst();
 			String password = ((MyClient.Pair) request.getValue()).getSecond();
 
 			pooledConnection = server.getConnectionPoolDataSource().getPooledConnection(username, password);
-			System.out.println("connected to database");
+			System.out.println(num + ": connected to database");
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+			System.out.println(num + ": " + e.getMessage());
 			try {
 				oos.writeObject(new MyEntry(1, e.getMessage()));
 			} catch (IOException e1) {
-				System.out.println("Shit_in_thread№" + num + ": can't send answer back");
+				System.out.println(num + ": Shit_in_thread: can't send answer back");
 				e1.printStackTrace();
 				disconnect();
 			}
-			return false;
+			connectToDatabase();
 		}
 
 		// send back that connection is approved"
 		try {
 			oos.writeObject(new MyEntry(0, null));
 		} catch (IOException e) {
-			System.out.println("Shit_in_thread№" + num + ": can't send answer back");
+			System.out.println(num + ": Shit_in_thread: can't send answer back");
 			e.printStackTrace();
 			disconnect();
 		}
-
-		return true;
-		//
-//		String username = (MyClient.Pair) request.getValue().getFirst();
-//		String password = (MyClient.Pair) request.getValue().getSecond();
-//
-//		PooledConnection pc = server.getConnectionPoolDataSource().getPooledConnection(username, password);
-//
-//		System.out.println("connected to database");
-//
-//		return pc;
 	}
 
 	@NotNull
@@ -172,22 +164,24 @@ public class MyServerThread extends Thread {
 //	    }
 
 		//
-		System.out.println("identifying request");
+		System.out.println(num + ": identifying request...");
 
 		MyEntry entry = null;
 		try {
 			entry = (MyEntry) ois.readObject();
 		} catch (IOException | ClassNotFoundException e) {
+			System.out.println(num + ": Shit_in_thread");
 			e.printStackTrace();
 			disconnect();
 		}
 
 		if (entry == null) {
-			System.out.println("Shit_in_thread№" + num + ": incorrect format of answer (entry is null)");
+			System.out.println(num + ": Shit_in_thread: incorrect format of answer (entry is null)");
 			disconnect();
 		} else {
 			return entry;
 		}
+
 		return null; // shouldn't be executed
 //		System.out.println(obj);
 //		//ByteBuffer buffer = ByteBuffer.allocate(128);
@@ -248,47 +242,65 @@ public class MyServerThread extends Thread {
 		//return obj;
 	}
 
-	private ResultSet getDataFromDatabase(PooledConnection pc) {
-		System.out.println("trying to get data from database");
+	private ResultSet getDataFromDatabase() {
+		System.out.println(num + ": trying to get data from database...");
+
 		ResultSet set = null;
 		try {
-			Statement stat = pc.getConnection().createStatement();
+			Statement stat = pooledConnection.getConnection().createStatement();
+			stat.execute("CREATE TABLE IF NOT EXISTS public.\"EMPLOYEE\"" +
+					"(NAME varchar, " +
+					"PROFESSION varchar, " +
+					"SALARY integer, " +
+					"ATTITUDE_TO_BOSS integer, " +
+					"WORK_QUALITY integer, " +
+					"AVATAR_PATH varchar, " +
+					"NOTES varchar);");
+
+			stat = pooledConnection.getConnection().createStatement();
 			set = stat.executeQuery(
 					"SELECT * FROM public.\"EMPLOYEE\"");
+
 			stat.close();
 			set.close();
 		} catch (SQLException e) {
-			System.out.println((e.getSQLState()));
+			System.out.println(num + ": Shit_in_thread: " + e.getSQLState());
+			e.printStackTrace();
 		}
+
 		return set;
 	}
 
-	private void sendTable(ResultSet res, SocketChannel channel) {
-		System.out.println("trying to send table");
+	private void sendTable(ResultSet res) {
+		System.out.println(num + ": trying to send table...");
 		try {
-			ObjectOutputStream ooStream = new ObjectOutputStream(channel.socket().getOutputStream());
-			ooStream.writeObject(res);
+			CachedRowSetImpl crs = new CachedRowSetImpl();
+			crs.populate(res);
+			oos.writeObject(new MyEntry(0, res.getStatement()));
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
 		}
 	}
 
 	private int receiveChanges() {
 		//TODO: receiveChanges()
-		System.out.println("trying to receive changes");
+		System.out.println(num + ": trying to receive changes");
 		return -1;
 	}
 
 	private void disconnect() throws InterruptedException {
-		System.out.println("trying to disconnect");
+		System.out.println(num + ": trying to disconnect");
 		try {
 			socketChannel.close();
 		} catch (IOException e) {
-			System.out.println("Shit_in_thread№" + num + ": can't close channel");
+			System.out.println(num + ": Shit_in_thread: can't close channel");
 			e.printStackTrace();
 			System.exit(1);
 		}
 		server.getThreads().remove(this);
+		System.out.println(num + ": disconnected");
 		throw new InterruptedException();
 	}
 }

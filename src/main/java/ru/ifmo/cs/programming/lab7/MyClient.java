@@ -1,27 +1,38 @@
 package ru.ifmo.cs.programming.lab7;
 
+import org.jetbrains.annotations.NotNull;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab6.AppGUI;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static ru.ifmo.cs.programming.lab6.AppGUI.*;
+import static ru.ifmo.cs.programming.lab6.AppGUI.getDeque;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntry.TABLE;
 
 public class MyClient extends Thread {
+
     private static Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
+
+	/*это наш дек*/
+	private static ArrayDeque<Employee> deque = new ArrayDeque<>();
+
     public static void main(String args[]) {
         if (args.length > 0) {
             if (args.length == 1) {
@@ -47,16 +58,6 @@ public class MyClient extends Thread {
 		    System.exit(1);
 	    }
 
-	    try {
-		    oos = new ObjectOutputStream(socket.getOutputStream());
-		    ois = new ObjectInputStream(socket.getInputStream());
-	    } catch (IOException e) {
-		    System.out.println("Shit_occurred: problems with input/output stream(s)");
-		    disconnect();
-	    }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(this::disconnect));
-
         // запускаем новый вычислительный поток (см. ф-ю run())
         start();
     }
@@ -70,9 +71,20 @@ public class MyClient extends Thread {
     }
 
     public void run() {
-        connect();
-        initDeque();
-        gui();
+        try {
+	        //Runtime.getRuntime().addShutdownHook(new Thread(this::disconnect));
+	        try {
+		        oos = new ObjectOutputStream(socket.getOutputStream());
+		        ois = new ObjectInputStream(socket.getInputStream());
+	        } catch (IOException e) {
+		        System.out.println("Shit_occurred: problems with input/output stream(s)");
+		        disconnect();
+	        }
+
+	        connect(null);
+	        new Thread(AppGUI::gui);
+	        initDeque();
+        } catch (InterruptedException ignored){}
 //        try {
 //            // берём поток вывода и выводим туда первый аргумент, заданный при вызове, адрес открытого сокета и его порт
 //            args[0] = args[0]+"\n" + socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort();
@@ -90,35 +102,9 @@ public class MyClient extends Thread {
 //        }
     }
 
-	private Pair guiNameAndPassword() {
-		JPanel panel = new JPanel(new BorderLayout(5, 5));
-		JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-
-		label.add(new JLabel("Username", SwingConstants.RIGHT));
-		label.add(new JLabel("Password", SwingConstants.RIGHT));
-		panel.add(label, BorderLayout.WEST);
-
-		JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
-		JTextField username = new JTextField();
-		controls.add(username);
-		JPasswordField password = new JPasswordField();
-		controls.add(password);
-		panel.add(controls, BorderLayout.CENTER);
-
-		Frame frame = new Frame("CRUD application");
-		frame.setIconImage(new ImageIcon(
-				System.getProperty("user.dir") + "/src/resources/images/icon.png").getImage());
-
-		JOptionPane.showConfirmDialog(
-				frame, panel, "Sign in", JOptionPane.DEFAULT_OPTION);
-
-		return new Pair(username.getText(), new String(password.getPassword()));
-	}
-
-    private void/*Connection*/ connect() {
+    private void/*Connection*/ connect(String msg) throws InterruptedException {
         System.out.println("trying to connect to server...");
-        Pair nameAndPassword =
-                guiNameAndPassword();
+        Pair nameAndPassword = guiNameAndPassword(msg);
 //        String username = nameAndPassword.getFirst();
 //        String password = nameAndPassword.getSecond();
 
@@ -144,13 +130,52 @@ public class MyClient extends Thread {
 
         MyEntry reply = query(NAME_AND_PASSWORD, nameAndPassword);
 
-	    System.out.print("server: ");
-        if (reply.getKey() == 0) System.out.println("connected to database");
-            else {
-            	System.out.println("Shit_occurred: " + reply.getValue());
-                disconnect();
-            }
+        if (reply.getKey() == 0)
+        	System.out.println("connected to database");
+        if (reply.getKey() == 1) {
+	        System.out.println("Shit_occurred: " + reply.getValue());
+	        connect(reply.getValue().toString());
+        }
+	    if (reply.getKey() == -1) {
+            System.out.println("Shit_occurred: " + reply.getValue());
+            disconnect();
+        }
     }
+
+	@NotNull
+	private Pair guiNameAndPassword(String msg) throws InterruptedException {
+		JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+		JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+		label.add(new JLabel("Username", SwingConstants.RIGHT));
+		label.add(new JLabel("Password", SwingConstants.RIGHT));
+		panel.add(label, BorderLayout.WEST);
+
+		JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+		JTextField username = new JTextField();
+		controls.add(username);
+		JPasswordField password = new JPasswordField();
+		controls.add(password);
+		panel.add(controls, BorderLayout.CENTER);
+
+		if (msg != null) {
+			JPanel message = new JPanel(new GridLayout(1, 0, 2, 2));
+			JLabel l = new JLabel(msg, SwingConstants.CENTER);
+			l.setForeground(Color.red);
+			message.add(l);
+			panel.add(message, BorderLayout.SOUTH);
+		}
+
+		Frame frame = new Frame("CRUD application");
+		frame.setIconImage(new ImageIcon(
+				System.getProperty("user.dir") + "/src/resources/images/icon.png").getImage());
+
+		int result = JOptionPane.showConfirmDialog(frame, panel, "Sign in", JOptionPane.DEFAULT_OPTION);
+		if (result == JOptionPane.CLOSED_OPTION) {
+			disconnect();
+		}
+		return new Pair(username.getText(), new String(password.getPassword()));
+	}
 
 //	private long byteLengthOfObject (MyEntry entry) throws IOException {
 //		ByteArrayOutputStream byteObject = new ByteArrayOutputStream();
@@ -186,7 +211,7 @@ public class MyClient extends Thread {
 //        return reply == JOptionPane.YES_OPTION;
 //    }
 
-    private /*Table*/t receiveTable() {
+    private ResultSet receiveTable() throws InterruptedException {
         System.out.println("trying to receive table...");
 	    MyEntry reply = query(TABLE, null);
 
@@ -195,10 +220,10 @@ public class MyClient extends Thread {
 		    disconnect();
 	    }
 
-        return (/*Table*/) reply.getValue();
+        return (ResultSet) reply.getValue();
     }
 
-    private MyEntry query(int requestCode, Object obj) {
+    private MyEntry query(int requestCode, Object obj) throws InterruptedException {
 	    MyEntry request = new MyEntry(requestCode, obj);
 	    try {
 		    oos.writeObject(request);
@@ -233,27 +258,33 @@ public class MyClient extends Thread {
 	    return reply;
     }
 
-    private void initDeque(ResultSet res) throws SQLException {
-    	t table = receiveTable();
+    private void initDeque() throws InterruptedException {
+    	ResultSet res = receiveTable();
+
         getDeque().clear();
-        while (res.next()) {
-            String name = res.getString("NAME");
-            String profession = res.getString("PROFESSION");
-            int salary = res.getInt("SALARY");
-            AttitudeToBoss attitudeToBoss = (AttitudeToBoss)res.getObject("ATTITUDE_TO_BOSS");
-            byte workQuality = res.getByte("WORK_QUALITY");
-            String avatarPath = res.getString("AVATAR_PATH");
-            String notes = res.getString("NOTES");
+        try {
+        	while (res.next()) {
+		        String name = res.getString("NAME");
+		        String profession = res.getString("PROFESSION");
+		        int salary = res.getInt("SALARY");
+		        AttitudeToBoss attitudeToBoss = (AttitudeToBoss)res.getObject("ATTITUDE_TO_BOSS");
+		        byte workQuality = res.getByte("WORK_QUALITY");
+		        String avatarPath = res.getString("AVATAR_PATH");
+		        String notes = res.getString("NOTES");
+		        Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+		        employee.setAvatarPath(avatarPath);
+		        employee.setNotes(notes);
 
-            Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
-            employee.setAvatarPath(avatarPath);
-            employee.setNotes(notes);
-
-            getDeque().add(employee);
+		        getDeque().add(employee);
+	        }
+        } catch (SQLException e) {
+	        System.out.println("Shit_occurred: SQLException in making table from ResultSet");
+	        e.printStackTrace();
+	        disconnect();
         }
     }
 
-    private void disconnect() {
+    private void disconnect() throws InterruptedException {
         System.out.println("trying to disconnect...");
         try {
             socket.close();
@@ -261,7 +292,8 @@ public class MyClient extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.exit(1);
+	    System.out.println("disconnected");
+	    throw new InterruptedException();
     }
 
 	public static class Pair implements Serializable {

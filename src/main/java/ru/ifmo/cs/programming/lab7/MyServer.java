@@ -16,6 +16,7 @@ import java.util.Set;
 public class MyServer {
     private static int port = 5431;
     private ArrayList<MyServerThread> threads = new ArrayList<>();
+	private int numberForThread = 0; // bad :(
 //    private static boolean stopIdentifier = false;
 //    private final int waitingTimeForNewConnection = 10000;
     private Selector selector;
@@ -109,7 +110,7 @@ public class MyServer {
                         continue;
                     }
 
-                    MyServerThread newThread = new MyServerThread(this, 0, acceptedSocketChannel);
+	                MyServerThread newThread = new MyServerThread(this, numberForThread++, acceptedSocketChannel);
 	                threads.add(newThread);
 
 //	                // recording to the selector (reading and writing)
