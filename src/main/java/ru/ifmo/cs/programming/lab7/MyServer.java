@@ -4,7 +4,7 @@
 package ru.ifmo.cs.programming.lab7;
 
 import org.postgresql.ds.PGConnectionPoolDataSource;
-import ru.ifmo.cs.programming.lab7.core.MyServerThread2;
+import ru.ifmo.cs.programming.lab7.core.MyServerThread;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class MyServer {
     private static int port = 5431;
-    private ArrayList<MyServerThread2> threads = new ArrayList<>();
+    private ArrayList<MyServerThread> threads = new ArrayList<>();
 //    private static boolean stopIdentifier = false;
 //    private final int waitingTimeForNewConnection = 10000;
     private Selector selector;
@@ -109,7 +109,7 @@ public class MyServer {
                         continue;
                     }
 
-                    MyServerThread2 newThread = new MyServerThread2(this, 0, acceptedSocketChannel);
+                    MyServerThread newThread = new MyServerThread(this, 0, acceptedSocketChannel);
 	                threads.add(newThread);
 
 //	                // recording to the selector (reading and writing)
@@ -130,7 +130,7 @@ public class MyServer {
 //	                SocketChannel client = (SocketChannel) key.channel();
 //                    processInput(client);
 //                }
-//                threads.add(new MyServerThread(num, serverSocketChannel.accept()));
+//                threads.add(new MyServerThread0(num, serverSocketChannel.accept()));
 //                System.out.println("server thread number " + num + " has added");
 //                num++;
 //                if (threads.isEmpty()) {
@@ -175,7 +175,7 @@ public class MyServer {
 //        try {
 //            while(true) {
 //                //
-//                new MyServerThread(i, serverSocket.accept());
+//                new MyServerThread0(i, serverSocket.accept());
 //                i++;
 //            }
 //        } catch(Exception e) {
@@ -194,7 +194,7 @@ public class MyServer {
     	return connectionPoolDataSource;
 	}
 
-	public ArrayList<MyServerThread2> getThreads() {
+	public ArrayList<MyServerThread> getThreads() {
     	return threads;
 	}
 }
