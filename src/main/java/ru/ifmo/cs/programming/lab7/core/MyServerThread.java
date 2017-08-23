@@ -1,7 +1,8 @@
 package ru.ifmo.cs.programming.lab7.core;
 
 import com.sun.istack.NotNull;
-import com.sun.rowset.CachedRowSetImpl;
+import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab7.MyClient;
 import ru.ifmo.cs.programming.lab7.MyServer;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
@@ -271,17 +272,59 @@ public class MyServerThread extends Thread {
 		return set;
 	}
 
-	private void sendTable(ResultSet res) {
+	private void sendTable(ResultSet res) throws InterruptedException {
 		System.out.println(num + ": trying to send table...");
+		//
+//		int rowNumber = 0;
+//		try {
+//			rowNumber = res.getMetaData().();
+//			oos.writeLong(rowNumber);
+//		} catch (IOException e) {
+//			System.out.println(num + ": Shit_in_thread: can't send answer back");
+//			e.printStackTrace();
+//			disconnect();
+//		} catch (SQLException e) {
+//			System.out.println(num + ": Shit_in_thread: database access error");
+//			e.printStackTrace();
+//			//send answer
+//		}
+
 		try {
-			CachedRowSetImpl crs = new CachedRowSetImpl();
-			crs.populate(res);
-			oos.writeObject(new MyEntry(0, res.getStatement()));
+			while (res.next()) {
+				String name = res.getString("NAME");
+				String profession = res.getString("PROFESSION");
+				int salary = res.getInt("SALARY");
+				AttitudeToBoss attitudeToBoss = (AttitudeToBoss)res.getObject("ATTITUDE_TO_BOSS");
+				byte workQuality = res.getByte("WORK_QUALITY");
+				String avatarPath = res.getString("AVATAR_PATH");
+				String notes = res.getString("NOTES");
+				Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+				employee.setAvatarPath(avatarPath);
+				employee.setNotes(notes);
+
+				oos.writeObject(employee);
+			}
+
+			oos.writeObject(new MyEntry(0, null));
+		} catch (SQLException e) {
+			System.out.println("Shit_occurred: SQLException in making table from ResultSet");
+			e.printStackTrace();
+			disconnect();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
 		}
+		//
+//			try {
+//			CachedRowSetImpl crs = new CachedRowSetImpl();
+//			crs.populate(res);
+//			oos.writeObject(new MyEntry(0, res.getStatement()));
+//		} catch (IOException e) {
+//			System.out.println(num + ": Shit_in_thread: can't send answer back");
+//			e.printStackTrace();
+//			disconnect();
+//		} catch (SQLException e1) {
+//			e1.printStackTrace();
+//		}
 	}
 
 	private int receiveChanges() {

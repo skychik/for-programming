@@ -2,7 +2,6 @@ package ru.ifmo.cs.programming.lab7;
 
 import org.jetbrains.annotations.NotNull;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
-import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab6.AppGUI;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 
@@ -15,8 +14,6 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -30,8 +27,8 @@ public class MyClient extends Thread {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
-	/*это наш дек*/
-	private static ArrayDeque<Employee> deque = new ArrayDeque<>();
+//	/*это наш дек*/
+//	private static ArrayDeque<Employee> deque = new ArrayDeque<>();
 
     public static void main(String args[]) {
         if (args.length > 0) {
@@ -85,6 +82,7 @@ public class MyClient extends Thread {
 	        new Thread(AppGUI::gui);
 	        initDeque();
         } catch (InterruptedException ignored){}
+        System.exit(0);
 //        try {
 //            // берём поток вывода и выводим туда первый аргумент, заданный при вызове, адрес открытого сокета и его порт
 //            args[0] = args[0]+"\n" + socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort();
@@ -259,29 +257,58 @@ public class MyClient extends Thread {
     }
 
     private void initDeque() throws InterruptedException {
-    	ResultSet res = receiveTable();
-
+    	//ResultSet res = receiveTable();
         getDeque().clear();
-        try {
-        	while (res.next()) {
-		        String name = res.getString("NAME");
-		        String profession = res.getString("PROFESSION");
-		        int salary = res.getInt("SALARY");
-		        AttitudeToBoss attitudeToBoss = (AttitudeToBoss)res.getObject("ATTITUDE_TO_BOSS");
-		        byte workQuality = res.getByte("WORK_QUALITY");
-		        String avatarPath = res.getString("AVATAR_PATH");
-		        String notes = res.getString("NOTES");
-		        Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
-		        employee.setAvatarPath(avatarPath);
-		        employee.setNotes(notes);
 
-		        getDeque().add(employee);
+	    try {
+		    oos.writeObject(new MyEntry(TABLE, null));
+
+		    Object reply = null;
+		    try {
+			    reply = ois.readObject();
+		        while (reply instanceof Employee) {
+		            getDeque().add((Employee) reply);
+		            reply = ois.readObject();
+		        }
+		    } catch (ClassNotFoundException e) {
+			    System.out.println("Shit_occurred: incorrect format of reply (wrong class format)");
+			    disconnect();
+		    }
+	        if (reply instanceof MyEntry) {
+	        	if (((MyEntry) reply).getKey() == 0) {
+	        		// ok
+		        } else {
+			        System.out.println("Shit_occurred: ???");
+			        // ?
+		        }
+	        } else {
+		        System.out.println("Shit_occurred: incorrect format of reply (expected MyEntry)");
+		        disconnect();
 	        }
-        } catch (SQLException e) {
-	        System.out.println("Shit_occurred: SQLException in making table from ResultSet");
-	        e.printStackTrace();
-	        disconnect();
-        }
+	    } catch (IOException e) {
+		    System.out.println("Shit_occurred: can't send a request to the server");
+		    disconnect();
+	    }
+//        try {
+//        	while (res.next()) {
+//		        String name = res.getString("NAME");
+//		        String profession = res.getString("PROFESSION");
+//		        int salary = res.getInt("SALARY");
+//		        AttitudeToBoss attitudeToBoss = (AttitudeToBoss)res.getObject("ATTITUDE_TO_BOSS");
+//		        byte workQuality = res.getByte("WORK_QUALITY");
+//		        String avatarPath = res.getString("AVATAR_PATH");
+//		        String notes = res.getString("NOTES");
+//		        Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+//		        employee.setAvatarPath(avatarPath);
+//		        employee.setNotes(notes);
+//
+//		        getDeque().add(employee);
+//	        }
+//        } catch (SQLException e) {
+//	        System.out.println("Shit_occurred: SQLException in making table from ResultSet");
+//	        e.printStackTrace();
+//	        disconnect();
+//        }
     }
 
     private void disconnect() throws InterruptedException {
