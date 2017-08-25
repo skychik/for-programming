@@ -13,7 +13,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.sql.ResultSet;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -80,7 +79,7 @@ public class MyClient extends Thread {
 
 	        connect(null);
 	        new Thread(AppGUI::gui);
-	        initDeque();
+	        receiveTable();
         } catch (InterruptedException ignored){}
         System.exit(0);
 //        try {
@@ -102,41 +101,22 @@ public class MyClient extends Thread {
 
     private void/*Connection*/ connect(String msg) throws InterruptedException {
         System.out.println("trying to connect to server...");
-        Pair nameAndPassword = guiNameAndPassword(msg);
-//        String username = nameAndPassword.getFirst();
-//        String password = nameAndPassword.getSecond();
+        Pair nameAndPassword =
+		        guiNameAndPassword(msg);
+        System.out.println(nameAndPassword.toString()); // not secure, for debug
 
-//        PGConnectionPoolDataSource ds = new PGConnectionPoolDataSource();
-//        ds.setServerName("localhost");
-//        ds.setDatabaseName("postgres");
-//
-//        PooledConnection pc = null;
-//        try {
-//            pc = ds.getPooledConnection(username, password);
-//            return pc.getConnection();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            System.out.println("Cannot get (pooled) connection");
-//
-//            if (guiTryAgain()) {
-//                return connect();
-//            } else disconnect();
-//        }
-//
-//        return null;
-        System.out.println(nameAndPassword.toString());
-
-        MyEntry reply = query(NAME_AND_PASSWORD, nameAndPassword);
-
-        if (reply.getKey() == 0)
-        	System.out.println("connected to database");
-        if (reply.getKey() == 1) {
-	        System.out.println("Shit_occurred: " + reply.getValue());
-	        connect(reply.getValue().toString());
-        }
-	    if (reply.getKey() == -1) {
-            System.out.println("Shit_occurred: " + reply.getValue());
-            disconnect();
+        MyEntry reply = sendRequest(NAME_AND_PASSWORD, nameAndPassword);
+        switch (reply.getKey()) {
+	        case 0:
+		        System.out.println("connected to database");
+		        break;
+	        case 1:
+		        System.out.println("Shit_occurred: " + reply.getValue());
+		        connect(reply.getValue().toString());
+		        break;
+	        case -1:
+		        System.out.println("Shit_occurred: " + reply.getValue());
+		        disconnect();
         }
     }
 
@@ -209,19 +189,7 @@ public class MyClient extends Thread {
 //        return reply == JOptionPane.YES_OPTION;
 //    }
 
-    private ResultSet receiveTable() throws InterruptedException {
-        System.out.println("trying to receive table...");
-	    MyEntry reply = query(TABLE, null);
-
-	    if (reply.getKey() != 0) {
-		    System.out.println("Shit_occurred: " + reply.getValue());
-		    disconnect();
-	    }
-
-        return (ResultSet) reply.getValue();
-    }
-
-    private MyEntry query(int requestCode, Object obj) throws InterruptedException {
+    private MyEntry sendRequest(int requestCode, Object obj) throws InterruptedException {
 	    MyEntry request = new MyEntry(requestCode, obj);
 	    try {
 		    oos.writeObject(request);
@@ -256,10 +224,9 @@ public class MyClient extends Thread {
 	    return reply;
     }
 
-    private void initDeque() throws InterruptedException {
-    	//ResultSet res = receiveTable();
+    private void receiveTable() throws InterruptedException {
+	    System.out.println("trying to receive table...");
         getDeque().clear();
-
 	    try {
 		    oos.writeObject(new MyEntry(TABLE, null));
 
@@ -274,12 +241,20 @@ public class MyClient extends Thread {
 			    System.out.println("Shit_occurred: incorrect format of reply (wrong class format)");
 			    disconnect();
 		    }
+
 	        if (reply instanceof MyEntry) {
-	        	if (((MyEntry) reply).getKey() == 0) {
-	        		// ok
-		        } else {
-			        System.out.println("Shit_occurred: ???");
-			        // ?
+	        	switch (((MyEntry) reply).getKey()){
+			        case 0 :
+				        System.out.println("table received");
+				        break;
+			        case 1 :
+				        System.out.println("Shit_occurred: " + ((MyEntry) reply).getValue());
+				        disconnect();
+			        	break;
+			        default :
+				        System.out.println("Shit_occurred: incorrect format of reply (unknown error code \"" +
+						        ((MyEntry) reply).getKey() + "\")");
+				        disconnect();
 		        }
 	        } else {
 		        System.out.println("Shit_occurred: incorrect format of reply (expected MyEntry)");

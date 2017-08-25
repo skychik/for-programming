@@ -16,8 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
-import static ru.ifmo.cs.programming.lab7.utils.MyEntry.TABLE;
+import static ru.ifmo.cs.programming.lab7.utils.MyEntry.*;
 
 public class MyServerThread extends Thread {
 	private MyServer server;
@@ -58,13 +57,33 @@ public class MyServerThread extends Thread {
 			// Receiving and trying to connect to DB
 			connectToDatabase();
 
-			MyEntry request = identifyRequest();
-			switch (request.getKey()) {
-				case TABLE :
-					sendTable(getDataFromDatabase());
-
+			boolean fl = true;
+			while (fl) {
+				MyEntry request = identifyRequest();
+				switch (request.getKey()) {
+					case TABLE :
+						sendTable();
+						break;
+					case QUERY :
+						proceedQuery(request.getValue());
+						break;
+					case CLOSE :
+						fl = false;
+						break;
+					default:
+						System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry key");
+						try {
+							oos.writeObject(new MyEntry(-1, "incorrect format of request (key number is unknown)"));
+						} catch (IOException e1) {
+							System.out.println(num + ": Shit_in_thread: can't send answer back");
+							e1.printStackTrace();
+						}
+						disconnect();
+				}
 			}
 		} catch (InterruptedException ignored){}
+
+		System.out.println(num + ": end of thread");
 	}
 
 //	private MyEntry deserialize(ByteArrayOutputStream data, int kol) throws IOException, ClassNotFoundException {
@@ -243,11 +262,10 @@ public class MyServerThread extends Thread {
 		//return obj;
 	}
 
-	private ResultSet getDataFromDatabase() {
-		System.out.println(num + ": trying to get data from database...");
-
-		ResultSet set = null;
+	private void sendTable() throws InterruptedException {
 		try {
+			// Getting data from database
+			System.out.println(num + ": trying to get data from database...");
 			Statement stat = pooledConnection.getConnection().createStatement();
 			stat.execute("CREATE TABLE IF NOT EXISTS public.\"EMPLOYEE\"" +
 					"(NAME varchar, " +
@@ -259,21 +277,10 @@ public class MyServerThread extends Thread {
 					"NOTES varchar);");
 
 			stat = pooledConnection.getConnection().createStatement();
-			set = stat.executeQuery(
-					"SELECT * FROM public.\"EMPLOYEE\"");
+			ResultSet res = stat.executeQuery("SELECT * FROM public.\"EMPLOYEE\"");
 
-			stat.close();
-			set.close();
-		} catch (SQLException e) {
-			System.out.println(num + ": Shit_in_thread: " + e.getSQLState());
-			e.printStackTrace();
-		}
-
-		return set;
-	}
-
-	private void sendTable(ResultSet res) throws InterruptedException {
-		System.out.println(num + ": trying to send table...");
+			// Sending data
+			System.out.println(num + ": trying to send table...");
 		//
 //		int rowNumber = 0;
 //		try {
@@ -288,8 +295,6 @@ public class MyServerThread extends Thread {
 //			e.printStackTrace();
 //			//send answer
 //		}
-
-		try {
 			while (res.next()) {
 				String name = res.getString("NAME");
 				String profession = res.getString("PROFESSION");
@@ -304,14 +309,25 @@ public class MyServerThread extends Thread {
 
 				oos.writeObject(employee);
 			}
-
 			oos.writeObject(new MyEntry(0, null));
+			System.out.println(num + ": table has sent");
+
+			stat.close();
+			res.close();
 		} catch (SQLException e) {
-			System.out.println("Shit_occurred: SQLException in making table from ResultSet");
+			System.out.println(num + ": Shit_in_thread: " + e.getSQLState());
 			e.printStackTrace();
+			try {
+				oos.writeObject(new MyEntry(-1, e.getSQLState()));
+			} catch (IOException e1) {
+				System.out.println(num + ": Shit_in_thread: can't send answer back");
+				e1.printStackTrace();
+			}
 			disconnect();
 		} catch (IOException e) {
+			System.out.println(num + ": Shit_in_thread: can't send answer back");
 			e.printStackTrace();
+			disconnect();
 		}
 		//
 //			try {
@@ -327,10 +343,8 @@ public class MyServerThread extends Thread {
 //		}
 	}
 
-	private int receiveChanges() {
-		//TODO: receiveChanges()
-		System.out.println(num + ": trying to receive changes");
-		return -1;
+	private void proceedQuery(Object obj) {
+		// TODO: proceedQuery()
 	}
 
 	private void disconnect() throws InterruptedException {

@@ -15,6 +15,8 @@ public class MyEntry implements AbstractMap.Entry<Integer, Object>, Serializable
 	//@Element(name = "name and password")
 	public static final int NAME_AND_PASSWORD = 0;
 	public static final int TABLE = 1;
+	public static final int QUERY = 2;
+	public static final int CLOSE = -1;
 
     public MyEntry(Integer key, Object value) {
 	    this.key   = key;
