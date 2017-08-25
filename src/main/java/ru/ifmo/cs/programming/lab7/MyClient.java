@@ -2,7 +2,6 @@ package ru.ifmo.cs.programming.lab7;
 
 import org.jetbrains.annotations.NotNull;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
-import ru.ifmo.cs.programming.lab6.AppGUI;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 
 import javax.swing.*;
@@ -17,6 +16,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static ru.ifmo.cs.programming.lab6.AppGUI.getDeque;
+import static ru.ifmo.cs.programming.lab6.AppGUI.gui;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntry.TABLE;
 
@@ -77,9 +77,10 @@ public class MyClient extends Thread {
 		        disconnect();
 	        }
 
-	        connect(null);
-	        new Thread(AppGUI::gui);
+	        connect();
 	        receiveTable();
+	        //GUI
+	        SwingUtilities.invokeLater(() -> gui(true));
         } catch (InterruptedException ignored){}
         System.exit(0);
 //        try {
@@ -99,7 +100,11 @@ public class MyClient extends Thread {
 //        }
     }
 
-    private void/*Connection*/ connect(String msg) throws InterruptedException {
+    private void connect() throws InterruptedException {
+    	connect(null);
+    }
+
+    private void connect(String msg) throws InterruptedException {
         System.out.println("trying to connect to server...");
         Pair nameAndPassword =
 		        guiNameAndPassword(msg);

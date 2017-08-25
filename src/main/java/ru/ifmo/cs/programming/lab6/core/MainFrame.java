@@ -27,6 +27,8 @@ import static ru.ifmo.cs.programming.lab6.utils.MyColor.opaqueColor;
 public class MainFrame extends JFrame {
     private InteractiveModeFunctions imf;
 
+    private boolean usingBD = false;
+
     private JPanel mainPanel;
     private static JTabbedPane tabbedPane;
     private JPanel commandTab;
@@ -47,6 +49,7 @@ public class MainFrame extends JFrame {
     private JFileChooser fileChooser;
     private JColorChooser colorChooser;
     private static JList<String> classList;
+    private JButton okButton;
 
     static String fontName = "Gill Sans MT Bold Condensed";
     private Font font = new Font(fontName, Font.ITALIC, 13);
@@ -229,7 +232,7 @@ public class MainFrame extends JFrame {
 
         constraints.gridx = 1;
         constraints.gridy = 4;
-        //Кнопка ok
+        //Кнопка okButton
         makeOkButton(constraints);
 
         tabbedPane.addTab("Commands", commandTab);
@@ -283,8 +286,7 @@ public class MainFrame extends JFrame {
         commandTab.add(avatar, constraints);
     }
 
-    private void addFileChooserListeners()
-    {
+    private void addFileChooserListeners() {
         avatar.addActionListener(new ActionListener()
         {
             private final String[][] FILTERS = {{"png", "Изображения (*.png)"},
@@ -312,8 +314,7 @@ public class MainFrame extends JFrame {
         });
     }
 
-    class FileFilterExt extends javax.swing.filechooser.FileFilter
-    {
+    class FileFilterExt extends javax.swing.filechooser.FileFilter {
         String extension  ;  // расширение файла
         String description;  // описание типа файлов
 
@@ -395,28 +396,25 @@ public class MainFrame extends JFrame {
     }
 
     private void makeOkButton(GridBagConstraints constraints){
-        JButton ok = new JButton(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok.png"));
-        ok.setBorder(null);
+        okButton = new JButton(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok.png"));
+        okButton.setBorder(null);
         //Нажатая кнопка
-        ok.setPressedIcon(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok_2.png"));
+        okButton.setPressedIcon(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok_2.png"));
         //Кнопка при наведении
-        ok.setSelectedIcon(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok_1.png"));
+        okButton.setSelectedIcon(new ImageIcon(System.getProperty("user.dir") + "/src/resources/images/button_ok_1.png"));
         //Прозрачность фона
-        ok.setBackground(opaqueColor);
-        ok.addActionListener(new java.awt.event.ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addEmployee();
-                getTable().updateUI();
-                setDefaultCommandTab();
-            }
+        okButton.setBackground(opaqueColor);
+        okButton.addActionListener(e -> {
+            addEmployee();
+            getTable().updateUI();
+            
+            setDefaultCommandTab();
         });
         JPanel panel = new JPanel();
         panel.setOpaque(false);
 
         panel.setPreferredSize(new Dimension(500,80));
-        panel.add(ok, BorderLayout.CENTER);
+        panel.add(okButton, BorderLayout.CENTER);
 
         commandTab.add(panel, constraints);
     }
@@ -792,6 +790,10 @@ public class MainFrame extends JFrame {
 
     public static void setNotes(String note){
         notes.setText(note);
+    }
+
+    public void setUsingBD(boolean usingBD) {
+        this.usingBD = usingBD;
     }
 
     /**

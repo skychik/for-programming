@@ -20,13 +20,13 @@ public class AppGUI extends InteractiveModeFunctions {
     private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private InputStreamReader inputStreamReader = new InputStreamReader(System.in);
-    private static JFrame frame;
+    private static JFrame frame = new MainFrame(deque);
 
     public static void main(String... args) {
         new AppGUI();
     }
 
-    private AppGUI() {
+    public AppGUI() {
         //i'm not sure, that Pattern has to be that big, but it works
         InteractiveModeFunctions.setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile(
                 "[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
@@ -45,7 +45,7 @@ public class AppGUI extends InteractiveModeFunctions {
         Runtime.getRuntime().addShutdownHook(new SaveDequeThread(deque));
 
         //GUI
-        SwingUtilities.invokeLater(AppGUI::gui);
+        SwingUtilities.invokeLater(() -> gui(false));
 
         //Close input stream reader
         try {
@@ -56,7 +56,7 @@ public class AppGUI extends InteractiveModeFunctions {
         }
     }
 
-    public static void gui() {
+    public static void gui(boolean usingBD) {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -79,7 +79,7 @@ public class AppGUI extends InteractiveModeFunctions {
             System.out.println("Nimbus is not available, you can set the GUI to another look and feel.");
         }
 
-        frame = new MainFrame(deque);
+	    ((MainFrame) frame).setUsingBD(usingBD);
 
         frame.setLocationRelativeTo(null);//по центру экрана
         frame.setResizable(false);
