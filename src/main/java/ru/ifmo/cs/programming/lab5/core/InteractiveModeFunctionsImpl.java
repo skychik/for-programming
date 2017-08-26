@@ -183,6 +183,10 @@ public class InteractiveModeFunctionsImpl implements InteractiveModeFunctions {
         thread.start();*/
     }
 
+    public void exit() {
+	    System.exit(0);
+    }
+
 	@Override
 	public int getSize() {
 		return deque.size();

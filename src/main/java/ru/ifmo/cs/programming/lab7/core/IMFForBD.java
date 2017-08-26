@@ -2,7 +2,9 @@ package ru.ifmo.cs.programming.lab7.core;
 
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayDeque;
 
@@ -38,6 +40,16 @@ public class IMFForBD implements InteractiveModeFunctions {
 		// oos.writeObject(new MyEntry(QUERY, sql);
 		// sql = null;
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void exit() {
+		try {
+			oos.writeObject(new MyEntry(MyEntry.CLOSE, null));
+		} catch (IOException e) {
+			System.out.println("can't tell server about disconnecting normally");
+		}
+		System.exit(0);
 	}
 
 	@Override

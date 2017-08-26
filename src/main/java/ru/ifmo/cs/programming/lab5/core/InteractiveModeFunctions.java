@@ -7,6 +7,7 @@ public interface InteractiveModeFunctions {
 	void remove(Employee employee);
 	void clear();
 	void save();
+	void exit();
 	int getSize();
 	Employee[] getEmployees();
 }

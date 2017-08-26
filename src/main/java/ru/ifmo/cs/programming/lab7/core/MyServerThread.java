@@ -189,8 +189,7 @@ public class MyServerThread extends Thread {
 		try {
 			entry = (MyEntry) ois.readObject();
 		} catch (IOException e) {
-			System.out.println(num + ": Shit_in_thread: can't send answer back");
-			e.printStackTrace();
+			System.out.println(num + ": Shit_in_thread: can't get new request back");
 			disconnect();
 		} catch (ClassNotFoundException e) {
 			System.out.println(num + ": Shit_in_thread: incorrect format of reply (wrong class format)");

@@ -86,8 +86,8 @@ public class MainFrame extends JFrame {
                                              "Подтверждение", JOptionPane.YES_NO_OPTION,
                                              JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                                      if (n == 0) {
-                                         e.getWindow().setVisible(false);
-                                         System.exit(0);
+	                                     e.getWindow().setVisible(false);
+                                         imf.exit();
                                      }
                                  }
                              });
