@@ -1,5 +1,6 @@
 package ru.ifmo.cs.programming.lab6.core;
 
+import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
@@ -14,13 +15,13 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
 
-import static ru.ifmo.cs.programming.lab6.AppGUI.getDeque;
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.*;
 
 class MyTable extends JTable implements TableModelListener {
     private TableRowSorter<TableModel> sorter;
+    private InteractiveModeFunctions imf;
 
 //    private static ArrayList<VisibilityOfSpeciality> visibilitiesOfSpecialities = new List<>();
 
@@ -61,8 +62,10 @@ class MyTable extends JTable implements TableModelListener {
         }
     }
 
-    MyTable(TableModel model) {
+    MyTable(TableModel model, InteractiveModeFunctions imf) {
         super(model);
+
+        this.imf = imf;
 
         this.setOpaque(false);
         //this.setBackground(AppGUI.backgroundEighthAlphaColor);
@@ -200,8 +203,8 @@ class MyTable extends JTable implements TableModelListener {
             public void mouseClicked(MouseEvent e) {
                 System.out.println();
                 if (checkClicks(e)) {
-                    Employee employee = (Employee) getDeque().toArray()[getSelectedRow()];
-                    getDeque().remove(employee);
+                    Employee employee = imf.getEmployees()[getSelectedRow()];
+                    imf.remove(employee);
                     updateUI();
                     getTabbedPane().setSelectedIndex(1);
                     setAvatar(employee.getAvatarPath());

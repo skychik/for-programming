@@ -1,14 +1,15 @@
 package ru.ifmo.cs.programming.lab6.core;
 
-import ru.ifmo.cs.programming.lab5.domain.Employee;
-import ru.ifmo.cs.programming.lab6.utils.*;
+import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
+import ru.ifmo.cs.programming.lab6.utils.MyColor;
+import ru.ifmo.cs.programming.lab6.utils.MyTableModel;
+import ru.ifmo.cs.programming.lab6.utils.StandardButton;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.ArrayDeque;
 import java.util.Objects;
 
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.fontName;
@@ -17,14 +18,13 @@ class MyTableTab extends JPanel {
     private static MyTable table;
     private JTextField searchField;
     private boolean isSearchFieldEmpty = true;
-    private StandartButton clearButton;
+    private StandardButton clearButton;
+    private InteractiveModeFunctions imf;
 
-    private ArrayDeque<Employee> deque;
-
-    MyTableTab(ArrayDeque<Employee> deque) {
+    MyTableTab(InteractiveModeFunctions imf) {
         super();
 
-        this.deque = deque;
+        this.imf = imf;
 
         this.setFont(new Font(fontName, Font.PLAIN, 16));
         //tableTab.setBackground(AppGUI.backgroundEighthAlphaColor);
@@ -118,7 +118,7 @@ class MyTableTab extends JPanel {
     }
 
     private void makeScrollTable(GridBagConstraints constraints) {
-        table = new MyTable(new MyTableModel(deque));
+        table = new MyTable(new MyTableModel(imf), imf);
 
         table.getModel().addTableModelListener(table);
 
@@ -185,7 +185,7 @@ class MyTableTab extends JPanel {
     }
 
     private void makeClearButton(GridBagConstraints constraints) {
-        clearButton = new StandartButton("Clear table");
+        clearButton = new StandardButton("Clear table");
 
         //clearButton.setBorderPainted(false);
         //clearButton.setBackground(AppGUI.backgroundEighthAlphaColor);
@@ -194,7 +194,7 @@ class MyTableTab extends JPanel {
             // Потверждение очищения таблицы
             int n = JOptionPane.showConfirmDialog(clearButton, "Очистить таблицу работников?",
                     "Подтверждение", JOptionPane.YES_NO_OPTION);
-            if (n == 0) deque.clear();
+            if (n == 0) imf.clear();
         });
 
         this.add(clearButton, constraints);

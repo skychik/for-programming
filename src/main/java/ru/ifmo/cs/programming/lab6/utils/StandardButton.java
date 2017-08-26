@@ -6,14 +6,13 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.io.File;
 
-public class StandartButton extends JButton {
+public class StandardButton extends JButton {
 
         private String fontName = "Gill Sans MT EXT Condensed";
         private static Color backgroundColor = new Color(195, 195, 195);
 
-        public StandartButton(String text) {
+        public StandardButton(String text) {
             super(text);
             //setMinimumSize(new Dimension(200, 50));
             backgroundColor = new Color(54, 151, 175);
@@ -30,7 +29,7 @@ public class StandartButton extends JButton {
             setBorder(compound);
 
             setBackground(new Color(54, 151, 175));
-            setFont(new Font(fontName, Font.CENTER_BASELINE, 15));
+            setFont(new Font(fontName, Font.PLAIN, 15));
         }
 }
 

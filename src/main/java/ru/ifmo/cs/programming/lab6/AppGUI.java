@@ -1,34 +1,29 @@
 package ru.ifmo.cs.programming.lab6;
 
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
+import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctionsImpl;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
-import ru.ifmo.cs.programming.lab5.utils.SaveDequeThread;
 import ru.ifmo.cs.programming.lab6.core.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayDeque;
+import java.io.*;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class AppGUI extends InteractiveModeFunctions {
+public class AppGUI extends InteractiveModeFunctionsImpl {
 
-    /*это наш дек*/
-    private static ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private InputStreamReader inputStreamReader = new InputStreamReader(System.in);
-    private static JFrame frame = new MainFrame(deque);
+    private static MainFrame frame;
 
     public static void main(String... args) {
         new AppGUI();
     }
 
-    public AppGUI() {
+    private AppGUI() {
         //i'm not sure, that Pattern has to be that big, but it works
-        InteractiveModeFunctions.setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile(
+        setScanner(new Scanner(inputStreamReader).useDelimiter(Pattern.compile(
                 "[\\p{Space}\\r\\n\\u0085\\u2028\\u2029\\u0004]")));
         try {
             if (getFilePath() == null)
@@ -39,13 +34,26 @@ public class AppGUI extends InteractiveModeFunctions {
         }
 
         //First loading of the deque from our File
-        load(deque);
+        load();
 
         //Save deque after every shutdown
-        Runtime.getRuntime().addShutdownHook(new SaveDequeThread(deque));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+	        try {
+		        PrintWriter writer = new PrintWriter(getFilePath());
+
+		        for (Employee employee : getEmployees()) {
+			        writer.println(employee);
+		        }
+
+		        writer.close();
+		        System.out.println("Deque saved.");
+	        } catch (FileNotFoundException e) {
+		        System.out.println("Невозможно произвести запись в файл по пути: " + getFilePath());
+	        }
+        }));
 
         //GUI
-        SwingUtilities.invokeLater(() -> gui(false));
+        SwingUtilities.invokeLater(() -> gui(this));
 
         //Close input stream reader
         try {
@@ -56,7 +64,7 @@ public class AppGUI extends InteractiveModeFunctions {
         }
     }
 
-    public static void gui(boolean usingBD) {
+    public static void gui(InteractiveModeFunctions imf) {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -79,7 +87,7 @@ public class AppGUI extends InteractiveModeFunctions {
             System.out.println("Nimbus is not available, you can set the GUI to another look and feel.");
         }
 
-	    ((MainFrame) frame).setUsingBD(usingBD);
+	    frame = new MainFrame(imf);
 
         frame.setLocationRelativeTo(null);//по центру экрана
         frame.setResizable(false);
@@ -90,10 +98,6 @@ public class AppGUI extends InteractiveModeFunctions {
 
     public void setInputStreamReader(InputStreamReader inputStreamReader) {
         this.inputStreamReader = inputStreamReader;
-    }
-
-    public static ArrayDeque<Employee> getDeque() {
-        return deque;
     }
 
     public static JFrame getFrame() {

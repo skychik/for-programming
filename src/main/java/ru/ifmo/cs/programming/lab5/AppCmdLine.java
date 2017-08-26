@@ -7,19 +7,16 @@
  */
 package ru.ifmo.cs.programming.lab5;
 
-import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
-import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctionsImpl;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class AppCmdLine extends InteractiveModeFunctions {
+public class AppCmdLine extends InteractiveModeFunctionsImpl {
 
-    /*это наш дек*/
-    private ArrayDeque<Employee> deque = new ArrayDeque<>();
     //for testing(changes to new FileReader(testingDir + "\\input.txt"))
     private static InputStreamReader inputStreamReader = new InputStreamReader(System.in);
 
@@ -39,10 +36,10 @@ public class AppCmdLine extends InteractiveModeFunctions {
         }
 
         //First loading of the deque from our File
-        load(deque);
+        load();
 
         //save deque after every shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> save(deque)));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
 
         /*This is an interactive mode:*/
         interactiveMode();
@@ -76,25 +73,25 @@ public class AppCmdLine extends InteractiveModeFunctions {
                     help();
                     break;
                 case "add":
-                    add(deque);
+                    add();
                     break;
                 case "remove":
-                    remove(deque);
+                    remove();
                     break;
                 case "remove_lower":
-                    remove_lower(deque);
+                    remove_lower();
                     break;
                 case "remove_all":
-                    remove_all(deque);
+                    remove_all();
                     break;
                 case "save":
-                    save(deque);
+                    save();
                     break;
                 case "load":
-                    load(deque);
+                    load();
                     break;
                 case "show":
-                    show(deque);
+                    show();
                     break;
                 case "end":
                     break intMode;

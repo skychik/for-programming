@@ -2,6 +2,7 @@ package ru.ifmo.cs.programming.lab7;
 
 import org.jetbrains.annotations.NotNull;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab7.core.IMFForBD;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 
 import javax.swing.*;
@@ -12,10 +13,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static ru.ifmo.cs.programming.lab6.AppGUI.getDeque;
 import static ru.ifmo.cs.programming.lab6.AppGUI.gui;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntry.TABLE;
@@ -25,6 +26,7 @@ public class MyClient extends Thread {
     private static Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
+    private IMFForBD imf = new IMFForBD();
 
 //	/*это наш дек*/
 //	private static ArrayDeque<Employee> deque = new ArrayDeque<>();
@@ -47,9 +49,11 @@ public class MyClient extends Thread {
 		    // открываем сокет и коннектимся к host:port, получаем сокет сервера
 		    socket = new Socket(host, port);
 	    } catch (UnknownHostException e) {
+	    	// TODO: вывести плашку с этим сообщением
 		    System.out.println("Unknown host: " + host);
 		    System.exit(1);
 	    } catch (IOException e) {
+		    // TODO: вывести плашку с этим сообщением
 		    System.out.println("Can't create socket on  " + host + ":" + port);
 		    System.exit(1);
 	    }
@@ -76,13 +80,13 @@ public class MyClient extends Thread {
 		        System.out.println("Shit_occurred: problems with input/output stream(s)");
 		        disconnect();
 	        }
+	        imf.setOos(oos);
 
 	        connect();
 	        receiveTable();
 	        //GUI
-	        SwingUtilities.invokeLater(() -> gui(true));
+	        SwingUtilities.invokeLater(() -> gui(new IMFForBD()));
         } catch (InterruptedException ignored){}
-        System.exit(0);
 //        try {
 //            // берём поток вывода и выводим туда первый аргумент, заданный при вызове, адрес открытого сокета и его порт
 //            args[0] = args[0]+"\n" + socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort();
@@ -231,7 +235,7 @@ public class MyClient extends Thread {
 
     private void receiveTable() throws InterruptedException {
 	    System.out.println("trying to receive table...");
-        getDeque().clear();
+	    ArrayDeque<Employee> deque = new ArrayDeque<>();
 	    try {
 		    oos.writeObject(new MyEntry(TABLE, null));
 
@@ -239,7 +243,7 @@ public class MyClient extends Thread {
 		    try {
 			    reply = ois.readObject();
 		        while (reply instanceof Employee) {
-		            getDeque().add((Employee) reply);
+		            deque.add((Employee) reply);
 		            reply = ois.readObject();
 		        }
 		    } catch (ClassNotFoundException e) {
@@ -265,6 +269,8 @@ public class MyClient extends Thread {
 		        System.out.println("Shit_occurred: incorrect format of reply (expected MyEntry)");
 		        disconnect();
 	        }
+
+	        imf.setDeque(deque);
 	    } catch (IOException e) {
 		    System.out.println("Shit_occurred: can't send a request to the server");
 		    disconnect();

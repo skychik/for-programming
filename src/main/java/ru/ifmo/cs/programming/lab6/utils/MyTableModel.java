@@ -1,22 +1,21 @@
 package ru.ifmo.cs.programming.lab6.utils;
 
+import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.Product;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.util.ArrayDeque;
 import java.util.HashSet;
-import java.util.Set;
 
 public class MyTableModel implements TableModel {
     private HashSet<TableModelListener> listeners = new HashSet<>();
-    private ArrayDeque<Employee> deque;
+    private InteractiveModeFunctions imf;
 
-    public MyTableModel(ArrayDeque<Employee> deque) {
+    public MyTableModel(InteractiveModeFunctions imf) {
         super();
-        this.deque = deque;
+        this.imf = imf;
     }
 
     public Class<?> getColumnClass(int columnIndex) {
@@ -61,7 +60,7 @@ public class MyTableModel implements TableModel {
     }
 
     public int getRowCount() {
-        return deque.size();
+        return imf.getSize();
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -70,7 +69,7 @@ public class MyTableModel implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Employee employee = (Employee) deque.toArray()[rowIndex];
+        Employee employee = imf.getEmployees()[rowIndex];
         switch (columnIndex) {
             case 0:
                 return employee.getName();

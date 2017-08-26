@@ -8,7 +8,7 @@ import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab6.utils.Background;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
-import ru.ifmo.cs.programming.lab6.utils.StandartButton;
+import ru.ifmo.cs.programming.lab6.utils.StandardButton;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,7 +17,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.Enumeration;
 
 import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
@@ -27,12 +26,10 @@ import static ru.ifmo.cs.programming.lab6.utils.MyColor.opaqueColor;
 public class MainFrame extends JFrame {
     private InteractiveModeFunctions imf;
 
-    private boolean usingBD = false;
-
     private JPanel mainPanel;
     private static JTabbedPane tabbedPane;
     private JPanel commandTab;
-    private StandartButton standartValuesButton;
+    private StandardButton standardValuesButton;
     private static JTextArea notes = null;
     private static JTextField nameField;
     private static JComboBox professionComboBox;
@@ -42,7 +39,7 @@ public class MainFrame extends JFrame {
     private String selectedRadio;
     private static JSpinner workQualityStepper;
     private Dimension size;
-    private ArrayDeque<Employee> deque;
+//    private ArrayDeque<Employee> deque;
     static JButton avatar;
     private String avatarPath;
     private FileFilterExt eff;
@@ -55,18 +52,18 @@ public class MainFrame extends JFrame {
     private Font font = new Font(fontName, Font.ITALIC, 13);
     private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
 
-    public MainFrame(ArrayDeque<Employee> deque) {
+    public MainFrame(InteractiveModeFunctions imf) {
         super("CRUD application");
 
-        imf = new InteractiveModeFunctions();
+        this.imf = imf;
 
-        size = new Dimension(1200, 675);
+        size = new Dimension(1200, 800);
         setPreferredSize(size);
 
         setIconImage(new ImageIcon(
                 System.getProperty("user.dir") + "/src/resources/images/icon.png").getImage());
 
-        this.deque = deque;
+//        this.deque = deque;
 
         UIManager.put("TabbedPane.contentOpaque", Boolean.FALSE);
         UIManager.put("TabbedPane.tabsOpaque", Boolean.TRUE);
@@ -113,7 +110,7 @@ public class MainFrame extends JFrame {
             protected void paintContentBorder(Graphics g,int tabPlacement,int selectedIndex){}
         });*/
 
-        JPanel tableTab = new MyTableTab(deque);
+        JPanel tableTab = new MyTableTab(imf);
         tabbedPane.addTab("Table", tableTab);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
@@ -150,11 +147,11 @@ public class MainFrame extends JFrame {
 
         );
 
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);//при маленьком окне табы в линию, а не друг под другом
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);// TODO: при маленьком окне табы в линию, а не друг под другом
     }
 
     /*private void makeSaveButton(GridBagConstraints constraints) {
-        StandartButton saveButton = new StandartButton("Save");
+        StandardButton saveButton = new StandardButton("Save");
 
         //saveButton.setForeground(Color.BLACK);
 //        saveButton.setBackground(new Color(152, 156, 153, 32));
@@ -228,7 +225,7 @@ public class MainFrame extends JFrame {
         constraints.gridx = 1;
         constraints.gridy = 2;
         //Кнопка Remove
-        makeStandartValuesFieldsButton(constraints);
+        makeStandardValuesFieldsButton(constraints);
 
         constraints.gridx = 1;
         constraints.gridy = 4;
@@ -376,16 +373,15 @@ public class MainFrame extends JFrame {
         commandTab.add(scrollNotes, constraints);
     }
 
-    private void makeStandartValuesFieldsButton(GridBagConstraints constraints){
-        standartValuesButton = new StandartButton("Standart Values");
+    private void makeStandardValuesFieldsButton(GridBagConstraints constraints){
+        standardValuesButton = new StandardButton("Standart Values");
 
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setPreferredSize(new Dimension(500,80));
-        panel.add(standartValuesButton, BorderLayout.CENTER);
+        panel.add(standardValuesButton, BorderLayout.CENTER);
 
-        standartValuesButton.addActionListener(new java.awt.event.ActionListener(){
-
+        standardValuesButton.addActionListener(new java.awt.event.ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 setDefaultCommandTab();
@@ -407,7 +403,6 @@ public class MainFrame extends JFrame {
         okButton.addActionListener(e -> {
             addEmployee();
             getTable().updateUI();
-            
             setDefaultCommandTab();
         });
         JPanel panel = new JPanel();
@@ -560,19 +555,17 @@ public class MainFrame extends JFrame {
 
         if (classList.getSelectedValue().equals("Employee")) {
             employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
-            deque.add(employee);
         }
         if (classList.getSelectedValue().equals("FactoryWorker")) {
             employee = new FactoryWorker(name, profession, salary, attitudeToBoss, workQuality);
-            deque.add(employee);
         }
         if (classList.getSelectedValue().equals("ShopAssistant")) {
             employee = new ShopAssistant(name, profession, salary, attitudeToBoss, workQuality);
-            deque.add(employee);
         }
         employee.setAvatarPath(avatarPath);
         employee.setNotes(notes.getText());
-        imf.save(deque);
+        imf.add(employee);
+        imf.save();
     }
 
     private void setBackground() {
@@ -630,9 +623,9 @@ public class MainFrame extends JFrame {
                    @Override
                    public void actionPerformed(ActionEvent ev) {
 
-                       //TODO: make normal color change, with every StandartButton
+                       //TODO: make normal color change, with every StandardButton
                        //clearButton.setBackground(colorChooser.getColor());
-                       standartValuesButton.setBackground(colorChooser.getColor());
+                       standardValuesButton.setBackground(colorChooser.getColor());
                        //clearButton.setBackground(colorChooser.getColor());
                        frame.dispose();
                    }
@@ -673,9 +666,8 @@ public class MainFrame extends JFrame {
 
         JMenuItem saveItem = new JMenuItem("Save");
         saveItem.setFont(font);
+        saveItem.addActionListener(e -> imf.save());
         menu.add(saveItem);
-
-//        saveItem.addActionListener ToDO: сделать сохранение по кнопке save и для остальных
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(menu);
@@ -792,10 +784,6 @@ public class MainFrame extends JFrame {
         notes.setText(note);
     }
 
-    public void setUsingBD(boolean usingBD) {
-        this.usingBD = usingBD;
-    }
-
     /**
      * THEN WILL BE A PART FROM AUTOGENERATED CODE
      * IT SHOULDN"T BE USED, ONLY TO FIND SOMETHING USEFUL
@@ -814,12 +802,12 @@ public class MainFrame extends JFrame {
         tabbedPane.addTab("Show", panel1);
         searchField = new JTextField();
         panel1.add(searchField, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 2, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        saveButton = new StandartButton("Save");
+        saveButton = new StandardButton("Save");
         panel1.add(saveButton, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
-        clearButton = new StandartButton("");
+        clearButton = new StandardButton("");
         clearButton.setText("Remove All");
         panel1.add(clearButton, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
-        clearButton = new StandartButton("Remove All");
+        clearButton = new StandardButton("Remove All");
         panel1.add(clearButton);
         final JLabel label1 = new JLabel();
         label1.setText("Label");

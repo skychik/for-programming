@@ -59,7 +59,7 @@ public class MyServerThread extends Thread {
 
 			boolean fl = true;
 			while (fl) {
-				MyEntry request = identifyRequest();
+				MyEntry request = getNewRequest();
 				switch (request.getKey()) {
 					case TABLE :
 						sendTable();
@@ -104,7 +104,7 @@ public class MyServerThread extends Thread {
 //	}
 
 	private void connectToDatabase() throws InterruptedException {
-		MyEntry request = identifyRequest();
+		MyEntry request = getNewRequest();
 
 		if (request.getKey() != NAME_AND_PASSWORD) {
 			System.out.println(num + ": Shit_in_thread: incorrect format of request (key is null)");
@@ -161,7 +161,7 @@ public class MyServerThread extends Thread {
 	}
 
 	@NotNull
-	private MyEntry identifyRequest() throws InterruptedException {
+	private MyEntry getNewRequest() throws InterruptedException {
 //	    ObjectInputStream ois = null;
 //    	try {
 //		    ois = new ObjectInputStream(Channels.newInputStream(channel));
@@ -184,13 +184,16 @@ public class MyServerThread extends Thread {
 //	    }
 
 		//
-		System.out.println(num + ": identifying request...");
-
+		System.out.println(num + ": getting new request...");
 		MyEntry entry = null;
 		try {
 			entry = (MyEntry) ois.readObject();
-		} catch (IOException | ClassNotFoundException e) {
-			System.out.println(num + ": Shit_in_thread");
+		} catch (IOException e) {
+			System.out.println(num + ": Shit_in_thread: can't send answer back");
+			e.printStackTrace();
+			disconnect();
+		} catch (ClassNotFoundException e) {
+			System.out.println(num + ": Shit_in_thread: incorrect format of reply (wrong class format)");
 			e.printStackTrace();
 			disconnect();
 		}
