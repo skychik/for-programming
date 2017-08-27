@@ -7,6 +7,10 @@ import ru.ifmo.cs.programming.lab6.utils.HasSpeciality;
 
 import java.io.Serializable;
 import java.lang.*;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
@@ -18,6 +22,9 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
     private byte workQuality = 0;
     private String avatarPath = System.getProperty("user.dir") + "\\src\\resources\\images\\" + "standartAvatar.jpg";
     private String notes;
+    private OffsetDateTime creatingTime;
+//    private LocalDateTime creatingTime;
+//    private ZonedDateTime creatingTime;
 
     public Employee(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession);

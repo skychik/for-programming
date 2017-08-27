@@ -1,6 +1,6 @@
 package ru.ifmo.cs.programming.lab7;
 
-import org.jetbrains.annotations.NotNull;
+//import org.jetbrains.annotations.NotNull;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab7.core.IMFForBD;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
@@ -129,7 +129,7 @@ public class MyClient extends Thread {
         }
     }
 
-	@NotNull
+//	@NotNull
 	private Pair guiNameAndPassword(String msg) throws InterruptedException {
 		JPanel panel = new JPanel(new BorderLayout(5, 5));
 

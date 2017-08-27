@@ -1,6 +1,7 @@
 //TODO: make commandTab as new class
 package ru.ifmo.cs.programming.lab6.core;
 
+import org.intellij.lang.annotations.Language;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
@@ -15,16 +16,20 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.Enumeration;
+import java.io.*;
+import java.util.*;
 
 import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
 import static ru.ifmo.cs.programming.lab6.utils.MyColor.foregroundColor;
 import static ru.ifmo.cs.programming.lab6.utils.MyColor.opaqueColor;
+import java.util.ResourceBundle;
 
 public class MainFrame extends JFrame {
     private InteractiveModeFunctions imf;
+
+    private boolean usingBD = false;
+
+    private JMenu menu;
 
     private JPanel mainPanel;
     private static JTabbedPane tabbedPane;
@@ -35,7 +40,7 @@ public class MainFrame extends JFrame {
     private static JComboBox professionComboBox;
     private static JSlider salarySlider;
     private static ButtonGroup bg;
-    private JRadioButton defaultButton;
+    private JRadioButton[] radio;
     private String selectedRadio;
     private static JSpinner workQualityStepper;
     private Dimension size;
@@ -47,6 +52,18 @@ public class MainFrame extends JFrame {
     private JColorChooser colorChooser;
     private static JList<String> classList;
     private JButton okButton;
+    private JMenu settings;
+    private JMenuItem hotKeysItem;
+    private JMenuItem buttonColorItem;
+    private JMenuItem standartAvatarItem;
+    private JMenuItem saveItem;
+    private JMenu language;
+    private String[] prof;
+    protected Locale locale = new Locale("eng", "UK");
+    private Properties prop = new Properties();
+    private String pathToProperties;
+    private FileInputStream fileInputStream;
+    private MyTableTab tableTab;
 
     static String fontName = "Gill Sans MT Bold Condensed";
     private Font font = new Font(fontName, Font.ITALIC, 13);
@@ -57,7 +74,7 @@ public class MainFrame extends JFrame {
 
         this.imf = imf;
 
-        size = new Dimension(1200, 800);
+        size = new Dimension(1200, 700);
         setPreferredSize(size);
 
         setIconImage(new ImageIcon(
@@ -110,9 +127,9 @@ public class MainFrame extends JFrame {
             protected void paintContentBorder(Graphics g,int tabPlacement,int selectedIndex){}
         });*/
 
-        JPanel tableTab = new MyTableTab(imf);
+        tableTab = new MyTableTab(imf);
         tabbedPane.addTab("Table", tableTab);
-        tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+        tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
 
         setCommandTab();
 
@@ -234,7 +251,7 @@ public class MainFrame extends JFrame {
 
         tabbedPane.addTab("Commands", commandTab);
 
-        tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
+        tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
         //tab2.setOpaque(false);
     }
 
@@ -447,7 +464,7 @@ public class MainFrame extends JFrame {
     }
 
     private void makeProfessionComboBox(GridBagConstraints constraints){
-        String[] prof = {"Programmer", "Economist", "Manager"};
+        prof = new String[]{"Programmer", "Economist", "Manager"};
         professionComboBox = new JComboBox<>(prof);
         professionComboBox.setForeground(foregroundColor);
         professionComboBox.setFont(font);
@@ -479,37 +496,32 @@ public class MainFrame extends JFrame {
     private void makeBossAttitudePanel(GridBagConstraints constraints){
         JPanel bossAttitudeRadioPanel = new JPanel(new GridLayout(0, 5, 0, 0));
         bossAttitudeRadioPanel.setPreferredSize(new Dimension(400,50));
-        String[] names1 = { "HATE", "LOW", "NORMAL", "HIGH"};
+        String[] name = { "HATE", "LOW", "DEFAULT", "NORMAL", "HIGH"};
         bg = new ButtonGroup();
-        defaultButton = new JRadioButton("DEFAULT");
         selectedRadio = "DEFAULT";
-        for (int i = 0; i < names1.length; i++) {
-            JRadioButton radio = new JRadioButton(names1[i]);
-            if (i == 2) {
-                defaultButton.setSelected(true);
-                bg.add(defaultButton);
-                bossAttitudeRadioPanel.add(defaultButton);
-            }
+        radio = new JRadioButton[5];
 
+        for (int i = 0; i < 5; i++) {
+            radio[i] = new JRadioButton(name[i]);
             //Шрифт
-            radio.setForeground(foregroundColor);
-            defaultButton.setForeground(foregroundColor);
-            radio.setFont(font);
-            defaultButton.setFont(font);
-            radio.setFocusPainted(false);
-            defaultButton.setFocusPainted(false);
-            radio.setOpaque(false);
-            defaultButton.setOpaque(false);
-            radio.addActionListener(new java.awt.event.ActionListener() {
+            radio[i].setForeground(foregroundColor);
+            radio[i].setFont(font);
+            radio[i].setFocusPainted(false);
+            radio[i].setOpaque(false);
+            radio[i].addActionListener(new java.awt.event.ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    selectedRadio = radio.getText();
+                    selectedRadio = e.toString().substring(e.toString().indexOf('=') + 1,
+                            e.toString().indexOf(',', e.toString().indexOf('=')));
+
                 }
             });
-            bg.add(radio);
-            bossAttitudeRadioPanel.add(radio);
+            bg.add(radio[i]);
+            bossAttitudeRadioPanel.add(radio[i]);
 
         }
+
+        radio[2].setSelected(true);
         bossAttitudeRadioPanel.setOpaque(false);
         bossAttitudeRadioPanel.setPreferredSize(new Dimension(500, 50));
 
@@ -526,42 +538,48 @@ public class MainFrame extends JFrame {
 
     private void addEmployee(){
         Employee employee = new Employee();
-
         String name = nameField.getText();
         String profession = professionComboBox.getSelectedItem().toString();
         int salary = salarySlider.getValue();
-        AttitudeToBoss attitudeToBoss;
-        switch (selectedRadio){
-            case "HIGH": {
-                attitudeToBoss = AttitudeToBoss.HIGH;
-                break;
-            }
-            case "HATE": {
+        AttitudeToBoss attitudeToBoss = AttitudeToBoss.DEFAULT;
+        pathToProperties = "src/resources/resourceBundles/Language_" + locale + ".xml";
+        try{
+            fileInputStream = new FileInputStream(pathToProperties);
+            prop.loadFromXML(fileInputStream);
+            String high = prop.getProperty("high");
+            String hate = prop.getProperty("hate");
+            String normal = prop.getProperty("normal");
+            String low = prop.getProperty("low");
+            if (selectedRadio.equals(hate)){
                 attitudeToBoss = AttitudeToBoss.HATE;
-                break;
             }
-            case "NORMAL": {
+            if (selectedRadio.equals(high)){
+                attitudeToBoss = AttitudeToBoss.HIGH;
+            }
+            if (selectedRadio.equals(normal)){
                 attitudeToBoss = AttitudeToBoss.NORMAL;
-                break;
             }
-            case "LOW": {
+            if (selectedRadio.equals(low)){
                 attitudeToBoss = AttitudeToBoss.LOW;
-                break;
             }
-            default: attitudeToBoss = AttitudeToBoss.DEFAULT;
-        }
+
         int wQ = (int) workQualityStepper.getValue();
         byte workQuality = (byte)wQ;
-
-        if (classList.getSelectedValue().equals("Employee")) {
+        if (classList.getSelectedValue().equals(prop.getProperty("employee"))) {
             employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
         }
-        if (classList.getSelectedValue().equals("FactoryWorker")) {
+        else
+        if (classList.getSelectedValue().equals(prop.getProperty("fWorker"))) {
+            System.out.println(classList.getSelectedValue());
             employee = new FactoryWorker(name, profession, salary, attitudeToBoss, workQuality);
         }
-        if (classList.getSelectedValue().equals("ShopAssistant")) {
+        else{
             employee = new ShopAssistant(name, profession, salary, attitudeToBoss, workQuality);
         }
+        } catch (IOException e) {
+        System.out.println("Ошибка: файл " + pathToProperties + " не обнаружен");
+        e.printStackTrace();
+    }
         employee.setAvatarPath(avatarPath);
         employee.setNotes(notes.getText());
         imf.add(employee);
@@ -576,17 +594,17 @@ public class MainFrame extends JFrame {
     }
 
     private void setMenu() {
-        JMenu menu = new JMenu("File");
+        menu = new JMenu("File");
 
         Font font = new Font(fontName, Font.PLAIN, 14);
 
         menu.setFont(font);
 
-        JMenu settings = new JMenu("Settings");
+        settings = new JMenu("Settings");
         settings.setFont(font);
         menu.add(settings);
 
-        JMenuItem hotKeysItem = new JMenuItem("Hot keys");
+        hotKeysItem = new JMenuItem("Hot keys");
         hotKeysItem.setFont(font);
         hotKeysItem.addActionListener(new ActionListener() {
             @Override
@@ -606,7 +624,7 @@ public class MainFrame extends JFrame {
         });
         menu.add(hotKeysItem);
 
-        JMenuItem buttonColorItem = new JMenuItem("Button color");
+        buttonColorItem = new JMenuItem("Button color");
         buttonColorItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -642,7 +660,7 @@ public class MainFrame extends JFrame {
         buttonColorItem.setFont(font);
         settings.add(buttonColorItem);
 
-        JMenuItem standartAvatarItem = new JMenuItem("Standart avatar");
+        standartAvatarItem = new JMenuItem("Standart avatar");
         standartAvatarItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -662,9 +680,15 @@ public class MainFrame extends JFrame {
         standartAvatarItem.setFont(font);
         settings.add(standartAvatarItem);
 
+        language = new JMenu("Language");
+        settings.setFont(font);
+        menu.add(language);
+
+        setLanguagePanel(language);
+
         menu.addSeparator();
 
-        JMenuItem saveItem = new JMenuItem("Save");
+        saveItem = new JMenuItem("Save");
         saveItem.setFont(font);
         saveItem.addActionListener(e -> imf.save());
         menu.add(saveItem);
@@ -674,6 +698,68 @@ public class MainFrame extends JFrame {
         this.setJMenuBar(menuBar);
     }
 
+    private void setLanguagePanel(JMenu menu) {
+        JMenuItem eng = new JRadioButtonMenuItem("English");
+        JMenuItem ru = new JRadioButtonMenuItem("Russian");
+        JMenuItem de = new JRadioButtonMenuItem("German");
+
+        Font font = new Font(fontName, Font.PLAIN, 14);
+        eng.setFont(font);
+        ru.setFont(font);
+        de.setFont(font);
+
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(eng);
+        bg.add(ru);
+        bg.add(de);
+
+        menu.add(eng);
+        menu.add(ru);
+        menu.add(de);
+
+        eng.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                locale = new Locale("eng", "UK");
+                try {
+                    setLoc(locale);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                getTable().updateUI();
+            }
+        });
+        ru.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                locale = new Locale("ru", "RU");
+                try {
+                    setLoc(locale);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                getTable().updateUI();
+            }
+        });
+        de.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                locale = new Locale("de", "DE");
+                try {
+                    setLoc(locale);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                getTable().updateUI();
+            }
+        });
+        eng.setSelected(true);
+
+    }
+
     private void setDefaultCommandTab(){
         avatar.setIcon(new ImageIcon(System.getProperty("user.dir") +
                 "/src/resources/images/standartAvatar.jpg"));
@@ -681,8 +767,55 @@ public class MainFrame extends JFrame {
         nameField.setText("Name");
         classList.setSelectedIndex(0);
         salarySlider.setValue(20000);
-        defaultButton.setSelected(true);
+        radio[2].setSelected(true);
         workQualityStepper.setValue(0);
+    }
+
+    private void setLoc(Locale locale) throws IOException {
+        //        Locale locale1 = new Locale("ru", "RU");
+        //        ResourceBundle bundle = ResourceBundle.getBundle("Language",
+        //                new XMLResourceBundleControl());
+        //         menu.setText(bundle.getString("file"));
+        String pathToProperties = "src/resources/resourceBundles/Language_" + locale + ".xml";
+        FileInputStream fileInputStream;
+            try {
+                fileInputStream = new FileInputStream(pathToProperties);
+                prop.loadFromXML(fileInputStream);
+                menu.setText(prop.getProperty("file"));
+                notes.setText(prop.getProperty("notes"));
+                nameField.setText(prop.getProperty("name"));
+                tabbedPane.setTitleAt(1, prop.getProperty("table"));
+                tabbedPane.setTitleAt(0, prop.getProperty("commands"));
+                settings.setText(prop.getProperty("settings"));
+                hotKeysItem.setText(prop.getProperty("hotKeys"));
+                buttonColorItem.setText(prop.getProperty("butColor"));
+                standartAvatarItem.setText(prop.getProperty("stAvatar"));
+                saveItem.setText(prop.getProperty("save"));
+                language.setText(prop.getProperty("language"));
+                standartValuesButton.setText(prop.getProperty("stValues"));
+                int i = professionComboBox.getSelectedIndex();
+                professionComboBox.removeAllItems();
+                professionComboBox.insertItemAt(prop.getProperty("programmer"), 0);
+                professionComboBox.insertItemAt(prop.getProperty("economist"), 1);
+                professionComboBox.insertItemAt(prop.getProperty("manager"), 2);
+                professionComboBox.setSelectedIndex(i);
+                i = classList.getSelectedIndex();
+                classList.setListData(new String[]{prop.getProperty("employee"),
+                        prop.getProperty("fWorker"), prop.getProperty("shAssistant")});
+                classList.setSelectedIndex(i);
+                String[] radioName = {prop.getProperty("hate"), prop.getProperty("low"),
+                        prop.getProperty("default"), prop.getProperty("normal"), prop.getProperty("high")};
+                for (int j = 0; j < 5; j++){
+                    radio[j].setText(radioName[j]);
+                }
+                tableTab.setClearButtonText(prop.getProperty("clearTable"));
+                tableTab.setSearchFieldText(prop.getProperty("search"));
+//                tableTab.setTableText(new String[] {}); ToDo переименовать шапку
+            } catch (IOException e) {
+                System.out.println("Ошибка: файл " + pathToProperties + " не обнаружен");
+                e.printStackTrace();
+            }
+    getTable().updateUI();
     }
 
     @Override
@@ -784,78 +917,9 @@ public class MainFrame extends JFrame {
         notes.setText(note);
     }
 
-    /**
-     * THEN WILL BE A PART FROM AUTOGENERATED CODE
-     * IT SHOULDN"T BE USED, ONLY TO FIND SOMETHING USEFUL
-     *
-     *
-     */
-
-    /*private void $$$setupUI$$$() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(15, 15, 15, 15), -1, -1));
-        mainPanel.setBackground(new Color(-9408400));
-        tabbedPane = new JTabbedPane();
-        mainPanel.add(tabbedPane, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(5, 4, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("Show", panel1);
-        searchField = new JTextField();
-        panel1.add(searchField, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 2, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        saveButton = new StandardButton("Save");
-        panel1.add(saveButton, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
-        clearButton = new StandardButton("");
-        clearButton.setText("Remove All");
-        panel1.add(clearButton, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(594, 41), null, 0, false));
-        clearButton = new StandardButton("Remove All");
-        panel1.add(clearButton);
-        final JLabel label1 = new JLabel();
-        label1.setText("Label");
-        panel1.add(label1, new com.intellij.uiDesigner.core.GridConstraints(0, 3, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        table = new MyTable(null);
-        panel1.add(table, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 3, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(50, 50), null, 0, false));
-        tree = new JTree();
-        panel1.add(tree, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(50, 50), null, 0, false));
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(7, 5, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("Commands", panel2);
-        notes = new JTextArea();
-        panel2.add(notes, new com.intellij.uiDesigner.core.GridConstraints(0, 4, 3, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
-        final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
-        panel2.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 4, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JPanel panel3 = new JPanel();
-        panel3.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel2.add(panel3, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("Photo");
-        panel3.add(label2, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final com.intellij.uiDesigner.core.Spacer spacer2 = new com.intellij.uiDesigner.core.Spacer();
-        panel2.add(spacer2, new com.intellij.uiDesigner.core.GridConstraints(1, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final com.intellij.uiDesigner.core.Spacer spacer3 = new com.intellij.uiDesigner.core.Spacer();
-        panel2.add(spacer3, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final com.intellij.uiDesigner.core.Spacer spacer4 = new com.intellij.uiDesigner.core.Spacer();
-        panel2.add(spacer4, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final com.intellij.uiDesigner.core.Spacer spacer5 = new com.intellij.uiDesigner.core.Spacer();
-        panel2.add(spacer5, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        nameField = new JTextField();
-        panel2.add(nameField, new com.intellij.uiDesigner.core.GridConstraints(3, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("Name");
-        panel2.add(label3, new com.intellij.uiDesigner.core.GridConstraints(3, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("Type");
-        panel2.add(label4, new com.intellij.uiDesigner.core.GridConstraints(4, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setText("Profession");
-        panel2.add(label5, new com.intellij.uiDesigner.core.GridConstraints(5, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        professionComboBox = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("Employee");
-        defaultComboBoxModel1.addElement("ShopAssistant");
-        defaultComboBoxModel1.addElement("FactoryWorker");
-        professionComboBox.setModel(defaultComboBoxModel1);
-        panel2.add(professionComboBox, new com.intellij.uiDesigner.core.GridConstraints(5, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-    }*/
+    public void setUsingBD(boolean usingBD) {
+        this.usingBD = usingBD;
+    }
 
     /**
      * @noinspection ALL

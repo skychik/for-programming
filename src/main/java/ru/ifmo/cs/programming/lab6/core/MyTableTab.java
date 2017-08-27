@@ -6,6 +6,7 @@ import ru.ifmo.cs.programming.lab6.utils.MyTableModel;
 import ru.ifmo.cs.programming.lab6.utils.StandardButton;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.FocusEvent;
@@ -198,6 +199,14 @@ class MyTableTab extends JPanel {
         });
 
         this.add(clearButton, constraints);
+    }
+
+    public void setClearButtonText(String text){
+        clearButton.setText(text);
+    }
+
+    public void setSearchFieldText(String text){
+        searchField.setText(text);
     }
 
     public static MyTable getTable() {
