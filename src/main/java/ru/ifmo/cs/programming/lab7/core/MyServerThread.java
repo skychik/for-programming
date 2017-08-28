@@ -273,7 +273,7 @@ public class MyServerThread extends Thread {
 					"(NAME varchar, " +
 					"PROFESSION varchar, " +
 					"SALARY integer, " +
-					"ATTITUDE_TO_BOSS integer, " +
+					"ATTITUDE_TO_BOSS oidvector, " +
 					"WORK_QUALITY integer, " +
 					"AVATAR_PATH varchar, " +
 					"NOTES varchar);");

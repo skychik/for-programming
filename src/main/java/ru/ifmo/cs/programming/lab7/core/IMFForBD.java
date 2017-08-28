@@ -13,12 +13,16 @@ public class IMFForBD implements InteractiveModeFunctions {
 
 	private ArrayDeque<Employee> deque = new ArrayDeque<>();
 	private String sql = null;
+	private final String table = "public.\"EMPLOYEE\"";
 
 	@Override
 	public void add(Employee employee) {
-		// sql = "sql";
+		 sql = "insert into " + table +
+				 " (NAME, PROFESSION, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, AVATAR_PATH, NOTES)" +
+				 " values (\'" + employee.getName() + "\', \'" + employee.getProfession() + ", "
+				 + employee.getSalary() + ", " + employee.getAttitudeToBoss() + ", " + employee.getWorkQuality() +
+				 ", \'" + employee.getAvatarPath() + "\', \'" + employee.getNotes() + "\')";
 		save();
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
