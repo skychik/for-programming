@@ -1,7 +1,6 @@
 //TODO: make commandTab as new class
 package ru.ifmo.cs.programming.lab6.core;
 
-import org.intellij.lang.annotations.Language;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
@@ -16,18 +15,21 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Properties;
 
 import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
 import static ru.ifmo.cs.programming.lab6.utils.MyColor.foregroundColor;
 import static ru.ifmo.cs.programming.lab6.utils.MyColor.opaqueColor;
-import java.util.ResourceBundle;
 
 public class MainFrame extends JFrame {
     private InteractiveModeFunctions imf;
 
-    private boolean usingBD = false;
+//    private boolean usingBD = false;
 
     private JMenu menu;
 
@@ -55,7 +57,7 @@ public class MainFrame extends JFrame {
     private JMenu settings;
     private JMenuItem hotKeysItem;
     private JMenuItem buttonColorItem;
-    private JMenuItem standartAvatarItem;
+    private JMenuItem standardAvatarItem;
     private JMenuItem saveItem;
     private JMenu language;
     private String[] prof;
@@ -660,8 +662,8 @@ public class MainFrame extends JFrame {
         buttonColorItem.setFont(font);
         settings.add(buttonColorItem);
 
-        standartAvatarItem = new JMenuItem("Standart avatar");
-        standartAvatarItem.addActionListener(new java.awt.event.ActionListener() {
+        standardAvatarItem = new JMenuItem("Standart avatar");
+        standardAvatarItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String avatarStandartPath = System.getProperty("user.dir") +
@@ -677,8 +679,8 @@ public class MainFrame extends JFrame {
                 }
             }
         });
-        standartAvatarItem.setFont(font);
-        settings.add(standartAvatarItem);
+        standardAvatarItem.setFont(font);
+        settings.add(standardAvatarItem);
 
         language = new JMenu("Language");
         settings.setFont(font);
@@ -789,10 +791,10 @@ public class MainFrame extends JFrame {
                 settings.setText(prop.getProperty("settings"));
                 hotKeysItem.setText(prop.getProperty("hotKeys"));
                 buttonColorItem.setText(prop.getProperty("butColor"));
-                standartAvatarItem.setText(prop.getProperty("stAvatar"));
+                standardAvatarItem.setText(prop.getProperty("stAvatar"));
                 saveItem.setText(prop.getProperty("save"));
                 language.setText(prop.getProperty("language"));
-                standartValuesButton.setText(prop.getProperty("stValues"));
+                standardValuesButton.setText(prop.getProperty("stValues"));
                 int i = professionComboBox.getSelectedIndex();
                 professionComboBox.removeAllItems();
                 professionComboBox.insertItemAt(prop.getProperty("programmer"), 0);
@@ -917,9 +919,9 @@ public class MainFrame extends JFrame {
         notes.setText(note);
     }
 
-    public void setUsingBD(boolean usingBD) {
-        this.usingBD = usingBD;
-    }
+//    public void setUsingBD(boolean usingBD) {
+//        this.usingBD = usingBD;
+//    }
 
     /**
      * @noinspection ALL
