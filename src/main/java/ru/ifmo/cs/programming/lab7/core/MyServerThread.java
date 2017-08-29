@@ -64,7 +64,7 @@ public class MyServerThread extends Thread {
 						sendTable();
 						break;
 					case TRANSACTION:
-						proceedTransaction(request);
+						processTransaction(request);
 						break;
 					case CLOSE :
 						//fl = false;
@@ -127,13 +127,13 @@ public class MyServerThread extends Thread {
 			// Sending data
 			System.out.println(num + ": trying to send table...");
 			while (res.next()) {
-				String name = res.getString("NAME");
-				String profession = res.getString("PROFESSION");
-				int salary = res.getInt("SALARY");
-				AttitudeToBoss attitudeToBoss = AttitudeToBoss.values()[(byte)res.getInt("ATTITUDE_TO_BOSS")];
-				byte workQuality = res.getByte("WORK_QUALITY");
-				String avatarPath = res.getString("AVATAR_PATH");
-				String notes = res.getString("NOTES");
+				String name = res.getString("name");
+				String profession = res.getString("profession");
+				int salary = res.getInt("salary");
+				AttitudeToBoss attitudeToBoss = AttitudeToBoss.values()[(byte)res.getInt("attitude")];
+				byte workQuality = res.getByte("work_quality");
+				String avatarPath = res.getString("avatar_path");
+				String notes = res.getString("notes");
 				Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
 				employee.setAvatarPath(avatarPath);
 				employee.setNotes(notes);
@@ -159,7 +159,8 @@ public class MyServerThread extends Thread {
 		}
 	}
 
-	private void proceedTransaction(MyEntry request) throws InterruptedException {
+	private void processTransaction(MyEntry request) throws InterruptedException {
+		System.out.println("processing transaction");
 		if (!(request.getValue() instanceof ArrayDeque)) {
 			System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry value");
 			sendMyEntry(DISCONNECT, "incorrect format of request (value.class != ArrayDeque)");
@@ -195,7 +196,7 @@ public class MyServerThread extends Thread {
 						if (obj instanceof Employee) {
 							Employee employee = (Employee) obj;
 							PreparedStatement stat = con.prepareStatement(((MyEntry) query).getKey() +
-									" into EMPLOYEE" +
+									" into public.\"EMPLOYEE\"" +
 									" (NAME, PROFESSION, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, AVATAR_PATH, NOTES)" +
 									" values (?, ?, ?, ?, ?, ?, ?)");
 							stat.setString(1, employee.getName());
@@ -251,6 +252,8 @@ public class MyServerThread extends Thread {
 			sendMyEntry(SQLEXCEPTION, e.getLocalizedMessage());
 			disconnect();
 		}
+
+		System.out.println("processed");
 	}
 
 	private MyEntry getNewRequest() throws InterruptedException {

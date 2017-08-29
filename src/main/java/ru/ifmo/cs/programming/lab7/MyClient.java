@@ -89,21 +89,6 @@ public class MyClient extends Thread {
 	        //GUI
 	        SwingUtilities.invokeLater(() -> gui(imf));
         } catch (InterruptedException ignored){}
-//        try {
-//            // берём поток вывода и выводим туда первый аргумент, заданный при вызове, адрес открытого сокета и его порт
-//            args[0] = args[0]+"\n" + socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort();
-//            socket.getOutputStream().write(args[0].getBytes());
-//
-//            // читаем ответ
-//            byte buf[] = new byte[64*1024];
-//            int r = socket.getInputStream().read(buf);
-//            String data = new String(buf, 0, r);
-//
-//            // выводим ответ в консоль
-//            System.out.println(data);
-//        } catch(Exception e) {
-//            System.out.println("init error: "+e); // вывод исключений
-//        }
     }
 
     private void connect() throws InterruptedException {

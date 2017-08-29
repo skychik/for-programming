@@ -23,12 +23,14 @@ public class IMFForBD implements InteractiveModeFunctions {
 	public void add(Employee employee) throws IOException {
 		deque.add(employee);
 		buff.add(new MyEntry(INSERT, employee));
+		System.out.println("Added: " + employee);
 	}
 
 	@Override
 	public void remove(Employee employee) throws IOException {
 		deque.remove(employee);
 		buff.add(new MyEntry(REMOVE, employee));
+		System.out.println("Removed: " + employee);
 	}
 
 	@Override
@@ -61,6 +63,7 @@ public class IMFForBD implements InteractiveModeFunctions {
 			if (entry.getKey() == DISCONNECT) exit(entry.getValue().toString());
 
 			buff.clear();
+			System.out.println("saved");
 		});
 		t.start();
 	}
