@@ -784,8 +784,8 @@ public class MainFrame extends JFrame {
                 menu.setText(prop.getProperty("file"));
                 notes.setText(prop.getProperty("notes"));
                 nameField.setText(prop.getProperty("name"));
-                tabbedPane.setTitleAt(1, prop.getProperty("table"));
-                tabbedPane.setTitleAt(0, prop.getProperty("commands"));
+                tabbedPane.setTitleAt(0, prop.getProperty("table"));
+                tabbedPane.setTitleAt(1, prop.getProperty("commands"));
                 settings.setText(prop.getProperty("settings"));
                 hotKeysItem.setText(prop.getProperty("hotKeys"));
                 buttonColorItem.setText(prop.getProperty("butColor"));
