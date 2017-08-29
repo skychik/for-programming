@@ -36,4 +36,8 @@
     <entry key="clearQ">Очистить таблицу работников?</entry>
     <entry key="yes">Да</entry>
     <entry key="no">Нет</entry>
+    <entry key="ru">Русский</entry>
+    <entry key="de">Deutsch</entry>
+    <entry key="norw">Norsk</entry>
+    <entry key="eng">English</entry>
 </properties>

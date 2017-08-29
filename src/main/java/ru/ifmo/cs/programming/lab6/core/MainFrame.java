@@ -92,6 +92,15 @@ public class MainFrame extends JFrame {
         UIManager.put("TabbedPane.tabsOpaque", Boolean.TRUE);
         UIManager.put("TabbedPane.selected", new Color(152, 156, 153, 96));
 
+        FileInputStream fileInputStream;
+        String pathToProperties = "src/resources/resourceBundles/Language_" + locale + ".xml";
+        try {
+            fileInputStream = new FileInputStream(pathToProperties);
+            prop.loadFromXML(fileInputStream);
+        } catch (IOException e) {
+            System.out.println("Ошибка: файл " + pathToProperties + " не обнаружен");
+            e.printStackTrace();
+        }
         setMainPanel();
         setContentPane(mainPanel);
 
@@ -677,7 +686,7 @@ public class MainFrame extends JFrame {
         buttonColorItem.setFont(font);
         settings.add(buttonColorItem);
 
-        standardAvatarItem = new JMenuItem("Standard avatar");
+        standardAvatarItem = new JMenuItem(prop.getProperty("stAvatar"));
         standardAvatarItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -716,23 +725,27 @@ public class MainFrame extends JFrame {
     }
 
     private void setLanguagePanel(JMenu menu) {
-        JMenuItem eng = new JRadioButtonMenuItem("English");
-        JMenuItem ru = new JRadioButtonMenuItem("Russian");
-        JMenuItem de = new JRadioButtonMenuItem("German");
+        JMenuItem eng = new JRadioButtonMenuItem(prop.getProperty("eng"));
+        JMenuItem ru = new JRadioButtonMenuItem(prop.getProperty("ru"));
+        JMenuItem de = new JRadioButtonMenuItem(prop.getProperty("de"));
+        JMenuItem no = new JRadioButtonMenuItem(prop.getProperty("norw"));
 
         Font font = new Font(fontName, Font.PLAIN, 14);
         eng.setFont(font);
         ru.setFont(font);
         de.setFont(font);
+        no.setFont(font);
 
         ButtonGroup bg = new ButtonGroup();
         bg.add(eng);
         bg.add(ru);
         bg.add(de);
+        bg.add(no);
 
         menu.add(eng);
         menu.add(ru);
         menu.add(de);
+        menu.add(no);
 
         eng.addActionListener(new ActionListener()
         {
@@ -758,6 +771,19 @@ public class MainFrame extends JFrame {
             {
                 locale = new Locale("de", "DE");
                 setLoc(locale);
+                getTable().updateUI();
+            }
+        });
+        no.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                locale = new Locale("no", "No", "B");
+                try {
+                    setLoc(locale);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 getTable().updateUI();
             }
         });
@@ -924,6 +950,10 @@ public class MainFrame extends JFrame {
 
     public static void setNotes(String note){
         notes.setText(note);
+    }
+
+    public void makeClock(){
+
     }
 
 //    public void setUsingBD(boolean usingBD) {

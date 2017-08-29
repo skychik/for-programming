@@ -6,7 +6,7 @@
     <entry key="hotKeys">Hot keys</entry>
     <entry key="save">Speichern</entry>
     <entry key="butColor">Button Farbe</entry>
-    <entry key="stAvatar">Standart avatar</entry>
+    <entry key="stAvatar">Standard avatar</entry>
     <entry key="language">Sprache</entry>
     <entry key="table">Tabelle</entry>
     <entry key="commands">Befehle</entry>
@@ -36,4 +36,8 @@
     <entry key="clearQ">Deaktivieren Sie die Tabelle Arbeitnehmer?</entry>
     <entry key="yes">Ja</entry>
     <entry key="no">Nein</entry>
+    <entry key="eng">English</entry>
+    <entry key="ru">Русский</entry>
+    <entry key="de">Deutsch</entry>
+    <entry key="norw">Norsk</entry>
 </properties>
