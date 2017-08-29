@@ -4,27 +4,18 @@ import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Map;
 
-//@Root
-public class MyEntry implements AbstractMap.Entry<Integer, Object>, Serializable {
-	//@Element
-	private final Integer key;
+public class MyEntry implements AbstractMap.Entry<MyEntryKey, Object>, Serializable {
+	private final MyEntryKey key;
 
-	//@Element
 	private Object value;
 
-	//@Element(name = "name and password")
-	public static final int NAME_AND_PASSWORD = 0;
-	public static final int TABLE = 1;
-	public static final int QUERY = 2;
-	public static final int CLOSE = -1;
-
-    public MyEntry(Integer key, Object value) {
+	public MyEntry(MyEntryKey key, Object value) {
 	    this.key   = key;
 	    this.value = value;
     }
 
     @Override
-    public Integer getKey() {
+    public MyEntryKey getKey() {
         return key;
     }
 

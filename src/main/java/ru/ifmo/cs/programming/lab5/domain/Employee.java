@@ -6,11 +6,7 @@ import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab6.utils.HasSpeciality;
 
 import java.io.Serializable;
-import java.lang.*;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
@@ -20,7 +16,7 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
     private int salary = 0;
     private AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
     private byte workQuality = 0;
-    private String avatarPath = System.getProperty("user.dir") + "\\src\\resources\\images\\" + "standartAvatar.jpg";
+    private String avatarPath = System.getProperty("user.dir") + "\\src\\resources\\images\\" + "standardAvatar.jpg";
     private String notes;
     private OffsetDateTime creatingTime;
 //    private LocalDateTime creatingTime;

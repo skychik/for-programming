@@ -204,8 +204,12 @@ class MyTable extends JTable implements TableModelListener {
                 System.out.println();
                 if (checkClicks(e)) {
                     Employee employee = imf.getEmployees()[getSelectedRow()];
-                    imf.remove(employee);
-                    updateUI();
+	                try {
+		                imf.remove(employee);
+	                } catch (IOException e1) {
+		                imf.exit(e1.getMessage());
+	                }
+	                updateUI();
                     getTabbedPane().setSelectedIndex(1);
                     setAvatar(employee.getAvatarPath());
                     setNotes(employee.getNotes());
@@ -249,7 +253,7 @@ class MyTable extends JTable implements TableModelListener {
             //TODO: and what?
 
         } catch (NullPointerException e) {
-            avatar.setIcon(new ImageIcon(getClass().getResource("images/standartAvatar.jpg")));
+            avatar.setIcon(new ImageIcon(getClass().getResource("images/standardAvatar.jpg")));
             avatar.setBackground(new Color(0,0,0,0));
         }
     }

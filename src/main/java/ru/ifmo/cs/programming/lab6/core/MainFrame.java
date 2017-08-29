@@ -131,7 +131,7 @@ public class MainFrame extends JFrame {
 
         tableTab = new MyTableTab(imf);
         tabbedPane.addTab("Table", tableTab);
-        tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
+        tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
         setCommandTab();
 
@@ -253,12 +253,12 @@ public class MainFrame extends JFrame {
 
         tabbedPane.addTab("Commands", commandTab);
 
-        tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+        tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
         //tab2.setOpaque(false);
     }
 
     private void makeAvatarButton(GridBagConstraints constraints) {
-        avatarPath = System.getProperty("user.dir") + "/src/resources/images/standartAvatar.jpg";
+        avatarPath = System.getProperty("user.dir") + "/src/resources/images/standardAvatar.jpg";
         avatar = new JButton();
         try {
             Image avatarImage = ImageIO.read(new File(avatarPath));
@@ -584,8 +584,11 @@ public class MainFrame extends JFrame {
     }
         employee.setAvatarPath(avatarPath);
         employee.setNotes(notes.getText());
-        imf.add(employee);
-        imf.save();
+	    try {
+		    imf.add(employee);
+	    } catch (IOException e) {
+		    imf.exit(e.getMessage());
+	    }
     }
 
     private void setBackground() {
@@ -667,9 +670,9 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String avatarStandartPath = System.getProperty("user.dir") +
-                        "/src/resources/images/standartAvatar.jpg";
+                        "/src/resources/images/standardAvatar.jpg";
                 avatarPath = System.getProperty("user.dir") +
-                        "/src/resources/images/standartAvatar.jpg";
+                        "/src/resources/images/standardAvatar.jpg";
                 try {
                     Image avatarImage = ImageIO.read(new File(avatarStandartPath));
                     avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
@@ -692,7 +695,13 @@ public class MainFrame extends JFrame {
 
         saveItem = new JMenuItem("Save");
         saveItem.setFont(font);
-        saveItem.addActionListener(e -> imf.save());
+        saveItem.addActionListener((ActionEvent e) -> {
+	        try {
+		        imf.save();
+	        } catch (IOException e1) {
+		        imf.exit();
+	        }
+        });
         menu.add(saveItem);
 
         JMenuBar menuBar = new JMenuBar();
@@ -764,7 +773,7 @@ public class MainFrame extends JFrame {
 
     private void setDefaultCommandTab(){
         avatar.setIcon(new ImageIcon(System.getProperty("user.dir") +
-                "/src/resources/images/standartAvatar.jpg"));
+                "/src/resources/images/standardAvatar.jpg"));
         notes.setText("Здесь можно вводить заметки");
         nameField.setText("Name");
         classList.setSelectedIndex(0);

@@ -50,6 +50,7 @@ public class InteractiveModeFunctionsImpl implements InteractiveModeFunctions {
         add(employee);
     }
 
+    @Override
     public void add(Employee employee) {
 	    deque.add(employee);
 
@@ -66,6 +67,7 @@ public class InteractiveModeFunctionsImpl implements InteractiveModeFunctions {
         remove(employee);
     }
 
+    @Override
     public void remove(Employee employee) {
 	    deque.remove(employee);
 	    System.out.println("First met employee, which you typed, removed");
@@ -116,6 +118,7 @@ public class InteractiveModeFunctionsImpl implements InteractiveModeFunctions {
         System.out.println("All employees, which are the same with your typed employee, removed from deque");
     }
 
+    @Override
     public void clear() {
     	deque.clear();
 	    System.out.println("Deque has cleared");
@@ -161,6 +164,7 @@ public class InteractiveModeFunctionsImpl implements InteractiveModeFunctions {
         }
     }
 
+    @Override
     public void save() {
         ArrayDeque<Employee> clone = deque.clone();
 
@@ -183,18 +187,25 @@ public class InteractiveModeFunctionsImpl implements InteractiveModeFunctions {
         thread.start();*/
     }
 
+    @Override
     public void exit() {
 	    System.exit(0);
     }
 
-	@Override
+    @Override
+    public void exit(String msg) {
+        System.out.println(msg);
+        System.exit(1);
+    }
+
+    @Override
 	public int getSize() {
 		return deque.size();
 	}
 
 	@Override
 	public Employee[] getEmployees() {
-		return (Employee[]) deque.toArray();
+		return deque.toArray(new Employee[]{});
 	}
 
 	protected void show() {

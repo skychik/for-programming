@@ -4,6 +4,7 @@ package ru.ifmo.cs.programming.lab7;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab7.core.IMFForBD;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
+import ru.ifmo.cs.programming.lab7.utils.MyEntryKey;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,8 +19,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static ru.ifmo.cs.programming.lab6.AppGUI.gui;
-import static ru.ifmo.cs.programming.lab7.utils.MyEntry.NAME_AND_PASSWORD;
-import static ru.ifmo.cs.programming.lab7.utils.MyEntry.TABLE;
+import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.NAME_AND_PASSWORD;
+import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.TABLE;
 
 public class MyClient extends Thread {
 
@@ -81,11 +82,12 @@ public class MyClient extends Thread {
 		        disconnect();
 	        }
 	        imf.setOos(oos);
+			imf.setOis(ois);
 
 	        connect();
 	        receiveTable();
 	        //GUI
-	        SwingUtilities.invokeLater(() -> gui(new IMFForBD()));
+	        SwingUtilities.invokeLater(() -> gui(imf));
         } catch (InterruptedException ignored){}
 //        try {
 //            // берём поток вывода и выводим туда первый аргумент, заданный при вызове, адрес открытого сокета и его порт
@@ -114,16 +116,22 @@ public class MyClient extends Thread {
 		        guiNameAndPassword(msg);
         System.out.println(nameAndPassword.toString()); // not secure, for debug
 
-        MyEntry reply = sendRequest(NAME_AND_PASSWORD, nameAndPassword);
-        switch (reply.getKey()) {
-	        case 0:
+	    MyEntry reply = null;
+	    try {
+		    reply = sendRequest(NAME_AND_PASSWORD, nameAndPassword);
+	    } catch (IOException e) { // shouldn't be thrown
+		    e.printStackTrace();
+	    }
+
+	    switch (reply.getKey()) {
+		    case OK:
 		        System.out.println("connected to database");
 		        break;
-	        case 1:
+		    case SQLEXCEPTION:
 		        System.out.println("Shit_occurred: " + reply.getValue());
 		        connect(reply.getValue().toString());
 		        break;
-	        case -1:
+		    case DISCONNECT:
 		        System.out.println("Shit_occurred: " + reply.getValue());
 		        disconnect();
         }
@@ -198,13 +206,13 @@ public class MyClient extends Thread {
 //        return reply == JOptionPane.YES_OPTION;
 //    }
 
-    private MyEntry sendRequest(int requestCode, Object obj) throws InterruptedException {
+    private MyEntry sendRequest(MyEntryKey requestCode, Object obj) throws InterruptedException, IOException {
 	    MyEntry request = new MyEntry(requestCode, obj);
 	    try {
 		    oos.writeObject(request);
 		    oos.flush();
 	    } catch (IOException e) {
-		    System.out.println("Shit_occurred: can't send a request to the server");
+		    System.out.println("Shit_occurred: can't send a request(" + requestCode + ") to the server");
 		    disconnect();
 	    }
 
@@ -253,14 +261,14 @@ public class MyClient extends Thread {
 
 	        if (reply instanceof MyEntry) {
 	        	switch (((MyEntry) reply).getKey()){
-			        case 0 :
+			        case OK:
 				        System.out.println("table received");
 				        break;
-			        case 1 :
+			        case DISCONNECT:
 				        System.out.println("Shit_occurred: " + ((MyEntry) reply).getValue());
 				        disconnect();
 			        	break;
-			        default :
+			        default:
 				        System.out.println("Shit_occurred: incorrect format of reply (unknown error code \"" +
 						        ((MyEntry) reply).getKey() + "\")");
 				        disconnect();
@@ -297,9 +305,9 @@ public class MyClient extends Thread {
 //        }
     }
 
-    private void disconnect() throws InterruptedException {
+    private static void disconnect() throws InterruptedException {
         System.out.println("trying to disconnect...");
-        try {
+	    try {
             socket.close();
             System.out.println("socket closed");
         } catch (IOException e) {
