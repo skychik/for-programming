@@ -9,7 +9,7 @@
     <entry key="hotKeys">Hot keys</entry>
     <entry key="save">Save</entry>
     <entry key="butColor">Button color</entry>
-    <entry key="stAvatar">Standart avatar</entry>
+    <entry key="stAvatar">Standard avatar</entry>
     <entry key="language">Language</entry>
     <entry key="table">Table</entry>
     <entry key="commands">Commands</entry>
@@ -36,4 +36,8 @@
     <entry key="stValues">Standart Values</entry>
     <entry key="yes">Yes</entry>
     <entry key="no">No</entry>
+    <entry key="ru">Русский</entry>
+    <entry key="de">Deutsch</entry>
+    <entry key="norw">Norsk</entry>
+    <entry key="eng">English</entry>
 </properties>
