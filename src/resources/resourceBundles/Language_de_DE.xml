@@ -31,4 +31,9 @@
     <entry key="high">Hoch</entry>
     <entry key="notes">Hier können Sie Notizen eingeben...</entry>
     <entry key="stValues">Standart Werte</entry>
+    <entry key="confirmation">Bestätigung</entry>
+    <entry key="closeW">Schließen Sie das Fenster?</entry>
+    <entry key="clearQ">Deaktivieren Sie die Tabelle Arbeitnehmer?</entry>
+    <entry key="yes">Ja</entry>
+    <entry key="no">Nein</entry>
 </properties>

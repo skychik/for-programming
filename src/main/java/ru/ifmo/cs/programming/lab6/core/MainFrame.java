@@ -97,6 +97,13 @@ public class MainFrame extends JFrame {
 
         setBackground();
 
+        setMenu();
+        try {
+            setLoc(locale);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         //Диалоговое окно для подтвеждения закрытия программы
@@ -104,9 +111,9 @@ public class MainFrame extends JFrame {
                                  @Override
                                  public void windowClosing(WindowEvent e) {
                                      // Потверждение закрытия окна JFrame
-                                     Object[] options = { "Да", "Нет!" };
-                                     int n = JOptionPane.showOptionDialog(e.getWindow(), "Закрыть окно?",
-                                             "Подтверждение", JOptionPane.YES_NO_OPTION,
+                                     Object[] options = { prop.getProperty("yes"), prop.getProperty("no") };
+                                     int n = JOptionPane.showOptionDialog(e.getWindow(), prop.getProperty("closeW"),
+                                             prop.getProperty("confirmation"), JOptionPane.YES_NO_OPTION,
                                              JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                                      if (n == 0) {
 	                                     e.getWindow().setVisible(false);
@@ -114,8 +121,6 @@ public class MainFrame extends JFrame {
                                      }
                                  }
                              });
-
-        setMenu();
     }
 
     private void setMainPanel() {
@@ -810,6 +815,10 @@ public class MainFrame extends JFrame {
                 }
                 tableTab.setClearButtonText(prop.getProperty("clearTable"));
                 tableTab.setSearchFieldText(prop.getProperty("search"));
+                tableTab.setClearQ(prop.getProperty("clearQ"));
+                tableTab.setConfirmation(prop.getProperty("confirmation"));
+                String[] options = {prop.getProperty("yes"), prop.getProperty("no")};
+                tableTab.setOptions(options);
 //                tableTab.setTableText(new String[] {}); ToDo переименовать шапку
             } catch (IOException e) {
                 System.out.println("Ошибка: файл " + pathToProperties + " не обнаружен");
