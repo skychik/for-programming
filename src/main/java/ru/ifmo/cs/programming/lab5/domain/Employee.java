@@ -6,7 +6,9 @@ import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab6.utils.HasSpeciality;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
@@ -18,8 +20,8 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
     private byte workQuality = 0;
     private String avatarPath = System.getProperty("user.dir") + "\\src\\resources\\images\\" + "standardAvatar.jpg";
     private String notes;
-    private OffsetDateTime creatingTime;
-//    private LocalDateTime creatingTime;
+//    private OffsetDateTime creatingTime;
+    private LocalDateTime creatingTime;
 //    private ZonedDateTime creatingTime;
 
     public Employee(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
@@ -27,6 +29,9 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
         this.salary = salary;
         this.attitudeToBoss = attitudeToBoss;
         this.workQuality = workQuality;
+//        creatingTime = OffsetDateTime.now();
+        creatingTime = LocalDateTime.now();
+//        creatingTime = ZonedDateTime.now();
     }
 
     public Employee() {
