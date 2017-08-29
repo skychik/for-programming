@@ -37,6 +37,7 @@ public class IMFForBD implements InteractiveModeFunctions {
 	public void clear() throws IOException {
 		deque.clear();
 		buff.add(new MyEntry(CLEAR, null));
+		System.out.println("cleared");
 	}
 
 	@Override

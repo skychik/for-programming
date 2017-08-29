@@ -160,7 +160,7 @@ public class MyServerThread extends Thread {
 	}
 
 	private void processTransaction(MyEntry request) throws InterruptedException {
-		System.out.println("processing transaction");
+		System.out.println(num + ": processing transaction");
 		if (!(request.getValue() instanceof ArrayDeque)) {
 			System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry value");
 			sendMyEntry(DISCONNECT, "incorrect format of request (value.class != ArrayDeque)");
@@ -181,7 +181,11 @@ public class MyServerThread extends Thread {
 
 		// Transaction
 		try {
+			int i = 1;
 			while (!deque.isEmpty()) {
+				System.out.println(num + ": " + i + " part");
+				i++;
+
 				Object query = deque.remove();
 				if (!(query instanceof MyEntry)) {
 					System.out.println(num + ": Shit_in_thread: incorrect type of an element");
@@ -195,14 +199,24 @@ public class MyServerThread extends Thread {
 						Object obj = ((MyEntry) query).getValue();
 						if (obj instanceof Employee) {
 							Employee employee = (Employee) obj;
-							PreparedStatement stat = con.prepareStatement(((MyEntry) query).getKey() +
-									" into public.\"EMPLOYEE\"" +
+							PreparedStatement stat = null;
+							switch (((MyEntry) query).getKey()) {
+								case INSERT:
+									System.out.println(num + ": inserting");
+									stat = con.prepareStatement(" insert into public.\"EMPLOYEE\"" +
 									" (NAME, PROFESSION, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, AVATAR_PATH, NOTES)" +
 									" values (?, ?, ?, ?, ?, ?, ?)");
+									break;
+								case REMOVE:
+									System.out.println(num + ": removing");
+									stat = con.prepareStatement("delete from public.\"EMPLOYEE\" where " +
+											"NAME = ? AND PROFESSION = ? AND SALARY = ? AND ATTITUDE_TO_BOSS = ? AND " +
+											"WORK_QUALITY = ? AND AVATAR_PATH = ? AND NOTES = ?");
+							}
 							stat.setString(1, employee.getName());
 							stat.setString(2, employee.getProfession());
 							stat.setInt(3, employee.getSalary());
-							stat.setInt(4, employee.getAttitudeToBoss().getAttitude());
+							stat.setByte(4, employee.getAttitudeToBoss().getAttitude());
 							stat.setByte(5, employee.getWorkQuality());
 							stat.setString(6, employee.getAvatarPath());
 							stat.setString(7, employee.getNotes());
@@ -215,8 +229,9 @@ public class MyServerThread extends Thread {
 						}
 						break;
 					case CLEAR:
+						System.out.println(num + ": clearing");
 						Statement stat = con.createStatement();
-						stat.executeUpdate("delete from public.EMPLOYEE");
+						stat.executeUpdate("delete from public.\"EMPLOYEE\"");
 						break;
 					default:
 						System.out.println(num + ": Shit_in_thread: unexpected request key");
@@ -253,7 +268,7 @@ public class MyServerThread extends Thread {
 			disconnect();
 		}
 
-		System.out.println("processed");
+		System.out.println(num + ": processed");
 	}
 
 	private MyEntry getNewRequest() throws InterruptedException {

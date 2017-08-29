@@ -665,16 +665,16 @@ public class MainFrame extends JFrame {
         buttonColorItem.setFont(font);
         settings.add(buttonColorItem);
 
-        standardAvatarItem = new JMenuItem("Standart avatar");
+        standardAvatarItem = new JMenuItem("Standard avatar");
         standardAvatarItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String avatarStandartPath = System.getProperty("user.dir") +
+                String avatarStandardPath = System.getProperty("user.dir") +
                         "/src/resources/images/standardAvatar.jpg";
                 avatarPath = System.getProperty("user.dir") +
                         "/src/resources/images/standardAvatar.jpg";
                 try {
-                    Image avatarImage = ImageIO.read(new File(avatarStandartPath));
+                    Image avatarImage = ImageIO.read(new File(avatarStandardPath));
                     avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
                     avatar.setBackground(new Color(0,0,0,0));
                 } catch (IOException ex) {
@@ -875,7 +875,7 @@ public class MainFrame extends JFrame {
     }
 
     public static void setProfessionComboBox(String profession){
-        Integer index = null;
+        Integer index = 0;
         switch (profession){
             case "Manager" : {
                 index = 2;
