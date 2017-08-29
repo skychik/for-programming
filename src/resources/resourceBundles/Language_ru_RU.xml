@@ -31,4 +31,9 @@
     <entry key="high">Высокое</entry>
     <entry key="notes">Здесь вы можете вводить заметки...</entry>
     <entry key="stValues">Стандартные значения</entry>
+    <entry key="confirmation">Подтверждение</entry>
+    <entry key="closeW">Закрыть окно?</entry>
+    <entry key="clearQ">Очистить таблицу работников?</entry>
+    <entry key="yes">Да</entry>
+    <entry key="no">Нет</entry>
 </properties>

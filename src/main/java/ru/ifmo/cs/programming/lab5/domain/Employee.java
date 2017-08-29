@@ -66,7 +66,8 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
                 ";" + getAttitudeToBoss().toString() +
                 ";" + getWorkQuality() +
                 ";" + getAvatarPath() +
-                ";{" + getNotes()) + "}";
+                ";{" + getNotes() + "}" +
+                ";" + getCreatingTime());
     }
 
     @Override
@@ -223,7 +224,7 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
     protected void stringToEmployee(Scanner sc) {
         int index = 1;
         try {
-            for (; sc.hasNext() && index < 8; index++)
+            for (; sc.hasNext() && index < 9; index++)
             switch (index){
                 case 1 : {
                     this.setName(sc.next());
@@ -272,15 +273,23 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
                 }
                 case  6 : {
                     this.avatarPath = sc.next();
+                    break;
                 }
                 case  7 : {
                     this.notes = sc.next().replace("{","").replace("}","");
+                    break;
+                }
+                case 8 : {
+//                    this.creatingTime = OffsetDateTime.parse(sc.next());
+                    this.creatingTime = LocalDateTime.parse(sc.next());
+//                    this.creatingTime = ZonedDateTime.parse(sc.next());
                 }
             }
         } catch (NumberFormatException e) {
             System.out.println("Исправьте значения в строке " + AppCmdLine.getLineNumber() + ". Столбцы D и F должны содержать числа.");
             System.exit(1);
         }
+
     }
 
     public void setAvatarPath(String path){
@@ -297,6 +306,10 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
 
     public String getNotes(){
         return notes;
+    }
+
+    public String getCreatingTime(){
+        return creatingTime.toString();
     }
 
     @Override

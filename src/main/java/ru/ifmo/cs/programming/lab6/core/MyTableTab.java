@@ -21,6 +21,9 @@ class MyTableTab extends JPanel {
     private boolean isSearchFieldEmpty = true;
     private StandardButton clearButton;
     private InteractiveModeFunctions imf;
+    private String clearQ;
+    private String confirmation;
+    private Object[] options;
 
     MyTableTab(InteractiveModeFunctions imf) {
         super();
@@ -193,8 +196,11 @@ class MyTableTab extends JPanel {
 
         clearButton.addActionListener(e -> {
             // Потверждение очищения таблицы
-            int n = JOptionPane.showConfirmDialog(clearButton, "Очистить таблицу работников?",
-                    "Подтверждение", JOptionPane.YES_NO_OPTION);
+            int n = JOptionPane.showOptionDialog(clearButton, clearQ,
+                    confirmation, JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+//                    .showConfirmDialog(clearButton, clearQ,
+//                    confirmation, JOptionPane.YES_NO_OPTION);
             if (n == 0) try {
 	            imf.clear();
             } catch (IOException e1) {
@@ -211,6 +217,18 @@ class MyTableTab extends JPanel {
 
     public void setSearchFieldText(String text){
         searchField.setText(text);
+    }
+
+    public void setClearQ(String s){
+        clearQ = s;
+    }
+
+    public void setConfirmation(String s){
+        confirmation = s;
+    }
+
+    public void setOptions(String[] strings){
+        options = strings;
     }
 
     public static MyTable getTable() {

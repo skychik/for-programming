@@ -2,6 +2,9 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <entry key="file">File</entry>
+    <entry key="clearQ">Clear the table employees?</entry>
+    <entry key="closeW">Close the window?</entry>
+    <entry key="confirmation">Confirmation</entry>
     <entry key="settings">Settings</entry>
     <entry key="hotKeys">Hot keys</entry>
     <entry key="save">Save</entry>
@@ -31,4 +34,6 @@
     <entry key="high">High</entry>
     <entry key="notes">Here you can enter notes...</entry>
     <entry key="stValues">Standart Values</entry>
+    <entry key="yes">Yes</entry>
+    <entry key="no">No</entry>
 </properties>
