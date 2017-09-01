@@ -211,14 +211,14 @@ class MyTable extends JTable implements TableModelListener {
 	                }
 	                updateUI();
                     getTabbedPane().setSelectedIndex(1);
-                    setAvatar(employee.getAvatarPath());
-                    setNotes(employee.getNotes());
-                    setNameField(employee.getName());
-                    setProfessionComboBox(employee.getProfession());
-                    setBg(employee.getAttitudeToBoss().toString());
-                    setClassList(employee.getClass().getSimpleName());
-                    setSalarySlider(employee.getSalary());
-                    setWorkQualityStepper(employee.getWorkQuality());
+                    CommandTab.setAvatar(employee.getAvatarPath());
+                    CommandTab.setNotes(employee.getNotes());
+                    CommandTab.setNameField(employee.getName());
+                    CommandTab.setProfessionComboBox(employee.getProfession());
+                    CommandTab.setBg(employee.getAttitudeToBoss().toString());
+                    CommandTab.setClassList(employee.getClass().getSimpleName());
+                    CommandTab.setSalarySlider(employee.getSalary());
+                    CommandTab.setWorkQualityStepper(employee.getWorkQuality());
                 }
             }
 
@@ -247,14 +247,14 @@ class MyTable extends JTable implements TableModelListener {
         File avatarFile = new File(avatarPath);
         try {
             Image avatarImage = ImageIO.read(avatarFile);
-            avatar.setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
-            avatar.setBackground(new Color(0,0,0,0));
+            CommandTab.getAvatar().setIcon(new ImageIcon(avatarImage.getScaledInstance(250,250,1)));
+            CommandTab.getAvatar().setBackground(new Color(0,0,0,0));
         } catch (IOException e) {
             //TODO: and what?
 
         } catch (NullPointerException e) {
-            avatar.setIcon(new ImageIcon(getClass().getResource("images/standardAvatar.jpg")));
-            avatar.setBackground(new Color(0,0,0,0));
+            CommandTab.getAvatar().setIcon(new ImageIcon(getClass().getResource("images/standardAvatar.jpg")));
+            CommandTab.getAvatar().setBackground(new Color(0,0,0,0));
         }
     }
 
