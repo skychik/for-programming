@@ -135,7 +135,7 @@ class MyTableTab extends JPanel {
     }
 
     private void makeSearchField(GridBagConstraints constraints) {
-        searchField = new JTextField("Type to search...", 1);
+        searchField = new JTextField(MyMenu.getProp().getProperty("search"), 1);
 
         searchField.setForeground(MyColor.whiteTextColor);
         searchField.setBackground(MyColor.backgroundEighthAlphaColor);
@@ -143,7 +143,8 @@ class MyTableTab extends JPanel {
         //if ENTER typed
         searchField.addActionListener(e -> {
             if (Objects.equals(searchField.getText(), "")) {
-                searchField.setText("Type to search...");
+                System.out.println(99);
+                searchField.setText(MyMenu.getProp().getProperty("search"));
                 isSearchFieldEmpty = true;
             } else isSearchFieldEmpty = false;
             doSearch();
@@ -159,7 +160,7 @@ class MyTableTab extends JPanel {
             @Override
             public void focusLost(FocusEvent e) {
                 if (Objects.equals(searchField.getText(), "")) {
-                    searchField.setText("Type something...");
+                    searchField.setText(MyMenu.getProp().getProperty("search"));
                     isSearchFieldEmpty = true;
                 } else isSearchFieldEmpty = false;
             }

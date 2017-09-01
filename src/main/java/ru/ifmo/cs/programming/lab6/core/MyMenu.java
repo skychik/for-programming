@@ -31,8 +31,6 @@ public class MyMenu extends JMenu{
     private String[] prof;
     private static Locale locale = new Locale("eng", "UK");
     private static Properties prop = new Properties();
-    private String pathToProperties;
-    private FileInputStream fileInputStream;
     private String fontName = "Gill Sans MT Bold Condensed";
 
     public MyMenu(InteractiveModeFunctions imf){
@@ -249,7 +247,9 @@ public class MyMenu extends JMenu{
             fileInputStream = new FileInputStream(pathToProperties);
             prop.loadFromXML(fileInputStream);
             this.setText(prop.getProperty("file"));
+            if (CommandTab.getNotes().equals("") || CommandTab.getNotes().equals(prop.getProperty("notes")))
             CommandTab.setNotes(prop.getProperty("notes"));
+            if (CommandTab.getNameField().equals("") || CommandTab.getNameField().equals(prop.getProperty("notes")))
             CommandTab.setNameField(prop.getProperty("name"));
             MainFrame.getTabbedPane().setTitleAt(0, prop.getProperty("table"));
             MainFrame.getTabbedPane().setTitleAt(1, prop.getProperty("commands"));

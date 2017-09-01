@@ -1,30 +1,12 @@
 package ru.ifmo.cs.programming.lab6.core;
 
-import org.springframework.cglib.core.Local;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
-import ru.ifmo.cs.programming.lab5.domain.Employee;
-import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
-import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
-import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab6.utils.Background;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
-import ru.ifmo.cs.programming.lab6.utils.StandardButton;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Properties;
-
-import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
-import static ru.ifmo.cs.programming.lab6.utils.MyColor.foregroundColor;
-import static ru.ifmo.cs.programming.lab6.utils.MyColor.opaqueColor;
 
 public class MainFrame extends JFrame {
     private InteractiveModeFunctions imf;
