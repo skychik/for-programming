@@ -16,13 +16,13 @@ import static ru.ifmo.cs.programming.lab6.core.MainFrame.fontName;
 
 class MyTableTab extends JPanel {
     private static MyTable table;
-    private JTextField searchField;
+    private static JTextField searchField;
     private boolean isSearchFieldEmpty = true;
-    private StandardButton clearButton;
+    private static StandardButton clearButton;
     private InteractiveModeFunctions imf;
-    private String clearQ;
-    private String confirmation;
-    private Object[] options;
+    private static String clearQ;
+    private static String confirmation;
+    private static Object[] options;
 
     MyTableTab(InteractiveModeFunctions imf) {
         super();
@@ -206,24 +206,29 @@ class MyTableTab extends JPanel {
         this.add(clearButton, constraints);
     }
 
-    public void setClearButtonText(String text){
+    public static void setClearButtonText(String text){
         clearButton.setText(text);
     }
 
-    public void setSearchFieldText(String text){
+    public static void setSearchFieldText(String text){
+        searchField.setText(text);
         searchField.setText(text);
     }
 
-    public void setClearQ(String s){
+    public static void setClearQ(String s){
         clearQ = s;
     }
 
-    public void setConfirmation(String s){
+    public static void setConfirmation(String s){
         confirmation = s;
     }
 
-    public void setOptions(String[] strings){
+    public static void setOptions(String[] strings){
         options = strings;
+    }
+
+    public static void setButtonColor(Color color){
+        clearButton.setBackground(color);
     }
 
     public static MyTable getTable() {
