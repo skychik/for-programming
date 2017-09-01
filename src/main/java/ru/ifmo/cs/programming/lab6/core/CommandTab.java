@@ -11,14 +11,12 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Objects;
 
 import static ru.ifmo.cs.programming.lab6.core.MyTableTab.getTable;
 import static ru.ifmo.cs.programming.lab6.utils.MyColor.foregroundColor;
@@ -31,6 +29,15 @@ public class CommandTab extends JPanel {
 
     private InteractiveModeFunctions imf;
     private static StandardButton standardValuesButton;
+
+    public static JTextArea getNotes() {
+        return notes;
+    }
+
+    public static JTextField getNameField() {
+        return nameField;
+    }
+
     private static JTextArea notes = null;
     private static JTextField nameField;
     private static JComboBox professionComboBox;
@@ -50,6 +57,8 @@ public class CommandTab extends JPanel {
     private String[] prof;
     private String pathToProperties;
     private FileInputStream fileInputStream;
+    private boolean isNameFieldEmpty = true;
+    private boolean isNotesAreaEmpty = true;
 
     static String fontName = "Gill Sans MT Bold Condensed";
     private Font font = new Font(fontName, Font.ITALIC, 13);
@@ -267,6 +276,19 @@ public class CommandTab extends JPanel {
         scrollNotes.setOpaque(false);
         scrollNotes.getViewport().setOpaque(false);
 
+        notes.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                if (isNotesAreaEmpty) notes.setText(null);
+            }
+
+            public void focusLost(FocusEvent e) {
+                if (Objects.equals(notes.getText(), "")) {
+                    notes.setText(MyMenu.getProp().getProperty("notes"));
+                    isNotesAreaEmpty = true;
+                } else isNotesAreaEmpty = false;
+            }
+        });
+
         this.add(scrollNotes, constraints);
     }
 
@@ -322,6 +344,19 @@ public class CommandTab extends JPanel {
         //Шрифт
         nameField.setFont(font);
         nameField.setForeground(foregroundColor);
+
+        nameField.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                if (isNameFieldEmpty) nameField.setText(null);
+            }
+
+            public void focusLost(FocusEvent e) {
+                if (Objects.equals(nameField.getText(), "")) {
+                    nameField.setText(MyMenu.getProp().getProperty("name"));
+                    isNameFieldEmpty = true;
+                } else isNameFieldEmpty = false;
+            }
+        });
 
         this.add(nameField, constraints);
     }
@@ -598,6 +633,4 @@ public class CommandTab extends JPanel {
         radio[2].setSelected(true);
         workQualityStepper.setValue(0);
     }
-
-
 }

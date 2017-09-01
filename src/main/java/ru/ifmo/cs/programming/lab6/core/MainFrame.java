@@ -6,9 +6,7 @@ import ru.ifmo.cs.programming.lab6.utils.MyColor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 public class MainFrame extends JFrame {
     private InteractiveModeFunctions imf;
