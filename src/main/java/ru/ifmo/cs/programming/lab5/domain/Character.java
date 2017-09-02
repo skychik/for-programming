@@ -2,9 +2,10 @@ package ru.ifmo.cs.programming.lab5.domain;
 
 import ru.ifmo.cs.programming.lab5.core.Movement;
 
+import java.io.Serializable;
 import java.util.*;
 
-public abstract class Character implements Movement {
+public abstract class Character implements Movement, Serializable {
 
     private String name = "";
     private String profession = "";

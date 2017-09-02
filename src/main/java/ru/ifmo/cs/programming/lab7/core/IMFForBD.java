@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 
 import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.*;
 
@@ -19,34 +20,38 @@ public class IMFForBD implements InteractiveModeFunctions {
 	private ArrayDeque<Employee> deque = new ArrayDeque<>();
 	private ArrayDeque<MyEntry> buff = new ArrayDeque<>();
 
+	private long nextId = -1;
+
 	@Override
-	public void add(Employee employee) throws IOException {
+	public void add(Employee employee) {
 		deque.add(employee);
 		buff.add(new MyEntry(INSERT, employee));
 		System.out.println("Added: " + employee);
 	}
 
 	@Override
-	public void remove(Employee employee) throws IOException {
+	public void remove(Employee employee) {
 		deque.remove(employee);
 		buff.add(new MyEntry(REMOVE, employee));
 		System.out.println("Removed: " + employee);
 	}
 
 	@Override
-	public void clear() throws IOException {
+	public void clear() {
 		deque.clear();
 		buff.add(new MyEntry(CLEAR, null));
 		System.out.println("cleared");
 	}
 
 	@Override
-	public void save() throws IOException {
+	public void save() {
 		Thread t = new Thread(() -> {
 			System.out.println("saving...");
 
+			System.out.println(Arrays.toString(buff.toArray()));
+
 			try {
-				oos.writeObject(new MyEntry(TRANSACTION, buff));
+				oos.writeObject(new MyEntry(TRANSACTION, buff.clone()));
 			} catch (IOException e) {
 				exit("Shit_occurred: can't send transaction(save)");
 			}

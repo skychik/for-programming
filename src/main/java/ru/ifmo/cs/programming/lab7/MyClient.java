@@ -27,7 +27,7 @@ public class MyClient extends Thread {
     private static Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
-    private IMFForBD imf = new IMFForBD();
+    private final IMFForBD imf = new IMFForBD();
 
 //	/*это наш дек*/
 //	private static ArrayDeque<Employee> deque = new ArrayDeque<>();
@@ -50,11 +50,19 @@ public class MyClient extends Thread {
 		    // открываем сокет и коннектимся к host:port, получаем сокет сервера
 		    socket = new Socket(host, port);
 	    } catch (UnknownHostException e) {
-	    	// TODO: вывести плашку с этим сообщением
+		    // show dialog
+		    Frame frame = new Frame("CRUD application");
+	    	JOptionPane.showMessageDialog(frame, new JLabel("Unknown host: " + host), "Ошибка",
+				    JOptionPane.ERROR_MESSAGE);
+
 		    System.out.println("Unknown host: " + host);
 		    System.exit(1);
 	    } catch (IOException e) {
-		    // TODO: вывести плашку с этим сообщением
+		    // show dialog
+		    Frame frame = new Frame("CRUD application");
+		    JOptionPane.showMessageDialog(frame, new JLabel("Can't create socket on  " + host + ":" + port),
+				    "Ошибка", JOptionPane.ERROR_MESSAGE);
+
 		    System.out.println("Can't create socket on  " + host + ":" + port);
 		    System.exit(1);
 	    }
@@ -101,12 +109,7 @@ public class MyClient extends Thread {
 		        guiNameAndPassword(msg);
         System.out.println(nameAndPassword.toString()); // not secure, for debug
 
-	    MyEntry reply = null;
-	    try {
-		    reply = sendRequest(NAME_AND_PASSWORD, nameAndPassword);
-	    } catch (IOException e) { // shouldn't be thrown
-		    e.printStackTrace();
-	    }
+	    MyEntry reply = sendRequest(NAME_AND_PASSWORD, nameAndPassword);
 
 	    switch (reply.getKey()) {
 		    case OK:
@@ -147,8 +150,6 @@ public class MyClient extends Thread {
 		}
 
 		Frame frame = new Frame("CRUD application");
-		frame.setIconImage(new ImageIcon(
-				System.getProperty("user.dir") + "/src/resources/images/icon.png").getImage());
 
 		int result = JOptionPane.showConfirmDialog(frame, panel, "Sign in", JOptionPane.DEFAULT_OPTION);
 		if (result == JOptionPane.CLOSED_OPTION) {
@@ -191,7 +192,7 @@ public class MyClient extends Thread {
 //        return reply == JOptionPane.YES_OPTION;
 //    }
 
-    private MyEntry sendRequest(MyEntryKey requestCode, Object obj) throws InterruptedException, IOException {
+    private MyEntry sendRequest(MyEntryKey requestCode, Object obj) throws InterruptedException {
 	    MyEntry request = new MyEntry(requestCode, obj);
 	    try {
 		    oos.writeObject(request);
@@ -229,6 +230,7 @@ public class MyClient extends Thread {
     private void receiveTable() throws InterruptedException {
 	    System.out.println("trying to receive table...");
 	    ArrayDeque<Employee> deque = new ArrayDeque<>();
+	    long nextId = -1;
 	    try {
 		    oos.writeObject(new MyEntry(TABLE, null));
 
@@ -237,6 +239,7 @@ public class MyClient extends Thread {
 			    reply = ois.readObject();
 		        while (reply instanceof Employee) {
 		            deque.add((Employee) reply);
+		            nextId = ((Employee) reply).getID();
 		            reply = ois.readObject();
 		        }
 		    } catch (ClassNotFoundException e) {

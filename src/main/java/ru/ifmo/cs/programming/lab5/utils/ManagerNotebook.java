@@ -17,8 +17,8 @@ public class ManagerNotebook implements Owned {
 
     public ManagerNotebook(Employer owner){
         this.owner = owner;
-        signs = new ArrayList<String>();
-        workerList = new ArrayList<FactoryWorker>();
+        signs = new ArrayList<>();
+        workerList = new ArrayList<>();
     }
 
     @Override

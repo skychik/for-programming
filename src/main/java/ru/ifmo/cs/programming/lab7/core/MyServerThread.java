@@ -1,7 +1,11 @@
+// TODO: доставать из бд № емплои и хранить его, тк удаление работает не так.
+
 package ru.ifmo.cs.programming.lab7.core;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab7.MyClient;
 import ru.ifmo.cs.programming.lab7.MyServer;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
@@ -18,7 +22,7 @@ import java.util.ArrayDeque;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.*;
 
 public class MyServerThread extends Thread {
-	private MyServer server;
+	private final MyServer server;
 	private int num; // server thread number; for exceptions
 	private SocketChannel socketChannel;
 	private ObjectInputStream ois;
@@ -120,23 +124,42 @@ public class MyServerThread extends Thread {
 			System.out.println(num + ": trying to get data from database...");
 
 			Statement stat = pooledConnection.getConnection().createStatement();
-			ResultSet res = stat.executeQuery("SELECT name, profession, salary, attitude, work_quality, " +
-					"avatar_path, notes FROM public.\"EMPLOYEE\", public.\"ATTITUDE_TO_BOSS\"" +
+			ResultSet res = stat.executeQuery("SELECT ID, name, profession, speciality, salary, attitude, " +
+					"work_quality, avatar_path, notes FROM public.\"EMPLOYEE\", public.\"ATTITUDE_TO_BOSS\"" +
 					"WHERE public.\"EMPLOYEE\".attitude_to_boss = public.\"ATTITUDE_TO_BOSS\".attitude");
 
 			// Sending data
 			System.out.println(num + ": trying to send table...");
 			while (res.next()) {
+				long ID = res.getLong("ID");
 				String name = res.getString("name");
 				String profession = res.getString("profession");
+				String speciality = res.getString("speciality");
 				int salary = res.getInt("salary");
-				AttitudeToBoss attitudeToBoss = AttitudeToBoss.values()[(byte)res.getInt("attitude")];
+				AttitudeToBoss attitudeToBoss = AttitudeToBoss.fromByteToAttitudeToBoss(
+						(byte)res.getInt("attitude"));
 				byte workQuality = res.getByte("work_quality");
 				String avatarPath = res.getString("avatar_path");
 				String notes = res.getString("notes");
-				Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+
+				Employee employee = null;
+				switch (speciality) {
+					case "class ru.ifmo.cs.programming.lab5.domain.Employee":
+						employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+						break;
+					case "class ru.ifmo.cs.programming.lab5.utils.FactoryWorker":
+						employee = new FactoryWorker(name, profession, salary, attitudeToBoss, workQuality);
+						break;
+					case "class ru.ifmo.cs.programming.lab5.domain.ShopAssistant":
+						employee = new ShopAssistant(name, profession, salary, attitudeToBoss, workQuality);
+						break;
+					default:
+						sendMyEntry(DISCONNECT, "Broken data: incorrect format of speciality");
+						disconnect();
+				}
 				employee.setAvatarPath(avatarPath);
 				employee.setNotes(notes);
+				employee.setID(ID);
 
 				try {
 					oos.writeObject(employee);
@@ -146,6 +169,7 @@ public class MyServerThread extends Thread {
 					disconnect();
 				}
 			}
+
 			if (!sendMyEntry(OK, null)) disconnect();
 			System.out.println(num + ": table has sent");
 
@@ -195,7 +219,7 @@ public class MyServerThread extends Thread {
 
 				switch (((MyEntry) query).getKey()) {
 					case INSERT:
-					case REMOVE:// TODO
+					case REMOVE:
 						Object obj = ((MyEntry) query).getValue();
 						if (obj instanceof Employee) {
 							Employee employee = (Employee) obj;
@@ -204,22 +228,25 @@ public class MyServerThread extends Thread {
 								case INSERT:
 									System.out.println(num + ": inserting");
 									stat = con.prepareStatement(" insert into public.\"EMPLOYEE\"" +
-									" (NAME, PROFESSION, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, AVATAR_PATH, NOTES)" +
-									" values (?, ?, ?, ?, ?, ?, ?)");
+											" (NAME, PROFESSION, SPECIALITY, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, " +
+											"AVATAR_PATH, NOTES) values (?, ?, ?, ?, ?, ?, ?, ?)");
 									break;
 								case REMOVE:
 									System.out.println(num + ": removing");
 									stat = con.prepareStatement("delete from public.\"EMPLOYEE\" where " +
-											"NAME = ? AND PROFESSION = ? AND SALARY = ? AND ATTITUDE_TO_BOSS = ? AND " +
-											"WORK_QUALITY = ? AND AVATAR_PATH = ? AND NOTES = ?");
+											"id in (select id from public.\"EMPLOYEE\" where " +
+											"NAME = ? AND PROFESSION = ? AND SPECIALITY = ? AND SALARY = ? AND " +
+											"ATTITUDE_TO_BOSS = ? AND WORK_QUALITY = ? AND AVATAR_PATH = ? AND " +
+											"NOTES = ? limit 1)");
 							}
 							stat.setString(1, employee.getName());
 							stat.setString(2, employee.getProfession());
-							stat.setInt(3, employee.getSalary());
-							stat.setByte(4, employee.getAttitudeToBoss().getAttitude());
-							stat.setByte(5, employee.getWorkQuality());
-							stat.setString(6, employee.getAvatarPath());
-							stat.setString(7, employee.getNotes());
+							stat.setString(3, employee.getClass().toString());
+							stat.setInt(4, employee.getSalary());
+							stat.setByte(5, employee.getAttitudeToBoss().getAttitude());
+							stat.setByte(6, employee.getWorkQuality());
+							stat.setString(7, employee.getAvatarPath());
+							stat.setString(8, employee.getNotes());
 							stat.executeUpdate();
 							stat.close();
 						} else {

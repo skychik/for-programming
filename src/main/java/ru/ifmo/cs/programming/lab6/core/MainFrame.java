@@ -71,6 +71,10 @@ public class MainFrame extends JFrame {
     private Font font = new Font(fontName, Font.ITALIC, 13);
     private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
 
+    // if -1 then nothing was deleted
+	private long deletedId = -1;
+	private long nextId;
+
     public MainFrame(InteractiveModeFunctions imf) {
         super("CRUD application");
 
@@ -541,8 +545,8 @@ public class MainFrame extends JFrame {
     private void addEmployee(){
         Employee employee = new Employee();
         String name = nameField.getText();
-        String profession = professionComboBox.getSelectedItem().toString();
-        int salary = salarySlider.getValue();
+	    String profession = professionComboBox.getSelectedItem().toString();
+	    int salary = salarySlider.getValue();
         AttitudeToBoss attitudeToBoss = AttitudeToBoss.DEFAULT;
         pathToProperties = "src/resources/resourceBundles/Language_" + locale + ".xml";
         try{
@@ -584,11 +588,14 @@ public class MainFrame extends JFrame {
     }
         employee.setAvatarPath(avatarPath);
         employee.setNotes(notes.getText());
-	    try {
-		    imf.add(employee);
-	    } catch (IOException e) {
-		    imf.exit(e.getMessage());
-	    }
+        if (deletedId == -1) {
+	        employee.setID(nextId);
+	        nextId++;
+        } else {
+        	employee.setID(deletedId);
+        	deletedId = -1;
+        }
+	    imf.add(employee);
     }
 
     private void setBackground() {
@@ -695,13 +702,7 @@ public class MainFrame extends JFrame {
 
         saveItem = new JMenuItem("Save");
         saveItem.setFont(font);
-        saveItem.addActionListener((ActionEvent e) -> {
-	        try {
-		        imf.save();
-	        } catch (IOException e1) {
-		        imf.exit();
-	        }
-        });
+        saveItem.addActionListener((ActionEvent e) -> imf.save());
         menu.add(saveItem);
 
         JMenuBar menuBar = new JMenuBar();
@@ -733,11 +734,7 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent e)
             {
                 locale = new Locale("eng", "UK");
-                try {
-                    setLoc(locale);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                setLoc(locale);
                 getTable().updateUI();
             }
         });
@@ -746,11 +743,7 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent e)
             {
                 locale = new Locale("ru", "RU");
-                try {
-                    setLoc(locale);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                setLoc(locale);
                 getTable().updateUI();
             }
         });
@@ -759,11 +752,7 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent e)
             {
                 locale = new Locale("de", "DE");
-                try {
-                    setLoc(locale);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                setLoc(locale);
                 getTable().updateUI();
             }
         });
@@ -782,7 +771,7 @@ public class MainFrame extends JFrame {
         workQualityStepper.setValue(0);
     }
 
-    private void setLoc(Locale locale) throws IOException {
+    private void setLoc(Locale locale) {
         //        Locale locale1 = new Locale("ru", "RU");
         //        ResourceBundle bundle = ResourceBundle.getBundle("Language",
         //                new XMLResourceBundleControl());
@@ -931,6 +920,10 @@ public class MainFrame extends JFrame {
 //    public void setUsingBD(boolean usingBD) {
 //        this.usingBD = usingBD;
 //    }
+
+	public void setNextId(long nextId) {
+    	this.nextId = nextId;
+	}
 
     /**
      * @noinspection ALL
