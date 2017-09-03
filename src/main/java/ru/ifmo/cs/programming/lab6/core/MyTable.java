@@ -4,6 +4,7 @@ import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
+import ru.ifmo.cs.programming.lab6.utils.MyTableModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

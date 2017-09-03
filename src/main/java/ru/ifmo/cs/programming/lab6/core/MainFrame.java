@@ -1,5 +1,6 @@
 package ru.ifmo.cs.programming.lab6.core;
 
+import com.intellij.uiDesigner.core.GridConstraints;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab6.utils.Background;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
@@ -18,6 +19,7 @@ public class MainFrame extends JFrame {
     private Dimension size;
 //    private ArrayDeque<Employee> deque;
     private MyTableTab tableTab;
+    private GridConstraints constraints;
 
     static String fontName = "Gill Sans MT Bold Condensed";
 
@@ -58,36 +60,41 @@ public class MainFrame extends JFrame {
         addWindowListener (new WindowAdapter() {
                                  @Override
                                  public void windowClosing(WindowEvent e) {
-                                     // Потверждение закрытия окна JFrame
-                                     Object[] options = { MyMenu.getProp().getProperty("yes"), MyMenu.getProp().getProperty("no") };
-                                     int n = JOptionPane.showOptionDialog(e.getWindow(), MyMenu.getProp().getProperty("closeW"),
-                                             MyMenu.getProp().getProperty("confirmation"), JOptionPane.YES_NO_OPTION,
-                                             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                                     if (n == 0) {
-	                                     e.getWindow().setVisible(false);
-                                         imf.exit();
-                                     }
-                                 }
-                             });
+                 // Потверждение закрытия окна JFrame
+                 Object[] options = { MyMenu.getProp().getProperty("yes"), MyMenu.getProp().getProperty("no") };
+                 int n = JOptionPane.showOptionDialog(e.getWindow(), MyMenu.getProp().getProperty("closeW"),
+                         MyMenu.getProp().getProperty("confirmation"), JOptionPane.YES_NO_OPTION,
+                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                 if (n == 0) {
+                     e.getWindow().setVisible(false);
+                     imf.exit();
+                 }
+             }
+         });
     }
 
     private void setMainPanel() {
+        constraints = new com.intellij.uiDesigner.core.GridConstraints(
+                0, 0, 1, 1,
+                com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER,
+                com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH,
+                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
+                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
+                null,
+                new Dimension(200, 200),
+                null,
+                0,
+                false
+        );
         mainPanel = new JPanel();
 
         LayoutManager overlay = new OverlayLayout(mainPanel);//TODO исправить
         mainPanel.setLayout(overlay);
 
         setTabbedPane();
-        setClock();
-    }
-
-    private void setClock(){ //todo
-        JPanel clockPanel = new JPanel();
-        clockPanel.setBackground(MyColor.backgroundEighthAlphaColor);
-        clockPanel.setFont(new Font(fontName, Font.PLAIN, 18));
-        clockPanel.setForeground(new Color(152, 156, 153));
-
-        mainPanel.add(clockPanel);
+//        setClock();
     }
 
     private void setTabbedPane() {
@@ -118,24 +125,24 @@ public class MainFrame extends JFrame {
 
         mainPanel.add(
                 tabbedPane,
-                new com.intellij.uiDesigner.core.GridConstraints(
-                        0, 0, 1, 1,
-                        com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER,
-                        com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH,
-                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
-                                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
-                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
-                                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
-                        null,
-                        new Dimension(200, 200),
-                        null,
-                        0,
-                        false
-                )
-
+                constraints
         );
 
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);// TODO: при маленьком окне табы в линию, а не друг под другом
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+    }
+
+
+    private void setClock(){ //todo
+        JPanel clockPanel = new JPanel();
+        clockPanel.setPreferredSize(new Dimension(100,20));
+        clockPanel.setBackground(MyColor.backgroundEighthAlphaColor);
+        clockPanel.setFont(new Font(fontName, Font.PLAIN, 18));
+        clockPanel.setForeground(new Color(152, 156, 153));
+        clockPanel.add(new JButton("1"));
+        constraints.setRow(1);
+        mainPanel.add(clockPanel,
+                constraints
+                );
     }
 
     private void setBackground() {
