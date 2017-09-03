@@ -59,6 +59,10 @@ public class MyTableModel implements TableModel {
         return "";
     }
 
+    public void setColumnName(){
+
+    }
+
     public int getRowCount() {
         return imf.getSize();
     }

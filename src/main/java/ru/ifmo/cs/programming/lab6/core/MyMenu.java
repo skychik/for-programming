@@ -1,6 +1,7 @@
 package ru.ifmo.cs.programming.lab6.core;
 
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
+import ru.ifmo.cs.programming.lab6.utils.MyTableModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -279,6 +280,7 @@ public class MyMenu extends JMenu{
             MyTableTab.setSearchFieldText(prop.getProperty("search"));
             MyTableTab.setClearQ(prop.getProperty("clearQ"));
             MyTableTab.setConfirmation(prop.getProperty("confirmation"));
+
             String[] options = {prop.getProperty("yes"), prop.getProperty("no")};
             MyTableTab.setOptions(options);
 //            MyTableTab.setTableText(new String[] {}); //ToDo переименовать шапку
