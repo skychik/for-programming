@@ -23,10 +23,6 @@ public class MainFrame extends JFrame {
 
     static String fontName = "Gill Sans MT Bold Condensed";
 
-    // if -1 then nothing was deleted
-	private long deletedId = -1;
-	private long nextId;
-
     public MainFrame(InteractiveModeFunctions imf) {
         super("CRUD application");
 
@@ -185,10 +181,6 @@ public class MainFrame extends JFrame {
     //    public void setUsingBD(boolean usingBD) {
     //        this.usingBD = usingBD;
     //    }
-
-	public void setNextId(long nextId) {
-    	this.nextId = nextId;
-	}
 
     /**
      * @noinspection ALL

@@ -13,7 +13,8 @@ public enum MyEntryKey implements Serializable {
 	TRANSACTION("TRANSACTION"),
 		INSERT("INSERT"),
 		REMOVE("REMOVE"),
-		CLEAR("CLEAR");
+		CLEAR("CLEAR"),
+	ROLLBACK("ROLLBACK");
 
 	private String name;
 

@@ -230,7 +230,6 @@ public class MyClient extends Thread {
     private void receiveTable() throws InterruptedException {
 	    System.out.println("trying to receive table...");
 	    ArrayDeque<Employee> deque = new ArrayDeque<>();
-	    long nextId = -1;
 	    try {
 		    oos.writeObject(new MyEntry(TABLE, null));
 
@@ -239,7 +238,6 @@ public class MyClient extends Thread {
 			    reply = ois.readObject();
 		        while (reply instanceof Employee) {
 		            deque.add((Employee) reply);
-		            nextId = ((Employee) reply).getID();
 		            reply = ois.readObject();
 		        }
 		    } catch (ClassNotFoundException e) {

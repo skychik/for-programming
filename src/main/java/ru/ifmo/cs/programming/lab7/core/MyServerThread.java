@@ -199,7 +199,7 @@ public class MyServerThread extends Thread {
 			con.setAutoCommit(false);
 		} catch (SQLException e) {
 			System.out.println(num + ": " + e.getMessage());
-			sendMyEntry(SQLEXCEPTION, e.getMessage());
+			sendMyEntry(DISCONNECT, e.getMessage());
 			disconnect();
 		}
 
@@ -269,18 +269,19 @@ public class MyServerThread extends Thread {
 		} catch (SQLException e) {
 			System.out.println(num + ": Shit_in_thread: " + e.getLocalizedMessage());
 			e.printStackTrace();
-			sendMyEntry(SQLEXCEPTION, e.getLocalizedMessage());
+			sendMyEntry(ROLLBACK, e.getLocalizedMessage());
 
 			System.out.println(num + ": trying to rollback...");
 			try {
 				con.rollback();
+				if (!sendMyEntry(OK, null)) disconnect();
 				System.out.println("rolled back");
 			} catch (SQLException e1) {
 				System.out.println(num + ": Shit_in_thread: can't rollback");
 				e1.printStackTrace();
-				sendMyEntry(SQLEXCEPTION, e1.getLocalizedMessage());
+				sendMyEntry(DISCONNECT, e1.getLocalizedMessage());
+				disconnect();
 			}
-			disconnect();
 		}
 
 		if (!sendMyEntry(OK, null)) disconnect();
@@ -291,7 +292,7 @@ public class MyServerThread extends Thread {
 		} catch (SQLException e) {
 			System.out.println(num + ": Shit_in_thread: " + e.getLocalizedMessage());
 			e.printStackTrace();
-			sendMyEntry(SQLEXCEPTION, e.getLocalizedMessage());
+			sendMyEntry(DISCONNECT, e.getLocalizedMessage());
 			disconnect();
 		}
 

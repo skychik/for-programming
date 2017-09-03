@@ -13,7 +13,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-public class MyServer {
+public final class MyServer {
+	private static MyServer instance = null;
+
+	public static synchronized MyServer getInstance() {
+		if (instance == null)
+			instance = new MyServer();
+		return instance;
+	}
+
     private static int port = 5431;
     private ArrayList<MyServerThread> threads = new ArrayList<>();
 	private int numberForThread = 0; // bad :(
@@ -36,7 +44,7 @@ public class MyServer {
         }
         // Если аргументы отсутствуют, порт принимает значение по умолчанию
 
-        new MyServer();
+        getInstance();
     }
 
     private MyServer() {
