@@ -205,11 +205,7 @@ class MyTable extends JTable implements TableModelListener {
                 System.out.println();
                 if (checkClicks(e)) {
                     Employee employee = imf.getEmployees()[getSelectedRow()];
-	                try {
-		                imf.remove(employee);
-	                } catch (IOException e1) {
-		                imf.exit(e1.getMessage());
-	                }
+	                imf.remove(employee);
 	                updateUI();
                     getTabbedPane().setSelectedIndex(1);
                     CommandTab.setAvatar(employee.getAvatarPath());

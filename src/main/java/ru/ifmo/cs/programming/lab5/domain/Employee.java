@@ -15,6 +15,7 @@ import java.util.Scanner;
 
 public class Employee extends Character implements Comparable, HasSpeciality, Serializable {
 
+    private long ID;
     private int salary = 0;
     private AttitudeToBoss attitudeToBoss = AttitudeToBoss.NONE;
     private byte workQuality = 0;
@@ -315,6 +316,14 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
     @Override
     public String getSpeciality() {
         return "Employee";
+    }
+
+    public void setID(long ID) {
+    	this.ID = ID;
+    }
+
+    public long getID() {
+    	return ID;
     }
 }
 

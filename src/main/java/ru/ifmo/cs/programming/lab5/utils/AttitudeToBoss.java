@@ -69,4 +69,21 @@ public enum AttitudeToBoss {
                 return "NONE";
         }
     }
+
+    public static AttitudeToBoss fromByteToAttitudeToBoss(byte b) {
+        switch (b){
+            case -128:
+                return HATE;
+            case -64:
+                return LOW;
+            case 0:
+                return DEFAULT;
+            case 63:
+                return NORMAL;
+            case 127:
+                return HIGH;
+            default:
+                return NONE;
+        }
+    }
 }

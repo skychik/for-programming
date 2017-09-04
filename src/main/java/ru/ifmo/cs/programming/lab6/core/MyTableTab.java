@@ -10,7 +10,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.IOException;
 import java.util.Objects;
 
 import static ru.ifmo.cs.programming.lab6.core.MainFrame.fontName;
@@ -197,16 +196,12 @@ class MyTableTab extends JPanel {
 
         clearButton.addActionListener(e -> {
             // Потверждение очищения таблицы
-            int n = JOptionPane.showOptionDialog(clearButton, clearQ,
-                    confirmation, JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+	        int n = JOptionPane.showOptionDialog(clearButton, clearQ,
+			        confirmation, JOptionPane.YES_NO_OPTION,
+			        JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 //                    .showConfirmDialog(clearButton, clearQ,
 //                    confirmation, JOptionPane.YES_NO_OPTION);
-            if (n == 0) try {
-	            imf.clear();
-            } catch (IOException e1) {
-	            imf.exit(e1.getMessage());
-            }
+	        if (n == 0) imf.clear();
         });
 
         this.add(clearButton, constraints);

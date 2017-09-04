@@ -1,7 +1,11 @@
+// TODO: доставать из бд № емплои и хранить его, тк удаление работает не так.
+
 package ru.ifmo.cs.programming.lab7.core;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
+import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
+import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab7.MyClient;
 import ru.ifmo.cs.programming.lab7.MyServer;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
@@ -18,7 +22,7 @@ import java.util.ArrayDeque;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.*;
 
 public class MyServerThread extends Thread {
-	private MyServer server;
+	private final MyServer server;
 	private int num; // server thread number; for exceptions
 	private SocketChannel socketChannel;
 	private ObjectInputStream ois;
@@ -64,7 +68,7 @@ public class MyServerThread extends Thread {
 						sendTable();
 						break;
 					case TRANSACTION:
-						proceedTransaction(request);
+						processTransaction(request);
 						break;
 					case CLOSE :
 						//fl = false;
@@ -120,23 +124,42 @@ public class MyServerThread extends Thread {
 			System.out.println(num + ": trying to get data from database...");
 
 			Statement stat = pooledConnection.getConnection().createStatement();
-			ResultSet res = stat.executeQuery("SELECT name, profession, salary, attitude, work_quality, " +
-					"avatar_path, notes FROM public.\"EMPLOYEE\", public.\"ATTITUDE_TO_BOSS\"" +
+			ResultSet res = stat.executeQuery("SELECT ID, name, profession, speciality, salary, attitude, " +
+					"work_quality, avatar_path, notes FROM public.\"EMPLOYEE\", public.\"ATTITUDE_TO_BOSS\"" +
 					"WHERE public.\"EMPLOYEE\".attitude_to_boss = public.\"ATTITUDE_TO_BOSS\".attitude");
 
 			// Sending data
 			System.out.println(num + ": trying to send table...");
 			while (res.next()) {
-				String name = res.getString("NAME");
-				String profession = res.getString("PROFESSION");
-				int salary = res.getInt("SALARY");
-				AttitudeToBoss attitudeToBoss = AttitudeToBoss.values()[(byte)res.getInt("ATTITUDE_TO_BOSS")];
-				byte workQuality = res.getByte("WORK_QUALITY");
-				String avatarPath = res.getString("AVATAR_PATH");
-				String notes = res.getString("NOTES");
-				Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+				long ID = res.getLong("ID");
+				String name = res.getString("name");
+				String profession = res.getString("profession");
+				String speciality = res.getString("speciality");
+				int salary = res.getInt("salary");
+				AttitudeToBoss attitudeToBoss = AttitudeToBoss.fromByteToAttitudeToBoss(
+						(byte)res.getInt("attitude"));
+				byte workQuality = res.getByte("work_quality");
+				String avatarPath = res.getString("avatar_path");
+				String notes = res.getString("notes");
+
+				Employee employee = null;
+				switch (speciality) {
+					case "class ru.ifmo.cs.programming.lab5.domain.Employee":
+						employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
+						break;
+					case "class ru.ifmo.cs.programming.lab5.utils.FactoryWorker":
+						employee = new FactoryWorker(name, profession, salary, attitudeToBoss, workQuality);
+						break;
+					case "class ru.ifmo.cs.programming.lab5.domain.ShopAssistant":
+						employee = new ShopAssistant(name, profession, salary, attitudeToBoss, workQuality);
+						break;
+					default:
+						sendMyEntry(DISCONNECT, "Broken data: incorrect format of speciality");
+						disconnect();
+				}
 				employee.setAvatarPath(avatarPath);
 				employee.setNotes(notes);
+				employee.setID(ID);
 
 				try {
 					oos.writeObject(employee);
@@ -146,6 +169,7 @@ public class MyServerThread extends Thread {
 					disconnect();
 				}
 			}
+
 			if (!sendMyEntry(OK, null)) disconnect();
 			System.out.println(num + ": table has sent");
 
@@ -159,7 +183,8 @@ public class MyServerThread extends Thread {
 		}
 	}
 
-	private void proceedTransaction(MyEntry request) throws InterruptedException {
+	private void processTransaction(MyEntry request) throws InterruptedException {
+		System.out.println(num + ": processing transaction");
 		if (!(request.getValue() instanceof ArrayDeque)) {
 			System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry value");
 			sendMyEntry(DISCONNECT, "incorrect format of request (value.class != ArrayDeque)");
@@ -174,13 +199,17 @@ public class MyServerThread extends Thread {
 			con.setAutoCommit(false);
 		} catch (SQLException e) {
 			System.out.println(num + ": " + e.getMessage());
-			sendMyEntry(SQLEXCEPTION, e.getMessage());
+			sendMyEntry(DISCONNECT, e.getMessage());
 			disconnect();
 		}
 
 		// Transaction
 		try {
+			int i = 1;
 			while (!deque.isEmpty()) {
+				System.out.println(num + ": " + i + " part");
+				i++;
+
 				Object query = deque.remove();
 				if (!(query instanceof MyEntry)) {
 					System.out.println(num + ": Shit_in_thread: incorrect type of an element");
@@ -190,21 +219,34 @@ public class MyServerThread extends Thread {
 
 				switch (((MyEntry) query).getKey()) {
 					case INSERT:
-					case REMOVE:// TODO
+					case REMOVE:
 						Object obj = ((MyEntry) query).getValue();
 						if (obj instanceof Employee) {
 							Employee employee = (Employee) obj;
-							PreparedStatement stat = con.prepareStatement(((MyEntry) query).getKey() +
-									" into EMPLOYEE" +
-									" (NAME, PROFESSION, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, AVATAR_PATH, NOTES)" +
-									" values (?, ?, ?, ?, ?, ?, ?)");
+							PreparedStatement stat = null;
+							switch (((MyEntry) query).getKey()) {
+								case INSERT:
+									System.out.println(num + ": inserting");
+									stat = con.prepareStatement(" insert into public.\"EMPLOYEE\"" +
+											" (NAME, PROFESSION, SPECIALITY, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, " +
+											"AVATAR_PATH, NOTES) values (?, ?, ?, ?, ?, ?, ?, ?)");
+									break;
+								case REMOVE:
+									System.out.println(num + ": removing");
+									stat = con.prepareStatement("delete from public.\"EMPLOYEE\" where " +
+											"id in (select id from public.\"EMPLOYEE\" where " +
+											"NAME = ? AND PROFESSION = ? AND SPECIALITY = ? AND SALARY = ? AND " +
+											"ATTITUDE_TO_BOSS = ? AND WORK_QUALITY = ? AND AVATAR_PATH = ? AND " +
+											"NOTES = ? limit 1)");
+							}
 							stat.setString(1, employee.getName());
 							stat.setString(2, employee.getProfession());
-							stat.setInt(3, employee.getSalary());
-							stat.setInt(4, employee.getAttitudeToBoss().getAttitude());
-							stat.setByte(5, employee.getWorkQuality());
-							stat.setString(6, employee.getAvatarPath());
-							stat.setString(7, employee.getNotes());
+							stat.setString(3, employee.getClass().toString());
+							stat.setInt(4, employee.getSalary());
+							stat.setByte(5, employee.getAttitudeToBoss().getAttitude());
+							stat.setByte(6, employee.getWorkQuality());
+							stat.setString(7, employee.getAvatarPath());
+							stat.setString(8, employee.getNotes());
 							stat.executeUpdate();
 							stat.close();
 						} else {
@@ -214,8 +256,9 @@ public class MyServerThread extends Thread {
 						}
 						break;
 					case CLEAR:
+						System.out.println(num + ": clearing");
 						Statement stat = con.createStatement();
-						stat.executeUpdate("delete from public.EMPLOYEE");
+						stat.executeUpdate("delete from public.\"EMPLOYEE\"");
 						break;
 					default:
 						System.out.println(num + ": Shit_in_thread: unexpected request key");
@@ -226,18 +269,19 @@ public class MyServerThread extends Thread {
 		} catch (SQLException e) {
 			System.out.println(num + ": Shit_in_thread: " + e.getLocalizedMessage());
 			e.printStackTrace();
-			sendMyEntry(SQLEXCEPTION, e.getLocalizedMessage());
+			sendMyEntry(ROLLBACK, e.getLocalizedMessage());
 
 			System.out.println(num + ": trying to rollback...");
 			try {
 				con.rollback();
+				if (!sendMyEntry(OK, null)) disconnect();
 				System.out.println("rolled back");
 			} catch (SQLException e1) {
 				System.out.println(num + ": Shit_in_thread: can't rollback");
 				e1.printStackTrace();
-				sendMyEntry(SQLEXCEPTION, e1.getLocalizedMessage());
+				sendMyEntry(DISCONNECT, e1.getLocalizedMessage());
+				disconnect();
 			}
-			disconnect();
 		}
 
 		if (!sendMyEntry(OK, null)) disconnect();
@@ -248,9 +292,11 @@ public class MyServerThread extends Thread {
 		} catch (SQLException e) {
 			System.out.println(num + ": Shit_in_thread: " + e.getLocalizedMessage());
 			e.printStackTrace();
-			sendMyEntry(SQLEXCEPTION, e.getLocalizedMessage());
+			sendMyEntry(DISCONNECT, e.getLocalizedMessage());
 			disconnect();
 		}
+
+		System.out.println(num + ": processed");
 	}
 
 	private MyEntry getNewRequest() throws InterruptedException {

@@ -5,10 +5,13 @@ import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 import ru.ifmo.cs.programming.lab7.utils.MyEntryKey;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 
 import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.*;
 
@@ -19,31 +22,38 @@ public class IMFForBD implements InteractiveModeFunctions {
 	private ArrayDeque<Employee> deque = new ArrayDeque<>();
 	private ArrayDeque<MyEntry> buff = new ArrayDeque<>();
 
+	private ArrayDeque<Employee> savepoint = new ArrayDeque<>();
+
 	@Override
-	public void add(Employee employee) throws IOException {
+	public void add(Employee employee) {
 		deque.add(employee);
 		buff.add(new MyEntry(INSERT, employee));
+		System.out.println("Added: " + employee);
 	}
 
 	@Override
-	public void remove(Employee employee) throws IOException {
+	public void remove(Employee employee) {
 		deque.remove(employee);
 		buff.add(new MyEntry(REMOVE, employee));
+		System.out.println("Removed: " + employee);
 	}
 
 	@Override
-	public void clear() throws IOException {
+	public void clear() {
 		deque.clear();
 		buff.add(new MyEntry(CLEAR, null));
+		System.out.println("cleared");
 	}
 
 	@Override
-	public void save() throws IOException {
+	public void save() {
 		Thread t = new Thread(() -> {
 			System.out.println("saving...");
 
+			System.out.println(Arrays.toString(buff.toArray()));
+
 			try {
-				oos.writeObject(new MyEntry(TRANSACTION, buff));
+				oos.writeObject(new MyEntry(TRANSACTION, buff.clone()));
 			} catch (IOException e) {
 				exit("Shit_occurred: can't send transaction(save)");
 			}
@@ -57,10 +67,38 @@ public class IMFForBD implements InteractiveModeFunctions {
 				exit("Shit_occurred: incorrect format of an answer (wrong class format)");
 			}
 
-			if (entry.getKey() == SQLEXCEPTION) System.out.println(entry.getValue());
-			if (entry.getKey() == DISCONNECT) exit(entry.getValue().toString());
-
-			buff.clear();
+			switch (entry.getKey()) {
+				case OK:
+					buff.clear();
+					setSavepoint(deque);
+					System.out.println("saved");
+					break;
+				case ROLLBACK:
+					MyEntry ent = null;
+					try {
+						ent = (MyEntry) ois.readObject();
+					} catch (IOException e) {
+						exit("Shit_occurred: can't get an answer");
+					} catch (ClassNotFoundException e) {
+						exit("Shit_occurred: incorrect format of an answer (wrong class format)");
+					}
+					switch (ent.getKey()) {
+						case OK:
+							rollback();
+							break;
+						case DISCONNECT:
+							exit(ent.getValue().toString());
+							break;
+						default:
+							exit("Unexpected key(rollback): " + entry.getKey());
+					}
+					break;
+				case DISCONNECT:
+					exit(entry.getValue().toString());
+					break;
+				default:
+					exit("Unexpected key(saving): " + entry.getKey());
+			}
 		});
 		t.start();
 	}
@@ -79,8 +117,19 @@ public class IMFForBD implements InteractiveModeFunctions {
 	@Override
 	public void exit(String msg) {
 		System.out.println("Shit_occurred: " + msg);
-		// TODO: плашечка instead
+		// show dialog
+		Frame frame = new Frame("CRUD application");
+		JOptionPane.showMessageDialog(frame, new JLabel("Shit_occurred: " + msg), "Ошибка",
+				JOptionPane.ERROR_MESSAGE);
 		exit();
+	}
+
+	private void rollback() {
+		deque = savepoint;
+	}
+
+	private void setSavepoint(ArrayDeque<Employee> deque) {
+		savepoint = deque;
 	}
 
 	@Override
@@ -104,5 +153,6 @@ public class IMFForBD implements InteractiveModeFunctions {
 
 	public void setDeque(ArrayDeque<Employee> deque) {
 		this.deque = deque;
+		this.savepoint = deque;
 	}
 }

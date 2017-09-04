@@ -498,11 +498,7 @@ public class CommandTab extends JPanel {
         }
         employee.setAvatarPath(avatarPath);
         employee.setNotes(notes.getText());
-        try {
-            imf.add(employee);
-        } catch (IOException e) {
-            imf.exit(e.getMessage());
-        }
+        imf.add(employee);
     }
 
     public static void setBg(String attitude){
