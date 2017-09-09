@@ -12,6 +12,7 @@ public enum MyEntryKey implements Serializable {
 	TABLE("TABLE"),
 	TRANSACTION("TRANSACTION"),
 		INSERT("INSERT"),
+		UPDATE("UPDATE"),
 		REMOVE("REMOVE"),
 		CLEAR("CLEAR"),
 	ROLLBACK("ROLLBACK");

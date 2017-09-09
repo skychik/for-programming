@@ -57,6 +57,11 @@ public class InteractiveModeFunctionsImpl implements InteractiveModeFunctions {
 	    System.out.println("добавлено");
     }
 
+    @Override
+    public void update(Employee oldEmployee, Employee newEmployee) {
+        //
+    }
+
     public void remove() {
         String obj = jsonObject(scanner);
         if (obj == null) return;//if incorrect input (more closing brackets than opening)
