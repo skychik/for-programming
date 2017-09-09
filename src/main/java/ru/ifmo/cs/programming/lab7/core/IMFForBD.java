@@ -22,13 +22,28 @@ public class IMFForBD implements InteractiveModeFunctions {
 	private ArrayDeque<Employee> deque = new ArrayDeque<>();
 	private ArrayDeque<MyEntry> buff = new ArrayDeque<>();
 
-	private ArrayDeque<Employee> savepoint = new ArrayDeque<>();
+	private DequeMemento undo;
+	private class DequeMemento {
+		private ArrayDeque<Employee> savepoint = new ArrayDeque<>();
+
+		DequeMemento() { savepoint = deque.clone(); }
+
+		ArrayDeque<Employee> getSavepoint() { return savepoint; }
+	}
 
 	@Override
 	public void add(Employee employee) {
 		deque.add(employee);
 		buff.add(new MyEntry(INSERT, employee));
 		System.out.println("Added: " + employee);
+	}
+
+	@Override
+	public void update(Employee oldEmployee, Employee newEmployee) {
+//		deque.remove(oldEmployee);
+//		deque.add(newEmployee);
+//		buff.add(new MyEntry(UPDATE, new employee));
+//		System.out.println("Added: " + employee);
 	}
 
 	@Override
@@ -70,7 +85,7 @@ public class IMFForBD implements InteractiveModeFunctions {
 			switch (entry.getKey()) {
 				case OK:
 					buff.clear();
-					setSavepoint(deque);
+					undo = new DequeMemento();
 					System.out.println("saved");
 					break;
 				case ROLLBACK:
@@ -84,7 +99,7 @@ public class IMFForBD implements InteractiveModeFunctions {
 					}
 					switch (ent.getKey()) {
 						case OK:
-							rollback();
+							deque = undo.getSavepoint();
 							break;
 						case DISCONNECT:
 							exit(ent.getValue().toString());
@@ -105,6 +120,8 @@ public class IMFForBD implements InteractiveModeFunctions {
 
 	@Override
 	public void exit() {
+		save();
+		// TODO: выкидывать плашку на сохранение
 		System.out.println("trying to exit...");
 		try {
 			oos.writeObject(new MyEntry(MyEntryKey.CLOSE, null));
@@ -122,14 +139,6 @@ public class IMFForBD implements InteractiveModeFunctions {
 		JOptionPane.showMessageDialog(frame, new JLabel("Shit_occurred: " + msg), "Ошибка",
 				JOptionPane.ERROR_MESSAGE);
 		exit();
-	}
-
-	private void rollback() {
-		deque = savepoint;
-	}
-
-	private void setSavepoint(ArrayDeque<Employee> deque) {
-		savepoint = deque;
 	}
 
 	@Override
@@ -153,6 +162,6 @@ public class IMFForBD implements InteractiveModeFunctions {
 
 	public void setDeque(ArrayDeque<Employee> deque) {
 		this.deque = deque;
-		this.savepoint = deque;
+		undo = new DequeMemento();
 	}
 }

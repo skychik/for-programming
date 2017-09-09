@@ -1,5 +1,3 @@
-// TODO: доставать из бд № емплои и хранить его, тк удаление работает не так.
-
 package ru.ifmo.cs.programming.lab7.core;
 
 import ru.ifmo.cs.programming.lab5.domain.Employee;
@@ -19,6 +17,8 @@ import java.nio.channels.SocketChannel;
 import java.sql.*;
 import java.util.ArrayDeque;
 
+import static ru.ifmo.cs.programming.lab7.MyServer.getDBPassword;
+import static ru.ifmo.cs.programming.lab7.MyServer.getDBUsername;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.*;
 
 public class MyServerThread extends Thread {
@@ -106,7 +106,18 @@ public class MyServerThread extends Thread {
 			String username = ((MyClient.Pair) request.getValue()).getFirst();
 			String password = ((MyClient.Pair) request.getValue()).getSecond();
 
-			pooledConnection = server.getConnectionPoolDataSource().getPooledConnection(username, password);
+			pooledConnection = server.getConnectionPoolDataSource().getPooledConnection(getDBUsername(), getDBPassword());
+			// Making connection to DB
+			Connection con = pooledConnection.getConnection();
+			PreparedStatement stat = con.prepareStatement("SELECT username, password FROM public.\"USERS\"" +
+					"WHERE username = ? AND password = ?");
+			stat.setString(1, username);
+			stat.setString(2, password);
+			ResultSet res = stat.executeQuery();
+			if (!res.next()) {
+				if (!sendMyEntry(SQLEXCEPTION, "Wrong name and password combination")) disconnect();
+				connectToDatabase();
+			}
 			System.out.println(num + ": connected to database");
 		} catch (SQLException e) {
 			System.out.println(num + ": " + e.getMessage());

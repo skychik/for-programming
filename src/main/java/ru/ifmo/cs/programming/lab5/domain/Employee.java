@@ -7,8 +7,6 @@ import ru.ifmo.cs.programming.lab6.utils.HasSpeciality;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;

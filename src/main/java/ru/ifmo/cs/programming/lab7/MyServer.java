@@ -3,6 +3,10 @@
  */
 package ru.ifmo.cs.programming.lab7;
 
+// TODO: хранить в базе изображения
+// TODO: кнопка reload
+// TODO: кидать клиентам все изменения
+
 import org.postgresql.ds.PGConnectionPoolDataSource;
 import ru.ifmo.cs.programming.lab7.core.MyServerThread;
 
@@ -23,6 +27,8 @@ public final class MyServer {
 	}
 
     private static int port = 5431;
+	private static String DBUsername = null;
+	private static String DBPassword = null;
     private ArrayList<MyServerThread> threads = new ArrayList<>();
 	private int numberForThread = 0; // bad :(
 //    private static boolean stopIdentifier = false;
@@ -39,9 +45,14 @@ public final class MyServer {
             System.exit(1);
         }
 
-        if (args.length > 0) {
-            port = Integer.parseInt(args[0]);
-        }
+        switch (args.length) {
+	        case 3:
+	        	DBPassword = args[2];
+	        case 2:
+	            DBUsername = args[1];
+	        case 1:
+		    	port = Integer.parseInt(args[0]);
+	    }
         // Если аргументы отсутствуют, порт принимает значение по умолчанию
 
         getInstance();
@@ -198,6 +209,14 @@ public final class MyServer {
 //    public static ArrayDeque<Employee> getDeque() {
 //        return deque;
 //    }
+
+	public static String getDBUsername() {
+		return DBUsername;
+	}
+
+	public static String getDBPassword() {
+		return DBPassword;
+	}
 
 	public PGConnectionPoolDataSource getConnectionPoolDataSource() {
     	return connectionPoolDataSource;

@@ -4,7 +4,6 @@ import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
-import ru.ifmo.cs.programming.lab6.utils.MyTableModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,7 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import static ru.ifmo.cs.programming.lab6.core.MainFrame.*;
+import static ru.ifmo.cs.programming.lab6.core.MainFrame.getTabbedPane;
 
 class MyTable extends JTable implements TableModelListener {
     private TableRowSorter<TableModel> sorter;
@@ -81,6 +80,23 @@ class MyTable extends JTable implements TableModelListener {
         sorter = new TableRowSorter<>(model);
         this.setRowSorter(sorter);
         tableListener();
+
+	    JPopupMenu popupMenu = new JPopupMenu();
+
+	    JMenuItem deleteItem = new JMenuItem("Delete selected");
+	    deleteItem.addActionListener(e -> {
+		    for (int i= 0; i < getSelectedRows().length; i++) {
+		    	imf.remove(imf.getEmployees()[i]);
+		    }
+		    updateUI();
+	    });
+	    popupMenu.add(deleteItem);
+
+//	    JMenuItem updateItem = new JMenuItem("Update");
+//	    updateItem.addActionListener(e -> updateEmployee());
+//	    popupMenu.add(updateItem);
+
+	    this.setComponentPopupMenu(popupMenu);
         //this.setDefaultEditor(String.class, new DefaultCellEditor(new JComboBox(colors)));
 //
 //        initVisibilityOfSpeciality();
@@ -202,20 +218,8 @@ class MyTable extends JTable implements TableModelListener {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println();
                 if (checkClicks(e)) {
-                    Employee employee = imf.getEmployees()[getSelectedRow()];
-	                imf.remove(employee);
-	                updateUI();
-                    getTabbedPane().setSelectedIndex(1);
-                    CommandTab.setAvatar(employee.getAvatarPath());
-                    CommandTab.setNotes(employee.getNotes());
-                    CommandTab.setNameField(employee.getName());
-                    CommandTab.setProfessionComboBox(employee.getProfession());
-                    CommandTab.setBg(employee.getAttitudeToBoss().toString());
-                    CommandTab.setClassList(employee.getClass().getSimpleName());
-                    CommandTab.setSalarySlider(employee.getSalary());
-                    CommandTab.setWorkQualityStepper(employee.getWorkQuality());
+                    updateEmployee();
                 }
             }
 
@@ -225,7 +229,13 @@ class MyTable extends JTable implements TableModelListener {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-
+//	            if (e.isPopupTrigger()) {
+//		            Point point = e.getPoint();
+//		            //int column = ((MyTable) e.getSource()).columnAtPoint(point);
+//		            int row = ((MyTable) e.getSource()).rowAtPoint(point);
+//		            ((MyTable) e.getSource()).setColumnSelectionInterval(0, 5);
+//		            ((MyTable) e.getSource()).setRowSelectionInterval(row, row);
+//	            }
             }
 
             @Override
@@ -239,6 +249,39 @@ class MyTable extends JTable implements TableModelListener {
             }
         });
     }
+
+	@Override
+	public JPopupMenu getComponentPopupMenu() {
+		Point point = getMousePosition();
+		// mouse over table and valid row
+		if (point != null && rowAtPoint(point) >= 0) {
+			// condition for showing popup triggered by mouse
+			if (isRowSelected(rowAtPoint(point))) {
+				return super.getComponentPopupMenu();
+			} else {
+				int row = this.rowAtPoint(point);
+				//this.setColumnSelectionInterval(0, 5);
+				this.setRowSelectionInterval(row, row);
+				return super.getComponentPopupMenu();
+			}
+		}
+		return super.getComponentPopupMenu();
+	}
+
+	private void updateEmployee() {
+		Employee employee = imf.getEmployees()[getSelectedRow()];
+		imf.remove(employee);
+		updateUI();
+		getTabbedPane().setSelectedIndex(1);
+		CommandTab.setAvatar(employee.getAvatarPath());
+		CommandTab.setNotes(employee.getNotes());
+		CommandTab.setNameField(employee.getName());
+		CommandTab.setProfessionComboBox(employee.getProfession());
+		CommandTab.setBg(employee.getAttitudeToBoss().toString());
+		CommandTab.setClassList(employee.getClass().getSimpleName());
+		CommandTab.setSalarySlider(employee.getSalary());
+		CommandTab.setWorkQualityStepper(employee.getWorkQuality());
+	}
 
     private void setAvatar(String avatarPath) {
         File avatarFile = new File(avatarPath);

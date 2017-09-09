@@ -26,6 +26,7 @@ public class MyMenu extends JMenu{
     private JMenuItem buttonColorItem;
     private JMenuItem standardAvatarItem;
     private JMenuItem saveItem;
+	private JMenuItem reloadItem;
     private JMenu language;
     private JColorChooser colorChooser;
     private String[] prof;
@@ -126,11 +127,16 @@ public class MyMenu extends JMenu{
 
         this.addSeparator();
 
+	    reloadItem = new JMenuItem("Save");
+	    reloadItem.setFont(font);
+	    reloadItem.addActionListener((ActionEvent e) -> {
+		    // TODO: reload
+	    });
+	    this.add(reloadItem);
+
         saveItem = new JMenuItem("Save");
         saveItem.setFont(font);
-        saveItem.addActionListener((ActionEvent e) -> {
-            imf.save();
-        });
+        saveItem.addActionListener((ActionEvent e) -> imf.save());
         this.add(saveItem);
 
         try {
