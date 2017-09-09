@@ -152,25 +152,29 @@ public class MyMenu extends JMenu{
         }
         JMenuItem eng = new JRadioButtonMenuItem(prop.getProperty("eng"));
         JMenuItem ru = new JRadioButtonMenuItem(prop.getProperty("ru"));
-        JMenuItem de = new JRadioButtonMenuItem(prop.getProperty("de"));
-        JMenuItem no = new JRadioButtonMenuItem(prop.getProperty("norw"));
+        JMenuItem jp = new JRadioButtonMenuItem(prop.getProperty("jp"));
+        JMenuItem rs = new JRadioButtonMenuItem(prop.getProperty("rs"));
+        JMenuItem bulg = new JRadioButtonMenuItem(prop.getProperty("bg"));
 
         Font font = new Font(fontName, Font.PLAIN, 14);
         eng.setFont(font);
         ru.setFont(font);
-        de.setFont(font);
-        no.setFont(font);
+        jp.setFont(font);
+        rs.setFont(font);
+        bulg.setFont(font);
 
         ButtonGroup bg = new ButtonGroup();
         bg.add(eng);
         bg.add(ru);
-        bg.add(de);
-        bg.add(no);
+        bg.add(jp);
+        bg.add(rs);
+        bg.add(bulg);
 
         menu.add(eng);
         menu.add(ru);
-        menu.add(de);
-        menu.add(no);
+        menu.add(jp);
+        menu.add(rs);
+        menu.add(bulg);
 
         eng.addActionListener(new ActionListener()
         {
@@ -198,11 +202,11 @@ public class MyMenu extends JMenu{
                 getTable().updateUI();
             }
         });
-        de.addActionListener(new ActionListener()
+        jp.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                locale = new Locale("de", "DE");
+                locale = new Locale("jp", "JP");
                 try {
                     setLoc(locale);
                 } catch (IOException e1) {
@@ -211,11 +215,11 @@ public class MyMenu extends JMenu{
                 getTable().updateUI();
             }
         });
-        no.addActionListener(new ActionListener()
+        rs.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                locale = new Locale("no", "No", "B");
+                locale = new Locale("rs", "RS");
                 try {
                     setLoc(locale);
                 } catch (IOException e1) {
@@ -224,8 +228,21 @@ public class MyMenu extends JMenu{
                 getTable().updateUI();
             }
         });
-        eng.setSelected(true);
+        bulg.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                locale = new Locale("bg", "BG");
+                try {
+                    setLoc(locale);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                getTable().updateUI();
+            }
+        });
 
+        eng.setSelected(true);
     }
 
     public static Properties getProp(){
@@ -243,9 +260,11 @@ public class MyMenu extends JMenu{
             fileInputStream = new FileInputStream(pathToProperties);
             prop.loadFromXML(fileInputStream);
             this.setText(prop.getProperty("file"));
-            if (CommandTab.getNotes().equals("") || CommandTab.getNotes().equals(prop.getProperty("notes")))
+            if (CommandTab.getNotes().getText().equals("") ||
+                    CommandTab.getNotes().getText().equals(prop.getProperty("notes")))
             CommandTab.setNotes(prop.getProperty("notes"));
-            if (CommandTab.getNameField().equals("") || CommandTab.getNameField().equals(prop.getProperty("notes")))
+            if (CommandTab.getNameField().getText().equals("") ||
+                    CommandTab.getNameField().getText().equals(prop.getProperty("notes")))
             CommandTab.setNameField(prop.getProperty("name"));
             MainFrame.getTabbedPane().setTitleAt(0, prop.getProperty("table"));
             MainFrame.getTabbedPane().setTitleAt(1, prop.getProperty("commands"));

@@ -1,5 +1,5 @@
 package ru.ifmo.cs.programming.lab6.core;
-
+//todo updateButton
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
 import ru.ifmo.cs.programming.lab6.utils.MyTableModel;
@@ -19,6 +19,7 @@ class MyTableTab extends JPanel {
     private static JTextField searchField;
     private boolean isSearchFieldEmpty = true;
     private static StandardButton clearButton;
+    private static StandardButton updateButton;
     private InteractiveModeFunctions imf;
     private static String clearQ;
     private static String confirmation;
@@ -205,6 +206,10 @@ class MyTableTab extends JPanel {
         });
 
         this.add(clearButton, constraints);
+    }
+
+    private void makeUpdateButton(GridBagConstraints constraints){
+
     }
 
     public static void setClearButtonText(String text){

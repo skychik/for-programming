@@ -33,11 +33,12 @@
     <entry key="normal">Normal</entry>
     <entry key="high">High</entry>
     <entry key="notes">Here you can enter notes...</entry>
-    <entry key="stValues">Standart Values</entry>
+    <entry key="stValues">Standard Values</entry>
     <entry key="yes">Yes</entry>
-    <entry key="no">No</entry>
+    <entry key="no">Not</entry>
     <entry key="ru">Русский</entry>
-    <entry key="de">Deutsch</entry>
-    <entry key="norw">Norsk</entry>
+    <entry key="rs">Руски</entry>
+    <entry key="jp">日本語</entry>
     <entry key="eng">English</entry>
+    <entry key="bg">Български</entry>
 </properties>

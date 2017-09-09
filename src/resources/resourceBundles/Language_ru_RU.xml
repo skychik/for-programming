@@ -37,7 +37,8 @@
     <entry key="yes">Да</entry>
     <entry key="no">Нет</entry>
     <entry key="ru">Русский</entry>
-    <entry key="de">Deutsch</entry>
-    <entry key="norw">Norsk</entry>
+    <entry key="rs">Руски</entry>
+    <entry key="jp">日本語</entry>
     <entry key="eng">English</entry>
+    <entry key="bg">Български</entry>
 </properties>

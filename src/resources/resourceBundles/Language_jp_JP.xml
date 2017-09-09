@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="file">ファイル</entry>
+    <entry key="settings">設定</entry>
+    <entry key="hotKeys">ホキー</entry>
+    <entry key="save">保存</entry>
+    <entry key="butColor">ボタンの色</entry>
+    <entry key="stAvatar">標準のアバター</entry>
+    <entry key="language">言語</entry>
+    <entry key="table">テーブル</entry>
+    <entry key="commands">コマンド</entry>
+    <entry key="employee">従業員</entry>
+    <entry key="fWorker">工場労働者</entry>
+    <entry key="shAssistant">ショップ店員</entry>
+    <entry key="name">名称
+    </entry>
+    <entry key="speciality">専門</entry>
+    <entry key="profession">職業</entry>
+    <entry key="salary">給与</entry>
+    <entry key="wQuality">業務品質</entry>
+    <entry key="search">タイプを検索---</entry>
+    <entry key="clearTable">明確なテーブル</entry>
+    <entry key="programmer">プログラマー</entry>
+    <entry key="economist">エコノミスト</entry>
+    <entry key="manager">部長</entry>
+    <entry key="no">ない</entry>
+    <entry key="yes">あり</entry>
+    <entry key="clearQ">クリアテーブルの従業員か？</entry>
+    <entry key="closeW">ウィンドウを閉すか？</entry>
+    <entry key="confirmation">確認中</entry>
+    <entry key="stValues">基準値</entry>
+    <entry key="notes">ここで入力できます注意事項---</entry>
+    <entry key="high">高</entry>
+    <entry key="normal">通常の</entry>
+    <entry key="default">デフォルト</entry>
+    <entry key="low">低</entry>
+    <entry key="hate">憎</entry>
+    <entry key="attToBoss">姿勢ボス</entry>
+    <entry key="ru">Русский</entry>
+    <entry key="rs">Руски</entry>
+    <entry key="jp">日本語</entry>
+    <entry key="eng">English</entry>
+    <entry key="bg">Български</entry>
+</properties>

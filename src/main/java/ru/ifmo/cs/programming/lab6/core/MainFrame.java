@@ -1,6 +1,7 @@
 package ru.ifmo.cs.programming.lab6.core;
 
 import com.intellij.uiDesigner.core.GridConstraints;
+import javafx.scene.layout.Border;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab6.utils.Background;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
@@ -8,6 +9,8 @@ import ru.ifmo.cs.programming.lab6.utils.MyColor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainFrame extends JFrame {
     private InteractiveModeFunctions imf;
@@ -16,10 +19,12 @@ public class MainFrame extends JFrame {
     private JPanel mainPanel;
     private static JTabbedPane tabbedPane;
     private JPanel commandTab;
+    JPanel panel;
     private Dimension size;
 //    private ArrayDeque<Employee> deque;
     private MyTableTab tableTab;
-    private GridConstraints constraints;
+    private GridBagConstraints constraints;
+    private JPanel clockPanel;
 
     static String fontName = "Gill Sans MT Bold Condensed";
 
@@ -28,7 +33,7 @@ public class MainFrame extends JFrame {
 
         this.imf = imf;
 
-        size = new Dimension(1200, 700);
+        size = new Dimension(1200, 800);
         setPreferredSize(size);
 
         setIconImage(new ImageIcon(
@@ -70,27 +75,48 @@ public class MainFrame extends JFrame {
     }
 
     private void setMainPanel() {
-        constraints = new com.intellij.uiDesigner.core.GridConstraints(
-                0, 0, 1, 1,
-                com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER,
-                com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH,
-                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
-                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
-                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
-                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
-                null,
-                new Dimension(200, 200),
-                null,
-                0,
-                false
-        );
+//        constraints = new com.intellij.uiDesigner.core.GridConstraints(
+//                2, 1, 1, 1,
+//                GridConstraints.ANCHOR_NORTH,
+//                com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH,
+//                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
+//                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
+//                com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK |
+//                        com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
+//                null,
+//                new Dimension(200, 200),
+//                null,
+//                0,
+//                false
+//        );
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.ipady = 80;
+        constraints.ipadx = 1200;
+        constraints.gridy = 0;
+        constraints.gridx = 0;
         mainPanel = new JPanel();
-
-        LayoutManager overlay = new OverlayLayout(mainPanel);//TODO исправить
-        mainPanel.setLayout(overlay);
-
+        OverlayLayout overlayLayout = new OverlayLayout(mainPanel);
+        GridBagLayout layout = new GridBagLayout();
+        JPanel panel = new JPanel();
+        panel.setLayout(layout);
+        mainPanel.setLayout(overlayLayout);
         setTabbedPane();
-//        setClock();
+        panel.add(
+                tabbedPane,
+                constraints
+        );
+
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.ipadx = 1200;
+        constraints.ipady = 60;
+        Clock clock = new Clock();
+        clock.setBackground(MyColor.backgroundEighthAlphaColor);
+        panel.add(clock,
+                constraints
+        );
+        mainPanel.add(panel);
     }
 
     private void setTabbedPane() {
@@ -119,26 +145,7 @@ public class MainFrame extends JFrame {
         tabbedPane.setForeground(new Color(152, 156, 153));
         tabbedPane.setBackground(MyColor.backgroundEighthAlphaColor);
 
-        mainPanel.add(
-                tabbedPane,
-                constraints
-        );
-
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-    }
-
-
-    private void setClock(){ //todo
-        JPanel clockPanel = new JPanel();
-        clockPanel.setPreferredSize(new Dimension(100,20));
-        clockPanel.setBackground(MyColor.backgroundEighthAlphaColor);
-        clockPanel.setFont(new Font(fontName, Font.PLAIN, 18));
-        clockPanel.setForeground(new Color(152, 156, 153));
-        clockPanel.add(new JButton("1"));
-        constraints.setRow(1);
-        mainPanel.add(clockPanel,
-                constraints
-                );
     }
 
     private void setBackground() {
@@ -158,10 +165,6 @@ public class MainFrame extends JFrame {
 
     static String getFontName() {
         return fontName;
-    }
-
-    public void makeClock(){
-
     }
 
     //    /*private void makeSaveButton(GridBagConstraints constraints) {

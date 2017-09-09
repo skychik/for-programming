@@ -1,5 +1,5 @@
 package ru.ifmo.cs.programming.lab6.core;
-
+//todo - по двойному клику не удаляется; поработать с моментом обновления
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.domain.ShopAssistant;
@@ -260,7 +260,7 @@ public class CommandTab extends JPanel {
     }
 
     private void makeScrollTextArea(GridBagConstraints constraints){
-        notes = new JTextArea("Здесь можно вводить заметки", 15,50);
+        notes = new JTextArea(MyMenu.getProp().getProperty("notes"), 15,50);
         notes.setLineWrap(true);
         notes.setWrapStyleWord(true);
         //шрифт
