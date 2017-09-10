@@ -6,7 +6,6 @@ import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab6.utils.HasSpeciality;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -304,8 +303,8 @@ public class Employee extends Character implements Comparable, HasSpeciality, Se
         return notes;
     }
 
-    public String getCreatingTime(){
-        return creatingTime.toString();
+    public ZonedDateTime getCreatingTime(){
+        return creatingTime;
     }
 
     @Override

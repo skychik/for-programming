@@ -125,6 +125,7 @@ public class IMFForBD implements InteractiveModeFunctions {
 		System.out.println("trying to exit...");
 		try {
 			oos.writeObject(new MyEntry(MyEntryKey.CLOSE, null));
+			oos.close();
 		} catch (IOException e) {
 			System.out.println("can't tell server about disconnecting normally");
 		}

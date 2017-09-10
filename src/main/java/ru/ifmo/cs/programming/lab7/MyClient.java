@@ -3,6 +3,7 @@ package ru.ifmo.cs.programming.lab7;
 //import org.jetbrains.annotations.NotNull;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab7.core.IMFForBD;
+import ru.ifmo.cs.programming.lab7.utils.DisconnectException;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 import ru.ifmo.cs.programming.lab7.utils.MyEntryKey;
 
@@ -16,7 +17,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import static ru.ifmo.cs.programming.lab6.AppGUI.gui;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.NAME_AND_PASSWORD;
@@ -87,7 +87,7 @@ public class MyClient extends Thread {
 		        ois = new ObjectInputStream(socket.getInputStream());
 	        } catch (IOException e) {
 		        System.out.println("Shit_occurred: problems with input/output stream(s)");
-		        disconnect();
+		        throw new DisconnectException();
 	        }
 	        imf.setOos(oos);
 			imf.setOis(ois);
@@ -96,14 +96,23 @@ public class MyClient extends Thread {
 	        receiveTable();
 	        //GUI
 	        SwingUtilities.invokeLater(() -> gui(imf));
-        } catch (InterruptedException ignored){}
+        } catch (DisconnectException e){
+	        System.out.println("trying to disconnect...");
+	        try {
+		        socket.close();
+		        System.out.println("socket closed");
+	        } catch (IOException e1) {
+		        e1.printStackTrace();
+	        }
+	        System.out.println("disconnected");
+        }
     }
 
-    private void connect() throws InterruptedException {
+    private void connect() throws DisconnectException {
     	connect(null);
     }
 
-    private void connect(String msg) throws InterruptedException {
+    private void connect(String msg) throws DisconnectException {
         System.out.println("trying to connect to server...");
         Pair nameAndPassword =
 		        guiNameAndPassword(msg);
@@ -121,12 +130,12 @@ public class MyClient extends Thread {
 		        break;
 		    case DISCONNECT:
 		        System.out.println("Shit_occurred: " + reply.getValue());
-		        disconnect();
+		        throw new DisconnectException();
         }
     }
 
 //	@NotNull
-	private Pair guiNameAndPassword(String msg) throws InterruptedException {
+	private Pair guiNameAndPassword(String msg) throws DisconnectException {
 		JPanel panel = new JPanel(new BorderLayout(5, 5));
 
 		JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
@@ -153,7 +162,7 @@ public class MyClient extends Thread {
 
 		int result = JOptionPane.showConfirmDialog(frame, panel, "Sign in", JOptionPane.DEFAULT_OPTION);
 		if (result == JOptionPane.CLOSED_OPTION) {
-			disconnect();
+			throw new DisconnectException();
 		}
 		return new Pair(username.getText(), new String(password.getPassword()));
 	}
@@ -192,48 +201,48 @@ public class MyClient extends Thread {
 //        return reply == JOptionPane.YES_OPTION;
 //    }
 
-    private MyEntry sendRequest(MyEntryKey requestCode, Object obj) throws InterruptedException {
+    private MyEntry sendRequest(MyEntryKey requestCode, Object obj) throws DisconnectException {
 	    MyEntry request = new MyEntry(requestCode, obj);
 	    try {
 		    oos.writeObject(request);
 		    oos.flush();
 	    } catch (IOException e) {
 		    System.out.println("Shit_occurred: can't send a request(" + requestCode + ") to the server");
-		    disconnect();
+		    throw new DisconnectException();
 	    }
 
 	    System.out.println("receiving answer...");
-	    MyEntry reply = null;
+	    MyEntry reply;
 	    try {
 		    reply = (MyEntry) ois.readObject();
 	    } catch (IOException e) {
 		    System.out.println("Shit_occurred: can't get a reply from server");
-		    disconnect();
+		    throw new DisconnectException();
 	    } catch (ClassNotFoundException e) {
 		    System.out.println("Shit_occurred: incorrect format of reply (wrong class format)");
-		    disconnect();
+		    throw new DisconnectException();
 	    }
 
 	    if (reply == null) {
 		    System.out.println("Shit_occurred: reply is null");
-		    disconnect();
+		    throw new DisconnectException();
 	    }
 
 	    if (reply.getKey() == null) {
 		    System.out.println("Shit_occurred: incorrect format of reply (key is null)");
-		    disconnect();
+		    throw new DisconnectException();
 	    }
 
 	    return reply;
     }
 
-    private void receiveTable() throws InterruptedException {
+    private void receiveTable() throws DisconnectException {
 	    System.out.println("trying to receive table...");
 	    ArrayDeque<Employee> deque = new ArrayDeque<>();
 	    try {
 		    oos.writeObject(new MyEntry(TABLE, null));
 
-		    Object reply = null;
+		    Object reply;
 		    try {
 			    reply = ois.readObject();
 		        while (reply instanceof Employee) {
@@ -242,7 +251,7 @@ public class MyClient extends Thread {
 		        }
 		    } catch (ClassNotFoundException e) {
 			    System.out.println("Shit_occurred: incorrect format of reply (wrong class format)");
-			    disconnect();
+			    throw new DisconnectException();
 		    }
 
 	        if (reply instanceof MyEntry) {
@@ -252,22 +261,21 @@ public class MyClient extends Thread {
 				        break;
 			        case DISCONNECT:
 				        System.out.println("Shit_occurred: " + ((MyEntry) reply).getValue());
-				        disconnect();
-			        	break;
+				        throw new DisconnectException();
 			        default:
 				        System.out.println("Shit_occurred: incorrect format of reply (unknown error code \"" +
 						        ((MyEntry) reply).getKey() + "\")");
-				        disconnect();
+				        throw new DisconnectException();
 		        }
 	        } else {
 		        System.out.println("Shit_occurred: incorrect format of reply (expected MyEntry)");
-		        disconnect();
+		        throw new DisconnectException();
 	        }
 
 	        imf.setDeque(deque);
 	    } catch (IOException e) {
 		    System.out.println("Shit_occurred: can't send a request to the server");
-		    disconnect();
+		    throw new DisconnectException();
 	    }
 //        try {
 //        	while (res.next()) {
@@ -287,20 +295,8 @@ public class MyClient extends Thread {
 //        } catch (SQLException e) {
 //	        System.out.println("Shit_occurred: SQLException in making table from ResultSet");
 //	        e.printStackTrace();
-//	        disconnect();
+//	        throw new DisconnectException();
 //        }
-    }
-
-    private static void disconnect() throws InterruptedException {
-        System.out.println("trying to disconnect...");
-	    try {
-            socket.close();
-            System.out.println("socket closed");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-	    System.out.println("disconnected");
-	    throw new InterruptedException();
     }
 
 	public static class Pair implements Serializable {
@@ -313,19 +309,19 @@ public class MyClient extends Thread {
 			this.second = second;
 		}
 
-		/**
-		 * @param str - "(first, second)"
-		 */
-		public Pair(String str) throws IllegalArgumentException {
-			super();
-			Pattern p = Pattern.compile("\\(\\w*, \\w*\\)");
-			if (!p.matcher(str).matches()) throw new IllegalArgumentException();
-
-			p = Pattern.compile("[,()]");
-			String[] ans = p.split(str);
-			first = ans[1];
-			second = ans[2];
-		}
+//		/**
+//		 * @param str - "(first, second)"
+//		 */
+//		public Pair(String str) throws IllegalArgumentException {
+//			super();
+//			Pattern p = Pattern.compile("\\(\\w*, \\w*\\)");
+//			if (!p.matcher(str).matches()) throw new IllegalArgumentException();
+//
+//			p = Pattern.compile("[,()]");
+//			String[] ans = p.split(str);
+//			first = ans[1];
+//			second = ans[2];
+//		}
 
 		public int hashCode() {
 			int hashFirst = first != null ? first.hashCode() : 0;

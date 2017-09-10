@@ -6,6 +6,7 @@ import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.FactoryWorker;
 import ru.ifmo.cs.programming.lab7.MyClient;
 import ru.ifmo.cs.programming.lab7.MyServer;
+import ru.ifmo.cs.programming.lab7.utils.DisconnectException;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 import ru.ifmo.cs.programming.lab7.utils.MyEntryKey;
 
@@ -17,19 +18,20 @@ import java.nio.channels.SocketChannel;
 import java.sql.*;
 import java.util.ArrayDeque;
 
+import static java.time.ZoneOffset.UTC;
 import static ru.ifmo.cs.programming.lab7.MyServer.getDBPassword;
 import static ru.ifmo.cs.programming.lab7.MyServer.getDBUsername;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.*;
 
 public class MyServerThread extends Thread {
 	private final MyServer server;
-	private int num; // server thread number; for exceptions
+	private long num; // server thread number; for exceptions
 	private SocketChannel socketChannel;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 	private PooledConnection pooledConnection;
 
-	public MyServerThread(MyServer server, int num, SocketChannel socketChannel) {
+	public MyServerThread(MyServer server, long num, SocketChannel socketChannel) {
 		this.server = server;
 		this.num = num;
 
@@ -53,7 +55,7 @@ public class MyServerThread extends Thread {
 			} catch (IOException e) {
 				System.out.println(num + ": Shit_in_thread");
 				e.printStackTrace();
-				disconnect();
+				throw new DisconnectException();
 			}
 
 
@@ -65,39 +67,49 @@ public class MyServerThread extends Thread {
 				MyEntry request = getNewRequest();
 				switch (request.getKey()) {
 					case TABLE :
+						System.out.println(num + ": trying to get data from database...");
 						sendTable();
 						break;
 					case TRANSACTION:
+						System.out.println(num + ": processing transaction");
 						processTransaction(request);
 						break;
 					case CLOSE :
-						//fl = false;
-						close();
-						break;
+						System.out.println(num + ": the closure request is received");
+						throw new DisconnectException();
 					default:
 						System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry key");
 						sendMyEntry(DISCONNECT, "incorrect format of request (key number is unknown)");
-						disconnect();
+						throw new DisconnectException();
 				}
 			}
-		} catch (InterruptedException ignored){}
+		} catch (DisconnectException ignored){}
 
-		System.out.println(num + ": end of thread");
+		System.out.println(num + ": trying to disconnect");
+		try {
+			socketChannel.close();
+		} catch (IOException e) {
+			System.out.println(num + ": Shit_in_thread: can't close channel");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		server.getThreads().remove(this);
+		System.out.println(num + ": disconnected");
 	}
 
-	private void connectToDatabase() throws InterruptedException {
+	private void connectToDatabase() throws DisconnectException {
 		MyEntry request = getNewRequest();
 
 		if (request.getKey() != NAME_AND_PASSWORD) {
 			System.out.println(num + ": Shit_in_thread: incorrect format of request (key is null)");
 			sendMyEntry(DISCONNECT, "incorrect format of request (key != NAME_AND_PASSWORD)");
-			disconnect();
+			throw new DisconnectException();
 		}
 
 		if (!(request.getValue() instanceof MyClient.Pair)) {
 			System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry value");
 			sendMyEntry(DISCONNECT, "incorrect format of request (value.class != Pair)");
-			disconnect();
+			throw new DisconnectException();
 		}
 
 		System.out.println(num + ": " + request.getValue().toString()); // вывод имени и пароля на экран
@@ -115,24 +127,23 @@ public class MyServerThread extends Thread {
 			stat.setString(2, password);
 			ResultSet res = stat.executeQuery();
 			if (!res.next()) {
-				if (!sendMyEntry(SQLEXCEPTION, "Wrong name and password combination")) disconnect();
+				if (!sendMyEntry(SQLEXCEPTION, "Wrong name and password combination")) throw new DisconnectException();
 				connectToDatabase();
 			}
 			System.out.println(num + ": connected to database");
 		} catch (SQLException e) {
 			System.out.println(num + ": " + e.getMessage());
-			if (!sendMyEntry(SQLEXCEPTION, e.getMessage())) disconnect();
+			if (!sendMyEntry(SQLEXCEPTION, e.getMessage())) throw new DisconnectException();
 			connectToDatabase();
 		}
 
 		// send back that connection is approved"
-		if (!sendMyEntry(OK, null)) disconnect();
+		if (!sendMyEntry(OK, null)) throw new DisconnectException();
 	}
 
-	private void sendTable() throws InterruptedException {
+	private void sendTable() throws DisconnectException {
 		try {
 			// Getting data from database
-			System.out.println(num + ": trying to get data from database...");
 
 			Statement stat = pooledConnection.getConnection().createStatement();
 			ResultSet res = stat.executeQuery("SELECT ID, name, profession, speciality, salary, attitude, " +
@@ -153,7 +164,7 @@ public class MyServerThread extends Thread {
 				String avatarPath = res.getString("avatar_path");
 				String notes = res.getString("notes");
 
-				Employee employee = null;
+				Employee employee;
 				switch (speciality) {
 					case "class ru.ifmo.cs.programming.lab5.domain.Employee":
 						employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
@@ -166,7 +177,7 @@ public class MyServerThread extends Thread {
 						break;
 					default:
 						sendMyEntry(DISCONNECT, "Broken data: incorrect format of speciality");
-						disconnect();
+						throw new DisconnectException();
 				}
 				employee.setAvatarPath(avatarPath);
 				employee.setNotes(notes);
@@ -177,11 +188,11 @@ public class MyServerThread extends Thread {
 				} catch (IOException e) {
 					System.out.println(num + ": Shit_in_thread: can't send answer back");
 					e.printStackTrace();
-					disconnect();
+					throw new DisconnectException();
 				}
 			}
 
-			if (!sendMyEntry(OK, null)) disconnect();
+			if (!sendMyEntry(OK, null)) throw new DisconnectException();
 			System.out.println(num + ": table has sent");
 
 			stat.close();
@@ -190,28 +201,27 @@ public class MyServerThread extends Thread {
 			System.out.println(num + ": Shit_in_thread: " + e.getLocalizedMessage());
 			e.printStackTrace();
 			sendMyEntry(SQLEXCEPTION, e.getLocalizedMessage());
-			disconnect();
+			throw new DisconnectException();
 		}
 	}
 
-	private void processTransaction(MyEntry request) throws InterruptedException {
-		System.out.println(num + ": processing transaction");
+	private void processTransaction(MyEntry request) throws DisconnectException {
 		if (!(request.getValue() instanceof ArrayDeque)) {
 			System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry value");
 			sendMyEntry(DISCONNECT, "incorrect format of request (value.class != ArrayDeque)");
-			disconnect();
+			throw new DisconnectException();
 		}
 		ArrayDeque deque = (ArrayDeque) request.getValue();
 
 		// Making connection to DB
-		Connection con = null;
+		Connection con;
 		try {
 			con = pooledConnection.getConnection();
 			con.setAutoCommit(false);
 		} catch (SQLException e) {
 			System.out.println(num + ": " + e.getMessage());
 			sendMyEntry(DISCONNECT, e.getMessage());
-			disconnect();
+			throw new DisconnectException();
 		}
 
 		// Transaction
@@ -225,7 +235,7 @@ public class MyServerThread extends Thread {
 				if (!(query instanceof MyEntry)) {
 					System.out.println(num + ": Shit_in_thread: incorrect type of an element");
 					sendMyEntry(DISCONNECT, "incorrect format of request (query.class != MyEntry)");
-					disconnect();
+					throw new DisconnectException();
 				}
 
 				switch (((MyEntry) query).getKey()) {
@@ -234,13 +244,13 @@ public class MyServerThread extends Thread {
 						Object obj = ((MyEntry) query).getValue();
 						if (obj instanceof Employee) {
 							Employee employee = (Employee) obj;
-							PreparedStatement stat = null;
+							PreparedStatement stat;
 							switch (((MyEntry) query).getKey()) {
 								case INSERT:
 									System.out.println(num + ": inserting");
 									stat = con.prepareStatement(" insert into public.\"EMPLOYEE\"" +
 											" (NAME, PROFESSION, SPECIALITY, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, " +
-											"AVATAR_PATH, NOTES) values (?, ?, ?, ?, ?, ?, ?, ?)");
+											"AVATAR_PATH, NOTES, CREATING_TIME) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 									break;
 								case REMOVE:
 									System.out.println(num + ": removing");
@@ -248,7 +258,10 @@ public class MyServerThread extends Thread {
 											"id in (select id from public.\"EMPLOYEE\" where " +
 											"NAME = ? AND PROFESSION = ? AND SPECIALITY = ? AND SALARY = ? AND " +
 											"ATTITUDE_TO_BOSS = ? AND WORK_QUALITY = ? AND AVATAR_PATH = ? AND " +
-											"NOTES = ? limit 1)");
+											"NOTES = ? AND CREATING_TIME = ? limit 1)");
+									break;
+								default:
+									throw new DisconnectException();
 							}
 							stat.setString(1, employee.getName());
 							stat.setString(2, employee.getProfession());
@@ -258,12 +271,14 @@ public class MyServerThread extends Thread {
 							stat.setByte(6, employee.getWorkQuality());
 							stat.setString(7, employee.getAvatarPath());
 							stat.setString(8, employee.getNotes());
+							stat.setTimestamp(9, Timestamp.from(employee.getCreatingTime().
+									withZoneSameInstant(UTC).toInstant()));
 							stat.executeUpdate();
 							stat.close();
 						} else {
 							System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry value");
 							sendMyEntry(DISCONNECT, "incorrect format of request (value.class != Employee)");
-							disconnect();
+							throw new DisconnectException();
 						}
 						break;
 					case CLEAR:
@@ -285,17 +300,17 @@ public class MyServerThread extends Thread {
 			System.out.println(num + ": trying to rollback...");
 			try {
 				con.rollback();
-				if (!sendMyEntry(OK, null)) disconnect();
+				if (!sendMyEntry(OK, null)) throw new DisconnectException();
 				System.out.println("rolled back");
 			} catch (SQLException e1) {
 				System.out.println(num + ": Shit_in_thread: can't rollback");
 				e1.printStackTrace();
 				sendMyEntry(DISCONNECT, e1.getLocalizedMessage());
-				disconnect();
+				throw new DisconnectException();
 			}
 		}
 
-		if (!sendMyEntry(OK, null)) disconnect();
+		if (!sendMyEntry(OK, null)) throw new DisconnectException();
 
 		// Closing connection
 		try {
@@ -304,30 +319,30 @@ public class MyServerThread extends Thread {
 			System.out.println(num + ": Shit_in_thread: " + e.getLocalizedMessage());
 			e.printStackTrace();
 			sendMyEntry(DISCONNECT, e.getLocalizedMessage());
-			disconnect();
+			throw new DisconnectException();
 		}
 
 		System.out.println(num + ": processed");
 	}
 
-	private MyEntry getNewRequest() throws InterruptedException {
+	@org.jetbrains.annotations.NotNull
+	private MyEntry getNewRequest() throws DisconnectException {
 		System.out.println(num + ": getting new request...");
-		MyEntry entry = null;
+		MyEntry entry;
 		try {
 			entry = (MyEntry) ois.readObject();
 		} catch (IOException e) {
 			System.out.println(num + ": Shit_in_thread: can't get new request");
-			disconnect();
+			throw new DisconnectException();
 		} catch (ClassNotFoundException e) {
 			System.out.println(num + ": Shit_in_thread: incorrect format of reply (wrong class format)");
 			e.printStackTrace();
-			disconnect();
+			throw new DisconnectException();
 		}
 
 		if (entry == null) {
 			System.out.println(num + ": Shit_in_thread: incorrect format of answer (entry is null)");
-			disconnect();
-			return null; // shouldn't be executed
+			throw new DisconnectException();
 		} else {
 			return entry;
 		}
@@ -342,24 +357,5 @@ public class MyServerThread extends Thread {
 			return false;
 		}
 		return true;
-	}
-
-	private void close() throws InterruptedException {
-		System.out.println(num + ": trying to end the thread...");
-		disconnect();
-	}
-
-	private void disconnect() throws InterruptedException {
-		System.out.println(num + ": trying to disconnect");
-		try {
-			socketChannel.close();
-		} catch (IOException e) {
-			System.out.println(num + ": Shit_in_thread: can't close channel");
-			e.printStackTrace();
-			System.exit(1);
-		}
-		server.getThreads().remove(this);
-		System.out.println(num + ": disconnected");
-		throw new InterruptedException();
 	}
 }

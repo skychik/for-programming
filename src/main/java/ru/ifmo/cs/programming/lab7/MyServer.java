@@ -30,7 +30,7 @@ public final class MyServer {
 	private static String DBUsername = null;
 	private static String DBPassword = null;
     private ArrayList<MyServerThread> threads = new ArrayList<>();
-	private int numberForThread = 0; // bad :(
+	private long numberForThread = 0; // bad :(
 //    private static boolean stopIdentifier = false;
 //    private final int waitingTimeForNewConnection = 10000;
     private Selector selector;
