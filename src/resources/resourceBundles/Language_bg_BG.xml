@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="butColor">Цвят на бутона</entry>
+    <entry key="clearQ">Ясни таблици служителите?</entry>
+    <entry key="closeW">Затвори прозореца?</entry>
+    <entry key="commands">Отбор</entry>
+    <entry key="confirmation">Потвърждаване на</entry>
+    <entry key="employee">Служител</entry>
+    <entry key="eng">English</entry>
+    <entry key="fWorker">Работник В Завод</entry>
+    <entry key="file">Файл</entry>
+    <entry key="hotKeys">Горещи клавиши</entry>
+    <entry key="language">Език</entry>
+    <entry key="jp">日本語</entry>
+    <entry key="rs">Руски</entry>
+    <entry key="ru">Русский</entry>
+    <entry key="save">Запази</entry>
+    <entry key="settings">Опции</entry>
+    <entry key="stAvatar">Стандартен аватар</entry>
+    <entry key="table">Таблица</entry>
+    <entry key="shAssistant">Продавач-Консултант</entry>
+    <entry key="name">Заглавие</entry>
+    <entry key="speciality">Специалност</entry>
+    <entry key="profession">Професия</entry>
+    <entry key="salary">Заплата</entry>
+    <entry key="attToBoss">Отношението на шефа към</entry>
+    <entry key="wQuality">Качество На Работа</entry>
+    <entry key="search">Тип търсене...</entry>
+    <entry key="clearTable">Изчистване на таблицата</entry>
+    <entry key="programmer">Програмист</entry>
+    <entry key="economist">Икономист</entry>
+    <entry key="manager">Управител</entry>
+    <entry key="hate">Мразя</entry>
+    <entry key="low">Ниска</entry>
+    <entry key="default">По подразбиране</entry>
+    <entry key="normal">Нормален</entry>
+    <entry key="high">Висока</entry>
+    <entry key="notes">Тук можете да въведете вашите бележки...</entry>
+    <entry key="stValues">Стандартни Стойности</entry>
+    <entry key="yes">Да</entry>
+    <entry key="no">Не</entry>
+    <entry key="bg">Български</entry>
+</properties>
