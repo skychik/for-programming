@@ -11,6 +11,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -270,7 +271,6 @@ class MyTable extends JTable implements TableModelListener {
 
 	private void updateEmployee() {
 		Employee employee = imf.getEmployees()[getSelectedRow()];
-		imf.remove(employee);
 		updateUI();
 		getTabbedPane().setSelectedIndex(1);
 		CommandTab.setAvatar(employee.getAvatarPath());

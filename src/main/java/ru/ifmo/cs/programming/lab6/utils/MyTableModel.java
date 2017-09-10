@@ -4,6 +4,7 @@ import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.Product;
+import ru.ifmo.cs.programming.lab6.core.MyMenu;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -44,23 +45,19 @@ public class MyTableModel implements TableModel {
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "Name";
+                return ("name");
             case 1:
-                return "Speciality";
+                return ("speciality");
             case 2:
-                return "Profession";
+                return ("profession");
             case 3:
-                return "Salary";
+                return ("salary");
             case 4:
-                return "Attitude to boss";
+                return ("attitudeToBoss");
             case 5:
-                return "Work quality";
+                return ("workQuality");
         }
         return "";
-    }
-
-    public void setColumnName(){
-
     }
 
     public int getRowCount() {

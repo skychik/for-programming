@@ -1,6 +1,8 @@
 package ru.ifmo.cs.programming.lab6.core;
 
+import org.apache.log4j.helpers.DateTimeDateFormat;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
+import ru.ifmo.cs.programming.lab6.utils.Clock;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -29,10 +33,16 @@ public class MyMenu extends JMenu{
 	private JMenuItem reloadItem;
     private JMenu language;
     private JColorChooser colorChooser;
-    private String[] prof;
+
     private static Locale locale = new Locale("eng", "UK");
+    private FileInputStream fileInputStream;
     private static Properties prop = new Properties();
     private String fontName = "Gill Sans MT Bold Condensed";
+    private static String pathToProperties = "src/resources/resourceBundles/Language_" + getMyLocale() + ".xml";
+
+    public static Locale getMyLocale() {
+        return locale;
+    }
 
     public MyMenu(InteractiveModeFunctions imf){
 
@@ -127,12 +137,12 @@ public class MyMenu extends JMenu{
 
         this.addSeparator();
 
-	    reloadItem = new JMenuItem("Save");
-	    reloadItem.setFont(font);
-	    reloadItem.addActionListener((ActionEvent e) -> {
-		    // TODO: reload
-	    });
-	    this.add(reloadItem);
+//	    reloadItem = new JMenuItem("Save");
+//	    reloadItem.setFont(font);
+//	    reloadItem.addActionListener((ActionEvent e) -> {
+//		    // TODO: reload
+//	    });
+//	    this.add(reloadItem);
 
         saveItem = new JMenuItem("Save");
         saveItem.setFont(font);
@@ -140,7 +150,7 @@ public class MyMenu extends JMenu{
         this.add(saveItem);
 
         try {
-            setLoc(locale);
+            setLoc();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -188,11 +198,12 @@ public class MyMenu extends JMenu{
             {
                 locale = new Locale("eng", "UK");
                 try {
-                    setLoc(locale);
+                    setLoc();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                getTable().updateUI();
+                getTable().revalidate();
+                getTable().repaint();
             }
         });
         ru.addActionListener(new ActionListener()
@@ -201,11 +212,12 @@ public class MyMenu extends JMenu{
             {
                 locale = new Locale("ru", "RU");
                 try {
-                    setLoc(locale);
+                    setLoc();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                getTable().updateUI();
+                getTable().revalidate();
+                getTable().repaint();
             }
         });
         jp.addActionListener(new ActionListener()
@@ -214,11 +226,12 @@ public class MyMenu extends JMenu{
             {
                 locale = new Locale("jp", "JP");
                 try {
-                    setLoc(locale);
+                    setLoc();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                getTable().updateUI();
+                getTable().revalidate();
+                getTable().repaint();
             }
         });
         rs.addActionListener(new ActionListener()
@@ -227,11 +240,12 @@ public class MyMenu extends JMenu{
             {
                 locale = new Locale("rs", "RS");
                 try {
-                    setLoc(locale);
+                    setLoc();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                getTable().updateUI();
+                getTable().revalidate();
+                getTable().repaint();
             }
         });
         bulg.addActionListener(new ActionListener()
@@ -240,11 +254,12 @@ public class MyMenu extends JMenu{
             {
                 locale = new Locale("bg", "BG");
                 try {
-                    setLoc(locale);
+                    setLoc();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                getTable().updateUI();
+                getTable().revalidate();
+                getTable().repaint();
             }
         });
 
@@ -255,22 +270,19 @@ public class MyMenu extends JMenu{
         return prop;
     }
 
-    private void setLoc(Locale locale) throws IOException {
+    private void setLoc() throws IOException {
         //        Locale locale1 = new Locale("ru", "RU");
         //        ResourceBundle bundle = ResourceBundle.getBundle("Language",
         //                new XMLResourceBundleControl());
         //         menu.setText(bundle.getString("file"));
-        String pathToProperties = "src/resources/resourceBundles/Language_" + locale + ".xml";
-        FileInputStream fileInputStream;
         try {
+            pathToProperties = "src/resources/resourceBundles/Language_" + getMyLocale() + ".xml";
             fileInputStream = new FileInputStream(pathToProperties);
             prop.loadFromXML(fileInputStream);
             this.setText(prop.getProperty("file"));
-            if (CommandTab.getNotes().getText().equals("") ||
-                    CommandTab.getNotes().getText().equals(prop.getProperty("notes")))
+            if (CommandTab.isIsNotesChanged() == false)
             CommandTab.setNotes(prop.getProperty("notes"));
-            if (CommandTab.getNameField().getText().equals("") ||
-                    CommandTab.getNameField().getText().equals(prop.getProperty("notes")))
+            if (CommandTab.isIsNameChanged() == false)
             CommandTab.setNameField(prop.getProperty("name"));
             MainFrame.getTabbedPane().setTitleAt(0, prop.getProperty("table"));
             MainFrame.getTabbedPane().setTitleAt(1, prop.getProperty("commands"));
@@ -301,14 +313,17 @@ public class MyMenu extends JMenu{
             MyTableTab.setClearQ(prop.getProperty("clearQ"));
             MyTableTab.setConfirmation(prop.getProperty("confirmation"));
 
+        Clock.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
+                DateFormat.DEFAULT, getMyLocale()));
+
             String[] options = {prop.getProperty("yes"), prop.getProperty("no")};
             MyTableTab.setOptions(options);
-//            MyTableTab.setTableText(new String[] {}); //ToDo переименовать шапку
         } catch (IOException e) {
             System.out.println("Ошибка: файл " + pathToProperties + " не обнаружен");
             e.printStackTrace();
         }
-        getTable().updateUI();
+        getTable().revalidate();
+        getTable().repaint();
     }
 
     public static Locale getSelectedLocale(){

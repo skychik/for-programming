@@ -103,7 +103,6 @@ class MyTableTab extends JPanel {
 
         tree.setOpaque(false);
         tree.setBackground(MyColor.backgroundEighthAlphaColor);
-
         this.add(tree, constraints);
     }
 
@@ -116,6 +115,7 @@ class MyTableTab extends JPanel {
         rootNode.add(secondNode);
 
         secondNode = new DefaultMutableTreeNode("Shop Assistant");
+
         rootNode.add(secondNode);
 
         return rootNode;
@@ -143,11 +143,12 @@ class MyTableTab extends JPanel {
         //if ENTER typed
         searchField.addActionListener(e -> {
             if (Objects.equals(searchField.getText(), "")) {
-                System.out.println(99);
                 searchField.setText(MyMenu.getProp().getProperty("search"));
                 isSearchFieldEmpty = true;
+                requestFocus();
             } else isSearchFieldEmpty = false;
             doSearch();
+            requestFocus();
         });
 
         //автоматически заполняет строчку дефолтной строкой
@@ -176,7 +177,6 @@ class MyTableTab extends JPanel {
         searchButton.setBorder(null);
 
         searchButton.addActionListener(e -> doSearch());
-
         this.add(searchButton, constraints);
     }
 
@@ -217,7 +217,6 @@ class MyTableTab extends JPanel {
     }
 
     public static void setSearchFieldText(String text){
-        searchField.setText(text);
         searchField.setText(text);
     }
 

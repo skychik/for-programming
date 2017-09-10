@@ -59,7 +59,8 @@ public class CommandTab extends JPanel {
     private FileInputStream fileInputStream;
     private boolean isNameFieldEmpty = true;
     private boolean isNotesAreaEmpty = true;
-
+    private static boolean isNotesChanged = false;
+    private static boolean isNameChanged = false;
     static String fontName = "Gill Sans MT Bold Condensed";
     private Font font = new Font(fontName, Font.ITALIC, 13);
     private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
@@ -272,9 +273,11 @@ public class CommandTab extends JPanel {
         notes.setBorder(new LineBorder(foregroundColor));
 
         JScrollPane scrollNotes = new JScrollPane(notes);
+
         //Прозрачность
         scrollNotes.setOpaque(false);
         scrollNotes.getViewport().setOpaque(false);
+        notes.setText(MyMenu.getProp().getProperty("notes"));
 
         notes.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
@@ -284,8 +287,12 @@ public class CommandTab extends JPanel {
             public void focusLost(FocusEvent e) {
                 if (Objects.equals(notes.getText(), "")) {
                     notes.setText(MyMenu.getProp().getProperty("notes"));
+                    isNotesChanged = false;
                     isNotesAreaEmpty = true;
-                } else isNotesAreaEmpty = false;
+                } else {
+                    isNotesAreaEmpty = false;
+                    isNotesChanged = true;
+                }
             }
         });
 
@@ -321,7 +328,8 @@ public class CommandTab extends JPanel {
         okButton.setBackground(opaqueColor);
         okButton.addActionListener(e -> {
             addEmployee();
-            getTable().updateUI();
+            getTable().revalidate();
+            getTable().repaint();
             setDefaultCommandTab();
         });
         JPanel panel = new JPanel();
@@ -354,7 +362,23 @@ public class CommandTab extends JPanel {
                 if (Objects.equals(nameField.getText(), "")) {
                     nameField.setText(MyMenu.getProp().getProperty("name"));
                     isNameFieldEmpty = true;
-                } else isNameFieldEmpty = false;
+                    isNameChanged = false;
+                } else {
+                    isNameFieldEmpty = false;
+                    isNameChanged = true;
+            }
+            }
+        });
+
+        nameField.addActionListener(e -> {
+            if (Objects.equals(nameField.getText(), "")) {
+                nameField.setText(MyMenu.getProp().getProperty("name"));
+                isNameFieldEmpty = true;
+                isNameChanged = false;
+                requestFocus();
+            } else {
+                isNameFieldEmpty = false;
+                isNameChanged = true;
             }
         });
 
@@ -451,10 +475,33 @@ public class CommandTab extends JPanel {
         this.add(workQualityStepper, constraints);
     }
 
+    public static boolean isIsNotesChanged() {
+        return isNotesChanged;
+    }
+
+    public static boolean isIsNameChanged() {
+        return isNameChanged;
+    }
+
     private void addEmployee(){
         Employee employee = new Employee();
         String name = nameField.getText();
-        String profession = professionComboBox.getSelectedItem().toString();
+        String profession = null;
+        if (professionComboBox.getSelectedItem().toString()
+                .equals(MyMenu.getProp().getProperty("programmer")))
+        {
+            profession = "Programmer";
+        }
+        if (professionComboBox.getSelectedItem().toString()
+                .equals(MyMenu.getProp().getProperty("economist")))
+        {
+            profession = "Economist";
+        }
+        if (professionComboBox.getSelectedItem().toString()
+                .equals(MyMenu.getProp().getProperty("manager")))
+        {
+            profession = "Manager";
+        }
         int salary = salarySlider.getValue();
         AttitudeToBoss attitudeToBoss = AttitudeToBoss.DEFAULT;
         pathToProperties = "src/resources/resourceBundles/Language_"

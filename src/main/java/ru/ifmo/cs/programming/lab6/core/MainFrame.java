@@ -1,22 +1,19 @@
 package ru.ifmo.cs.programming.lab6.core;
 
-import com.intellij.uiDesigner.core.GridConstraints;
-import javafx.scene.layout.Border;
 import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab6.utils.Background;
+import ru.ifmo.cs.programming.lab6.utils.Clock;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MainFrame extends JFrame {
     private InteractiveModeFunctions imf;
 //    private boolean usingBD = false;
     private JMenu menu;
-    private JPanel mainPanel;
+    private Background mainPanel;
     private static JTabbedPane tabbedPane;
     private JPanel commandTab;
     JPanel panel;
@@ -47,8 +44,6 @@ public class MainFrame extends JFrame {
 
         setMainPanel();
         setContentPane(mainPanel);
-
-        setBackground();
 
         menu = new MyMenu(imf);
         JMenuBar menuBar = new JMenuBar();
@@ -91,15 +86,17 @@ public class MainFrame extends JFrame {
 //        );
         constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.ipady = 80;
+        constraints.ipady = 130;
         constraints.ipadx = 1200;
         constraints.gridy = 0;
         constraints.gridx = 0;
-        mainPanel = new JPanel();
+        mainPanel = new Background(new ImageIcon(System.getProperty("user.dir") +
+                "/src/resources/images/background.png").getImage());
         OverlayLayout overlayLayout = new OverlayLayout(mainPanel);
         GridBagLayout layout = new GridBagLayout();
         JPanel panel = new JPanel();
         panel.setLayout(layout);
+        panel.setOpaque(false);
         mainPanel.setLayout(overlayLayout);
         setTabbedPane();
         panel.add(
@@ -110,13 +107,14 @@ public class MainFrame extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.ipadx = 1200;
-        constraints.ipady = 60;
+        constraints.ipady = 30;
         Clock clock = new Clock();
         clock.setBackground(MyColor.backgroundEighthAlphaColor);
         panel.add(clock,
                 constraints
         );
         mainPanel.add(panel);
+
     }
 
     private void setTabbedPane() {
@@ -134,9 +132,9 @@ public class MainFrame extends JFrame {
         tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
 
         //Прозрачность фона вкладок
-        //tabbedPane.setOpaque(false);
-        //tabbedPane.putClientProperty("TabbedPane.contentOpaque", Boolean.FALSE);
-        //tabbedPane.putClientProperty("TabbedPane.tabsOpaque", Boolean.FALSE);
+//        tabbedPane.setOpaque(false);
+//        tabbedPane.putClientProperty("TabbedPane.contentOpaque", Boolean.FALSE);
+//        tabbedPane.putClientProperty("TabbedPane.tabsOpaque", Boolean.FALSE);
 
         //Шрифт
         tabbedPane.setFont(new Font(fontName, Font.PLAIN, 18));
@@ -146,13 +144,6 @@ public class MainFrame extends JFrame {
         tabbedPane.setBackground(MyColor.backgroundEighthAlphaColor);
 
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-    }
-
-    private void setBackground() {
-        Background background = new Background(new ImageIcon(System.getProperty("user.dir") +
-                "/src/resources/images/background.png").getImage());
-
-        getContentPane().add(background);
     }
 
     public static JTabbedPane getTabbedPane(){
