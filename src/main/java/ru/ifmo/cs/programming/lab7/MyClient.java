@@ -60,10 +60,10 @@ public class MyClient extends Thread {
 	    } catch (IOException e) {
 		    // show dialog
 		    Frame frame = new Frame("CRUD application");
-		    JOptionPane.showMessageDialog(frame, new JLabel("Can't create socket on  " + host + ":" + port),
+		    JOptionPane.showMessageDialog(frame, new JLabel("Can't insert socket on  " + host + ":" + port),
 				    "Ошибка", JOptionPane.ERROR_MESSAGE);
 
-		    System.out.println("Can't create socket on  " + host + ":" + port);
+		    System.out.println("Can't insert socket on  " + host + ":" + port);
 		    System.exit(1);
 	    }
 
@@ -125,7 +125,7 @@ public class MyClient extends Thread {
 		        System.out.println("connected to database");
 		        break;
 		    case SQLEXCEPTION:
-		        System.out.println("Shit_occurred: " + reply.getValue());
+				System.out.println("Shit_occurred: " + reply.getValue());
 		        connect(reply.getValue().toString());
 		        break;
 		    case DISCONNECT:
@@ -287,7 +287,7 @@ public class MyClient extends Thread {
 //		        String avatarPath = res.getString("AVATAR_PATH");
 //		        String notes = res.getString("NOTES");
 //		        Employee employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
-//		        employee.setAvatarPath(avatarPath);
+//		        employee.setAvatar_path(avatarPath);
 //		        employee.setNotes(notes);
 //
 //		        getDeque().add(employee);

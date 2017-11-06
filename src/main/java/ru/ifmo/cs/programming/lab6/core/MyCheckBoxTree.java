@@ -1,7 +1,6 @@
 package ru.ifmo.cs.programming.lab6.core;
 
-
-import eu.floraresearch.lablib.gui.checkboxtree.*;
+import name.lecaroz.java.swing.jocheckboxtree.*;
 import ru.ifmo.cs.programming.lab6.utils.MyColor;
 
 import javax.swing.*;

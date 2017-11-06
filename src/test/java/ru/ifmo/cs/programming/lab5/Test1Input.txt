@@ -3,15 +3,15 @@ remove
     "name": "Sasha",
     "profession": "programmer",
     "salary": 1,
-    "attitudeToBoss": "LOW",
-    "workQuality": 4
+    "attitude_to_boss": "LOW",
+    "work_quality": 4
 }
 remove_all {
     "name": "Pasha",
     "profession": "programmer",
     "salary": 18,
-    "attitudeToBoss": "NORMAL",
-    "workQuality": 21
+    "attitude_to_boss": "NORMAL",
+    "work_quality": 21
 }
 load
 add aa

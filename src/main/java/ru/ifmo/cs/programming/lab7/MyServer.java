@@ -77,7 +77,7 @@ public final class MyServer {
         try {
             selector = Selector.open();
         } catch (IOException e) {
-            System.out.println("Shit_occurred#2: cannot create selector");
+            System.out.println("Shit_occurred#2: cannot insert selector");
             System.exit(1);
         }
 
@@ -177,7 +177,7 @@ public final class MyServer {
 //        try {
 //            socketChannel = SocketChannel.open();
 //        } catch (IOException e) {
-//            System.out.println("Cannot create socket channel");
+//            System.out.println("Cannot insert socket channel");
 //            System.exit(-1);
 //        }
 //        try {

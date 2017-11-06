@@ -4,7 +4,6 @@ import ru.ifmo.cs.programming.lab5.core.InteractiveModeFunctions;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 import ru.ifmo.cs.programming.lab5.utils.AttitudeToBoss;
 import ru.ifmo.cs.programming.lab5.utils.Product;
-import ru.ifmo.cs.programming.lab6.core.MyMenu;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -81,11 +80,11 @@ public class MyTableModel implements TableModel {
             case 3:
                 return employee.getSalary();
             case 4:
-                return employee.getAttitudeToBoss();
+                return employee.returnAttitude_to_boss();
             case 5:
-                return employee.getWorkQuality();
+                return employee.getWork_quality();
             case 6://TODO: TAKE AWAY FROM HERE
-                return employee.getAvatarPath();
+                return employee.getAvatar_path();
             case 7://TODO: TAKE AWAY FROM HERE
                 return employee.getNotes();
         }
@@ -106,4 +105,5 @@ public class MyTableModel implements TableModel {
     public void removeTableModelListener(TableModelListener listener) {
         listeners.remove(listener);
     }
+
 }

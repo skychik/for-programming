@@ -11,7 +11,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -85,12 +84,16 @@ class MyTable extends JTable implements TableModelListener {
 	    JPopupMenu popupMenu = new JPopupMenu();
 
 	    JMenuItem deleteItem = new JMenuItem("Delete selected");
+//	    JMenuItem updateItem = new JMenuItem("Update selected");
 	    deleteItem.addActionListener(e -> {
-		    for (int i= 0; i < getSelectedRows().length; i++) {
-		    	imf.remove(imf.getEmployees()[i]);
-		    }
+//		    for (int i= 0; i < getSelectedRows().length; i++) {
+//		        if (i == getSelectedRow())
+		    	imf.remove(imf.getEmployees()[getSelectedRow()]);
+//		    }
 		    updateUI();
 	    });
+
+//	    popupMenu.add(updateItem);
 	    popupMenu.add(deleteItem);
 
 //	    JMenuItem updateItem = new JMenuItem("Update");
@@ -273,14 +276,16 @@ class MyTable extends JTable implements TableModelListener {
 		Employee employee = imf.getEmployees()[getSelectedRow()];
 		updateUI();
 		getTabbedPane().setSelectedIndex(1);
-		CommandTab.setAvatar(employee.getAvatarPath());
+		CommandTab.setAvatar(employee.getAvatar_path());
 		CommandTab.setNotes(employee.getNotes());
 		CommandTab.setNameField(employee.getName());
 		CommandTab.setProfessionComboBox(employee.getProfession());
-		CommandTab.setBg(employee.getAttitudeToBoss().toString());
+		CommandTab.setBg(employee.returnAttitude_to_boss().toString());
 		CommandTab.setClassList(employee.getClass().getSimpleName());
 		CommandTab.setSalarySlider(employee.getSalary());
-		CommandTab.setWorkQualityStepper(employee.getWorkQuality());
+		CommandTab.setWorkQualityStepper(employee.getWork_quality());
+        CommandTab.setForUpdate(employee);
+        getTabbedPane().setEnabledAt(0, false);
 	}
 
     private void setAvatar(String avatarPath) {
@@ -300,6 +305,10 @@ class MyTable extends JTable implements TableModelListener {
 
     private boolean checkClicks(MouseEvent e) {
         return e.getClickCount() != 1;
+    }
+
+    public MyTable getMyTable(){
+        return this;
     }
 
 //    private void initVisibilityOfSpeciality() {

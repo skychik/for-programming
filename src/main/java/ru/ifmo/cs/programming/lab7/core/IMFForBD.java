@@ -71,13 +71,14 @@ public class IMFForBD implements InteractiveModeFunctions {
 				oos.writeObject(new MyEntry(TRANSACTION, buff.clone()));
 			} catch (IOException e) {
 				exit("Shit_occurred: can't send transaction(save)");
+				e.printStackTrace();
 			}
 
 			MyEntry entry = null;
 			try {
 				entry = (MyEntry) ois.readObject();
 			} catch (IOException e) {
-				exit("Shit_occurred: can't get an answer");
+				exit("Shit_occurred1: can't get an answer");
 			} catch (ClassNotFoundException e) {
 				exit("Shit_occurred: incorrect format of an answer (wrong class format)");
 			}
@@ -93,7 +94,7 @@ public class IMFForBD implements InteractiveModeFunctions {
 					try {
 						ent = (MyEntry) ois.readObject();
 					} catch (IOException e) {
-						exit("Shit_occurred: can't get an answer");
+						exit("Shit_occurred2: can't get an answer");
 					} catch (ClassNotFoundException e) {
 						exit("Shit_occurred: incorrect format of an answer (wrong class format)");
 					}
@@ -103,6 +104,7 @@ public class IMFForBD implements InteractiveModeFunctions {
 							break;
 						case DISCONNECT:
 							exit(ent.getValue().toString());
+							System.out.println("#1");
 							break;
 						default:
 							exit("Unexpected key(rollback): " + entry.getKey());
@@ -110,6 +112,7 @@ public class IMFForBD implements InteractiveModeFunctions {
 					break;
 				case DISCONNECT:
 					exit(entry.getValue().toString());
+					System.out.println("#2");
 					break;
 				default:
 					exit("Unexpected key(saving): " + entry.getKey());

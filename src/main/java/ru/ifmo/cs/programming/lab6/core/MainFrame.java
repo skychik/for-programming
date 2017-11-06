@@ -50,7 +50,7 @@ public class MainFrame extends JFrame {
         menuBar.add(menu);
         this.setJMenuBar(menuBar);
 
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         //Диалоговое окно для подтвеждения закрытия программы
         addWindowListener (new WindowAdapter() {

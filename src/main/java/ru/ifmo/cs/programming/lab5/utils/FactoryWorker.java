@@ -3,38 +3,44 @@ package ru.ifmo.cs.programming.lab5.utils;
 import ru.ifmo.cs.programming.lab5.AppCmdLine;
 import ru.ifmo.cs.programming.lab5.domain.Employee;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.time.ZonedDateTime;
 import java.util.Scanner;
 
 public class FactoryWorker extends Employee {
 
-    private ArrayList<Product> bagpack = null;
+//    private ArrayList<Product> bagpack = null;
 
     public FactoryWorker() {super();}
 
     public FactoryWorker(String name, String profession, int salary, AttitudeToBoss attitudeToBoss, byte workQuality) {
         super(name, profession, salary, attitudeToBoss, workQuality);
-        bagpack = new ArrayList<>();
+//        bagpack = new ArrayList<>();
+        setSpeciality("FactoryWorker");
+    }
+
+    public FactoryWorker(String name, String profession, Integer salary, AttitudeToBoss attitude, Byte workQuality, ZonedDateTime creating_time) {
+        super(name, profession, salary, attitude, workQuality, creating_time);
+//        bagpack = new ArrayList<>();
+        setSpeciality("FactoryWorker");
     }
 
     public void changeQuality(byte up){
-        setWorkQuality((byte)(getWorkQuality() + up));
+        setWork_quality((byte)(getWork_quality() + up));
     }
 
     public void raiseAttitude(){
-        if (getAttitudeToBoss() == AttitudeToBoss.HATE)
-            setAttitudeToBoss(AttitudeToBoss.LOW);
-        if (getAttitudeToBoss() == AttitudeToBoss.LOW)
-            setAttitudeToBoss(AttitudeToBoss.DEFAULT);
-        if (getAttitudeToBoss() == AttitudeToBoss.DEFAULT)
-            setAttitudeToBoss(AttitudeToBoss.NORMAL);
-        if (getAttitudeToBoss() == AttitudeToBoss.NORMAL)
-            setAttitudeToBoss(AttitudeToBoss.HIGH);
+        if (returnAttitude_to_boss() == AttitudeToBoss.HATE)
+            setAttitude_to_boss(AttitudeToBoss.LOW);
+        if (returnAttitude_to_boss() == AttitudeToBoss.LOW)
+            setAttitude_to_boss(AttitudeToBoss.DEFAULT);
+        if (returnAttitude_to_boss() == AttitudeToBoss.DEFAULT)
+            setAttitude_to_boss(AttitudeToBoss.NORMAL);
+        if (returnAttitude_to_boss() == AttitudeToBoss.NORMAL)
+            setAttitude_to_boss(AttitudeToBoss.HIGH);
     }
 
     public void receiveSausage(Product sausage) {
-        bagpack.add(sausage);
+//        bagpack.add(sausage);
         byte up = 5;
         this.changeQuality(up);
         this.raiseAttitude();
@@ -45,46 +51,47 @@ public class FactoryWorker extends Employee {
         return ("FactoryWorker;" + getName()  +
                 ";" + getProfession() +
                 ";" + getSalary() +
-                ";" + getAttitudeToBoss().toString() +
-                ";" + getWorkQuality() +
-                ";" + getAvatarPath() +
+                ";" + returnAttitude_to_boss().toString() +
+                ";" + getWork_quality() +
+                ";" + getAvatar_path() +
                 ";{" + getNotes() + "}");
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 23 * hash + Objects.hashCode(this.bagpack);
+        hash = 23 * hash;
+//                + Objects.hashCode(this.bagpack);
         return hash;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final FactoryWorker other = (FactoryWorker) obj;
-        return Objects.equals(this.bagpack, other.bagpack);
-    }
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj) {
+//            return true;
+//        }
+//        if (obj == null) {
+//            return false;
+//        }
+//        if (getClass() != obj.getClass()) {
+//            return false;
+//        }
+//        final FactoryWorker other = (FactoryWorker) obj;
+//        return Objects.equals(this.bagpack, other.bagpack);
+//    }
 
     public void sign(ManagerNotebook notebook){
         notebook.addSign(this.getName());
     }
 
-    public ArrayList<Product> getBagpack() {
-        return bagpack;
-    }
+//    public ArrayList<Product> getBagpack() {
+//        return bagpack;
+//    }
 
-    public void addProduct (Product product){
-        bagpack.add(product);
-        bagpack = null;
-    }
+//    public void addProduct (Product product){
+//        bagpack.add(product);
+//        bagpack = null;
+//    }
 
     /**
      * Метод, преобразующий оставшуюся часть строки в коллекцию bagPack,
@@ -129,7 +136,7 @@ public class FactoryWorker extends Employee {
                         return;
                     }
 
-                    addProduct(product);
+//                    addProduct(product);
 
                     if (foundClosingSquareBracket) break;
                 }

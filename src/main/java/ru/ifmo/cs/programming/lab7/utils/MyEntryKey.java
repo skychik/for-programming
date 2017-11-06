@@ -19,7 +19,7 @@ public enum MyEntryKey implements Serializable {
 
 	private String name;
 
-	MyEntryKey(String name) {
+		MyEntryKey(String name) {
 		this.name = name;
 	}
 

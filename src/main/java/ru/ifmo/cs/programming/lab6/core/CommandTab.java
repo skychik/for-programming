@@ -27,7 +27,7 @@ import static ru.ifmo.cs.programming.lab6.utils.MyColor.opaqueColor;
  */
 public class CommandTab extends JPanel {
 
-    private InteractiveModeFunctions imf;
+    private static InteractiveModeFunctions imf = null;
     private static StandardButton standardValuesButton;
 
     public static JTextArea getNotes() {
@@ -64,6 +64,8 @@ public class CommandTab extends JPanel {
     static String fontName = "Gill Sans MT Bold Condensed";
     private Font font = new Font(fontName, Font.ITALIC, 13);
     private LineBorder lineBorder = new LineBorder(Color.BLACK,2);
+    private static Employee employeeForUpdating = null;
+    private static boolean isUpdating = false;
 
     public CommandTab(InteractiveModeFunctions imf) {
 
@@ -207,6 +209,11 @@ public class CommandTab extends JPanel {
         });
     }
 
+    public static void setForUpdate(Employee employee) {
+        CommandTab.employeeForUpdating = employee;
+        isUpdating = true;
+    }
+
     class FileFilterExt extends javax.swing.filechooser.FileFilter {
         String extension  ;  // расширение файла
         String description;  // описание типа файлов
@@ -327,10 +334,18 @@ public class CommandTab extends JPanel {
         //Прозрачность фона
         okButton.setBackground(opaqueColor);
         okButton.addActionListener(e -> {
-            addEmployee();
-            getTable().revalidate();
-            getTable().repaint();
-            setDefaultCommandTab();
+            if (!isUpdating){
+                addEmployee();
+                getTable().revalidate();
+                getTable().repaint();
+                setDefaultCommandTab();
+            } else {
+                addEmployee();
+                getTable().revalidate();
+                getTable().repaint();
+                update();
+                setDefaultCommandTab();
+            }
         });
         JPanel panel = new JPanel();
         panel.setOpaque(false);
@@ -484,6 +499,10 @@ public class CommandTab extends JPanel {
     }
 
     private void addEmployee(){
+        imf.add(getEmployee());
+    }
+
+    private Employee getEmployee(){
         Employee employee = new Employee();
         String name = nameField.getText();
         String profession = null;
@@ -543,9 +562,9 @@ public class CommandTab extends JPanel {
             System.out.println("Ошибка: файл " + pathToProperties + " не обнаружен");
             e.printStackTrace();
         }
-        employee.setAvatarPath(avatarPath);
+        employee.setAvatar_path(avatarPath);
         employee.setNotes(notes.getText());
-        imf.add(employee);
+        return employee;
     }
 
     public static void setBg(String attitude){
@@ -675,5 +694,18 @@ public class CommandTab extends JPanel {
         salarySlider.setValue(20000);
         radio[2].setSelected(true);
         workQualityStepper.setValue(0);
+    }
+
+    public void update(){
+        imf.remove(employeeForUpdating);
+        getTable().revalidate();
+        getTable().repaint();
+        CommandTab.imf = null;
+        CommandTab.employeeForUpdating = null;
+        isUpdating = false;
+        MainFrame.getTabbedPane().setEnabledAt(0, true);
+        updateUI();
+        MainFrame.getTabbedPane().setSelectedIndex(0);
+
     }
 }

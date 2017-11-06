@@ -9,6 +9,8 @@ import ru.ifmo.cs.programming.lab7.MyServer;
 import ru.ifmo.cs.programming.lab7.utils.DisconnectException;
 import ru.ifmo.cs.programming.lab7.utils.MyEntry;
 import ru.ifmo.cs.programming.lab7.utils.MyEntryKey;
+import ru.ifmo.cs.programming.lab8.ORMClass;
+import ru.ifmo.cs.programming.lab8.Test2;
 
 import javax.sql.PooledConnection;
 import java.io.IOException;
@@ -18,7 +20,6 @@ import java.nio.channels.SocketChannel;
 import java.sql.*;
 import java.util.ArrayDeque;
 
-import static java.time.ZoneOffset.UTC;
 import static ru.ifmo.cs.programming.lab7.MyServer.getDBPassword;
 import static ru.ifmo.cs.programming.lab7.MyServer.getDBUsername;
 import static ru.ifmo.cs.programming.lab7.utils.MyEntryKey.*;
@@ -144,44 +145,48 @@ public class MyServerThread extends Thread {
 	private void sendTable() throws DisconnectException {
 		try {
 			// Getting data from database
-
+            ORMClass ormClass = new ORMClass(pooledConnection);
 			Statement stat = pooledConnection.getConnection().createStatement();
-			ResultSet res = stat.executeQuery("SELECT ID, name, profession, speciality, salary, attitude, " +
-					"work_quality, avatar_path, notes FROM public.\"EMPLOYEE\", public.\"ATTITUDE_TO_BOSS\"" +
-					"WHERE public.\"EMPLOYEE\".attitude_to_boss = public.\"ATTITUDE_TO_BOSS\".attitude");
+					ResultSet res = ormClass.readTable(Employee.class);
+//                    stat.executeQuery("SELECT ID, name, profession, speciality, salary, attitude, " +
+//					"work_quality, avatar_path, notes FROM public.\"EMPLOYEE\", public.\"ATTITUDE_TO_BOSS\"" +
+//					"WHERE public.\"EMPLOYEE\".attitude_to_boss = public.\"ATTITUDE_TO_BOSS\".attitude");
 
 			// Sending data
 			System.out.println(num + ": trying to send table...");
 			while (res.next()) {
 				long ID = res.getLong("ID");
+				ResultSet test = ormClass.selectById(Employee.class, ID);
+				test.next();
+                System.out.println("Проверка: id = " + test.getString("ID") + ", name = " + test.getString("name"));
 				String name = res.getString("name");
 				String profession = res.getString("profession");
 				String speciality = res.getString("speciality");
 				int salary = res.getInt("salary");
 				AttitudeToBoss attitudeToBoss = AttitudeToBoss.fromByteToAttitudeToBoss(
-						(byte)res.getInt("attitude"));
+						(byte)res.getInt("attitude_to_boss"));
 				byte workQuality = res.getByte("work_quality");
 				String avatarPath = res.getString("avatar_path");
 				String notes = res.getString("notes");
 
 				Employee employee;
 				switch (speciality) {
-					case "class ru.ifmo.cs.programming.lab5.domain.Employee":
+					case "Employee":
 						employee = new Employee(name, profession, salary, attitudeToBoss, workQuality);
 						break;
-					case "class ru.ifmo.cs.programming.lab5.utils.FactoryWorker":
+					case "Factory Worker":
 						employee = new FactoryWorker(name, profession, salary, attitudeToBoss, workQuality);
 						break;
-					case "class ru.ifmo.cs.programming.lab5.domain.ShopAssistant":
+					case "Shop Assistant":
 						employee = new ShopAssistant(name, profession, salary, attitudeToBoss, workQuality);
 						break;
 					default:
 						sendMyEntry(DISCONNECT, "Broken data: incorrect format of speciality");
 						throw new DisconnectException();
 				}
-				employee.setAvatarPath(avatarPath);
+				employee.setAvatar_path(avatarPath);
 				employee.setNotes(notes);
-				employee.setID(ID);
+				employee.setId(ID);
 
 				try {
 					oos.writeObject(employee);
@@ -215,9 +220,15 @@ public class MyServerThread extends Thread {
 
 		// Making connection to DB
 		Connection con;
+        ORMClass ormClass;
+		Test2 test = new Test2();
+		test.setId(165);
+		test.setName("test2");
 		try {
 			con = pooledConnection.getConnection();
 			con.setAutoCommit(false);
+			ormClass = new ORMClass(con, pooledConnection);
+			ormClass.insert(test);
 		} catch (SQLException e) {
 			System.out.println(num + ": " + e.getMessage());
 			sendMyEntry(DISCONNECT, e.getMessage());
@@ -244,37 +255,50 @@ public class MyServerThread extends Thread {
 						Object obj = ((MyEntry) query).getValue();
 						if (obj instanceof Employee) {
 							Employee employee = (Employee) obj;
-							PreparedStatement stat;
+//							PreparedStatement stat;
 							switch (((MyEntry) query).getKey()) {
 								case INSERT:
 									System.out.println(num + ": inserting");
-									stat = con.prepareStatement(" insert into public.\"EMPLOYEE\"" +
-											" (NAME, PROFESSION, SPECIALITY, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, " +
-											"AVATAR_PATH, NOTES, CREATING_TIME) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+									ormClass.insert(employee);
+									employee.setNotes("Я update-нулся");
+									ormClass.update(employee);
+//									stat = con.prepareStatement(" insert into public.\"EMPLOYEE\"" +
+//											" (NAME, PROFESSION, SPECIALITY, SALARY, ATTITUDE_TO_BOSS, WORK_QUALITY, " +
+//											"AVATAR_PATH, NOTES, CREATING_TIME) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 									break;
 								case REMOVE:
 									System.out.println(num + ": removing");
-									stat = con.prepareStatement("delete from public.\"EMPLOYEE\" where " +
-											"id in (select id from public.\"EMPLOYEE\" where " +
-											"NAME = ? AND PROFESSION = ? AND SPECIALITY = ? AND SALARY = ? AND " +
-											"ATTITUDE_TO_BOSS = ? AND WORK_QUALITY = ? AND AVATAR_PATH = ? AND " +
-											"NOTES = ? AND CREATING_TIME = ? limit 1)");
+									ormClass.removeEmployee(employee);
+//									stat = con.prepareStatement("delete from public.\"EMPLOYEE\" where " +
+//											"id in (select id from public.\"EMPLOYEE\" where " +
+//											"NAME = ? AND PROFESSION = ? AND SPECIALITY = ? AND SALARY = ? AND " +
+//											"ATTITUDE_TO_BOSS = ? AND WORK_QUALITY = ? AND AVATAR_PATH = ? AND " +
+//											"NOTES = ? AND CREATING_TIME = ? limit 1)");
 									break;
+                                case UPDATE:
+                                    System.out.println(num + ": updating");
+                                    ormClass.update(employee);
+//									stat = con.prepareStatement("delete from public.\"EMPLOYEE\" where " +
+//											"id in (select id from public.\"EMPLOYEE\" where " +
+//											"NAME = ? AND PROFESSION = ? AND SPECIALITY = ? AND SALARY = ? AND " +
+//											"ATTITUDE_TO_BOSS = ? AND WORK_QUALITY = ? AND AVATAR_PATH = ? AND " +
+//											"NOTES = ? AND CREATING_TIME = ? limit 1)");
+                                    break;
 								default:
 									throw new DisconnectException();
 							}
-							stat.setString(1, employee.getName());
-							stat.setString(2, employee.getProfession());
-							stat.setString(3, employee.getClass().toString());
-							stat.setInt(4, employee.getSalary());
-							stat.setByte(5, employee.getAttitudeToBoss().getAttitude());
-							stat.setByte(6, employee.getWorkQuality());
-							stat.setString(7, employee.getAvatarPath());
-							stat.setString(8, employee.getNotes());
-							stat.setTimestamp(9, Timestamp.from(employee.getCreatingTime().
-									withZoneSameInstant(UTC).toInstant()));
-							stat.executeUpdate();
-							stat.close();
+//							stat.setString(1, employee.getName());
+//							stat.setString(2, employee.getProfession());
+//							stat.setString(3, employee.getClass().toString());
+//							stat.setInt(4, employee.getSalary());
+//							stat.setByte(5, employee.returnAttitude_to_boss().getAttitude());
+//							stat.setByte(6, employee.getWork_quality());
+//							stat.setString(7, employee.getAvatar_path());
+//							stat.setString(8, employee.getNotes());
+//							stat.setTimestamp(9, Timestamp.from(employee.getCreating_time().
+//									withZoneSameInstant(UTC).toInstant()));
+//							stat.executeUpdate();
+//							stat.close();
 						} else {
 							System.out.println(num + ": Shit_in_thread: incorrect type of MyEntry value");
 							sendMyEntry(DISCONNECT, "incorrect format of request (value.class != Employee)");
@@ -283,14 +307,15 @@ public class MyServerThread extends Thread {
 						break;
 					case CLEAR:
 						System.out.println(num + ": clearing");
-						Statement stat = con.createStatement();
-						stat.executeUpdate("delete from public.\"EMPLOYEE\"");
+						ormClass.clearTable(Employee.class);
+//						Statement stat = con.createStatement();
+//						stat.executeUpdate("delete from public.\"EMPLOYEE\"");
 						break;
 					default:
 						System.out.println(num + ": Shit_in_thread: unexpected request key");
 				}
 			}
-
+            ormClass.closeORM();
 			con.commit();
 		} catch (SQLException e) {
 			System.out.println(num + ": Shit_in_thread: " + e.getLocalizedMessage());
